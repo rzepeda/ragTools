@@ -1,0 +1,13 @@
+[MESSAGES CONTROL]
+# Disable unnecessary-ellipsis for abstract methods
+disable=unnecessary-ellipsis
+
+[FORMAT]
+max-line-length=100
+
+[BASIC]
+good-names=i,j,k,_,x,y,z,id
+
+[DESIGN]
+max-args=7
+max-attributes=10
