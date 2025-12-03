@@ -1,0 +1,11 @@
+can you build the stories for epic 5 'docs/epics/epic-05-agentic-advanced.md' as detailed documents with requirements, acceptace criteria and tests, unit test, integration tests the code should pass for a developer to work on it?
+
+can you build the stories for epic 6 'docs/epics/epic-06-multi-query-contextual.md' as detailed documents with requirements, acceptace criteria and tests, unit test, integration tests the code should pass for a developer to work on it?
+
+can you build the stories for epic 7 'docs/epics/epic-07-experimental-strategies.md' as detailed documents with requirements, acceptace criteria and tests, unit test, integration tests the code should pass for a developer to work on it?
+
+can you build the stories for epic 8 'docs/epics/epic-08-observability.md' as detailed documents with requirements, acceptace criteria and tests, unit test, integration tests the code should pass for a developer to work on it?
+
+can you build the stories for epic 8.5 'docs/epics/epic-08.5-development-tools.md' as detailed documents with requirements, acceptace criteria and tests, unit test, integration tests the code should pass for a developer to work on it?
+
+can you build the stories for epic 9 'docs/epics/epic-09-documentation.md' as detailed documents with requirements, acceptace criteria and tests, unit test, integration tests the code should pass for a developer to work on it?
