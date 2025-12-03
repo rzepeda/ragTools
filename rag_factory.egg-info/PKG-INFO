@@ -1,0 +1,38 @@
+Metadata-Version: 2.4
+Name: rag-factory
+Version: 0.1.0
+Summary: A flexible factory system for combining multiple RAG strategies
+Author-email: RAG Factory Team <team@rag-factory.example.com>
+License: MIT
+Project-URL: Homepage, https://github.com/yourusername/rag-factory
+Project-URL: Documentation, https://rag-factory.readthedocs.io
+Project-URL: Repository, https://github.com/yourusername/rag-factory
+Project-URL: Issues, https://github.com/yourusername/rag-factory/issues
+Keywords: rag,retrieval,llm,ai,nlp
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: pyyaml>=6.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: mypy>=1.0.0; extra == "dev"
+Requires-Dist: flake8>=6.0.0; extra == "dev"
+Requires-Dist: isort>=5.12.0; extra == "dev"
+Provides-Extra: watch
+Requires-Dist: watchdog>=3.0.0; extra == "watch"
+Provides-Extra: all
+Requires-Dist: rag-factory[dev,watch]; extra == "all"
+
+# My Project

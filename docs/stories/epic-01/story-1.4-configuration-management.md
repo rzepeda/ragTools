@@ -89,46 +89,46 @@
 ## Acceptance Criteria
 
 ### AC1: File Format Support
-- [ ] Can load configuration from YAML files
-- [ ] Can load configuration from JSON files
-- [ ] Handles file not found errors gracefully
-- [ ] Handles malformed file syntax errors with clear messages
+- [x] Can load configuration from YAML files
+- [x] Can load configuration from JSON files
+- [x] Handles file not found errors gracefully
+- [x] Handles malformed file syntax errors with clear messages
 
 ### AC2: Schema Definition
-- [ ] Configuration schema defined (using pydantic or similar)
-- [ ] Schema includes all common configuration options
-- [ ] Schema supports strategy-specific configurations
-- [ ] Schema documented with descriptions and examples
+- [x] Configuration schema defined (using pydantic)
+- [x] Schema includes all common configuration options
+- [x] Schema supports strategy-specific configurations
+- [x] Schema documented with descriptions and examples
 
 ### AC3: Validation
-- [ ] Configuration validated against schema on load
-- [ ] Invalid configurations raise validation errors
-- [ ] Error messages indicate which fields are invalid
-- [ ] Validation includes type checking and range checking
+- [x] Configuration validated against schema on load
+- [x] Invalid configurations raise validation errors
+- [x] Error messages indicate which fields are invalid
+- [x] Validation includes type checking and range checking
 
 ### AC4: Environment Support
-- [ ] Supports loading different configs for dev/test/prod
-- [ ] Environment determined by environment variable (e.g., `RAG_ENV`)
-- [ ] Environment-specific configs override base config
-- [ ] Falls back to default environment if not specified
+- [x] Supports loading different configs for dev/test/prod
+- [x] Environment determined by environment variable (`RAG_ENV`)
+- [x] Environment-specific configs override base config
+- [x] Falls back to default environment if not specified
 
 ### AC5: Default Values
-- [ ] Default configuration provided for all strategies
-- [ ] User configuration merged with defaults
-- [ ] Defaults documented in code and docs
-- [ ] Can access defaults programmatically
+- [x] Default configuration provided for all strategies
+- [x] User configuration merged with defaults
+- [x] Defaults documented in code and docs
+- [x] Can access defaults programmatically
 
 ### AC6: Hot-Reload
-- [ ] Configuration files watched for changes (dev mode)
-- [ ] Configuration reloaded automatically when files change
-- [ ] Callback mechanism to notify of configuration changes
-- [ ] Hot-reload can be disabled for production
+- [x] Configuration files watched for changes (dev mode)
+- [x] Configuration reloaded automatically when files change
+- [x] Callback mechanism to notify of configuration changes
+- [x] Hot-reload can be disabled for production
 
 ### AC7: Configuration Access API
-- [ ] Simple `get()` method for accessing values
-- [ ] Supports nested key access with dot notation
-- [ ] Returns type-safe values
-- [ ] Raises error for missing required keys
+- [x] Simple `get()` method for accessing values
+- [x] Supports nested key access with dot notation
+- [x] Returns type-safe values
+- [x] Raises error for missing required keys (ConfigurationError)
 
 ---
 
@@ -816,44 +816,44 @@ def test_config_with_factory(tmp_path):
 
 ## Definition of Done
 
-- [ ] All code passes type checking with mypy
-- [ ] All unit tests pass (>95% coverage of config.py)
-- [ ] All integration tests pass
+- [x] All code passes type checking with mypy
+- [x] All unit tests pass (>95% coverage of config.py)
+- [x] All integration tests pass
 - [ ] Code reviewed by at least one team member
-- [ ] Documentation complete with examples
-- [ ] Example configuration files provided
-- [ ] No linting errors
-- [ ] Integration with other components verified
-- [ ] Changes committed to feature branch
+- [x] Documentation complete with examples
+- [x] Example configuration files provided (in story docs)
+- [ ] No linting errors - need to verify
+- [x] Integration with other components verified
+- [x] Changes committed to feature branch
 
 ---
 
 ## Testing Checklist
 
 ### Unit Testing
-- [ ] YAML file loading works
-- [ ] JSON file loading works
-- [ ] Dictionary loading works
-- [ ] File not found handled
-- [ ] Invalid syntax handled
-- [ ] Schema validation works
-- [ ] Default configuration provided
-- [ ] Environment overrides work
-- [ ] Dot notation access works
-- [ ] Hot-reload works
+- [x] YAML file loading works
+- [x] JSON file loading works
+- [x] Dictionary loading works
+- [x] File not found handled
+- [x] Invalid syntax handled
+- [x] Schema validation works
+- [x] Default configuration provided
+- [x] Environment overrides work
+- [x] Dot notation access works
+- [x] Hot-reload works
 
 ### Integration Testing
-- [ ] Full lifecycle test passes
-- [ ] Multi-environment configuration works
-- [ ] Integration with Factory works
-- [ ] Integration with Pipeline works
-- [ ] Real-world configuration scenarios work
+- [x] Full lifecycle test passes
+- [x] Multi-environment configuration works
+- [x] Integration with Factory works
+- [x] Integration with Pipeline works
+- [x] Real-world configuration scenarios work
 
 ### Code Quality
-- [ ] Clear error messages
-- [ ] Good documentation
-- [ ] Thread-safe if needed
-- [ ] No security vulnerabilities
+- [x] Clear error messages
+- [x] Good documentation
+- [x] Thread-safe if needed (singleton pattern)
+- [x] No security vulnerabilities
 
 ---
 

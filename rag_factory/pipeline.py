@@ -182,10 +182,9 @@ class StrategyPipeline:
         """
         if self.mode == ExecutionMode.SEQUENTIAL:
             return self._execute_sequential(query, top_k)
-        elif self.mode == ExecutionMode.PARALLEL:
+        if self.mode == ExecutionMode.PARALLEL:
             return asyncio.run(self._execute_parallel(query, top_k))
-        else:
-            raise NotImplementedError(f"Mode {self.mode} not implemented")
+        raise NotImplementedError(f"Mode {self.mode} not implemented")
 
     async def aexecute(self, query: str, top_k: int = 5) -> PipelineResult:
         """
@@ -204,10 +203,9 @@ class StrategyPipeline:
         """
         if self.mode == ExecutionMode.SEQUENTIAL:
             return await self._aexecute_sequential(query, top_k)
-        elif self.mode == ExecutionMode.PARALLEL:
+        if self.mode == ExecutionMode.PARALLEL:
             return await self._execute_parallel(query, top_k)
-        else:
-            raise NotImplementedError(f"Mode {self.mode} not implemented")
+        raise NotImplementedError(f"Mode {self.mode} not implemented")
 
     def _execute_sequential(self, query: str, top_k: int) -> PipelineResult:
         """
@@ -234,14 +232,14 @@ class StrategyPipeline:
                 stage_results[stage.name] = stage_output
                 results.extend(stage_output)
 
-            except Exception as e:
+            except Exception as e:  # pylint: disable=broad-exception-caught
                 self._handle_stage_error(stage, e)
                 if stage.fallback:
                     # Execute fallback
                     try:
                         stage_output = stage.fallback.retrieve(query, top_k)
                         results.extend(stage_output)
-                    except Exception as fallback_error:
+                    except Exception as fallback_error:  # pylint: disable=broad-exception-caught
                         if stage.required:
                             raise
                         self._handle_stage_error(stage, fallback_error)
@@ -288,7 +286,7 @@ class StrategyPipeline:
                 stage_results[stage.name] = stage_output
                 results.extend(stage_output)
 
-            except Exception as e:
+            except Exception as e:  # pylint: disable=broad-exception-caught
                 self._handle_stage_error(stage, e)
                 if stage.fallback:
                     # Execute fallback
@@ -298,7 +296,7 @@ class StrategyPipeline:
                             top_k
                         )
                         results.extend(stage_output)
-                    except Exception as fallback_error:
+                    except Exception as fallback_error:  # pylint: disable=broad-exception-caught
                         if stage.required:
                             raise
                         self._handle_stage_error(stage, fallback_error)
@@ -354,10 +352,10 @@ class StrategyPipeline:
                             top_k
                         )
                         results.extend(fallback_result)
-                    except Exception as fallback_error:
+                    except Exception as fallback_error:  # pylint: disable=broad-exception-caught
                         if stage.required:
                             # Re-raise the original error for required stages
-                            raise result
+                            raise result from fallback_error
                         self._handle_stage_error(stage, fallback_error)
                 elif stage.required:
                     raise result

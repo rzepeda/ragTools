@@ -1,5 +1,6 @@
 """RAG Factory package for creating and managing RAG strategies."""
 
+from rag_factory.__version__ import __version__
 from rag_factory.factory import (
     RAGFactory,
     StrategyNotFoundError,
@@ -19,8 +20,17 @@ from rag_factory.pipeline import (
     PipelineStage,
     PipelineResult,
 )
+from rag_factory.config import (
+    ConfigManager,
+    ConfigurationError as ConfigError,
+    GlobalConfigSchema,
+    StrategyConfigSchema,
+    PipelineConfigSchema,
+    RAGConfigSchema,
+)
 
 __all__ = [
+    "__version__",
     "RAGFactory",
     "StrategyNotFoundError",
     "ConfigurationError",
@@ -34,4 +44,10 @@ __all__ = [
     "ExecutionMode",
     "PipelineStage",
     "PipelineResult",
+    "ConfigManager",
+    "ConfigError",
+    "GlobalConfigSchema",
+    "StrategyConfigSchema",
+    "PipelineConfigSchema",
+    "RAGConfigSchema",
 ]
