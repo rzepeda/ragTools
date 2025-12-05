@@ -32,7 +32,11 @@ Requires-Dist: flake8>=6.0.0; extra == "dev"
 Requires-Dist: isort>=5.12.0; extra == "dev"
 Provides-Extra: watch
 Requires-Dist: watchdog>=3.0.0; extra == "watch"
+Provides-Extra: cli
+Requires-Dist: typer>=0.12.0; extra == "cli"
+Requires-Dist: rich>=13.7.0; extra == "cli"
+Requires-Dist: prompt-toolkit>=3.0.43; extra == "cli"
 Provides-Extra: all
-Requires-Dist: rag-factory[dev,watch]; extra == "all"
+Requires-Dist: rag-factory[cli,dev,watch]; extra == "all"
 
 # My Project

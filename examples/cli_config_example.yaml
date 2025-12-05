@@ -1,0 +1,23 @@
+# RAG Factory CLI Configuration Example
+# This file demonstrates various configuration options for the CLI
+
+# Required: Strategy name to use
+strategy_name: semantic_chunker
+
+# Chunking parameters
+chunk_size: 512           # Size of each chunk in tokens
+chunk_overlap: 50         # Overlap between consecutive chunks
+
+# Retrieval parameters
+top_k: 10                 # Number of top results to return
+
+# Strategy-specific settings (example for semantic chunker)
+embedding_model: all-MiniLM-L6-v2
+similarity_threshold: 0.85
+use_sentence_boundaries: true
+
+# Additional metadata
+metadata:
+  project: example_project
+  version: "1.0"
+  description: "Example configuration for RAG Factory CLI"

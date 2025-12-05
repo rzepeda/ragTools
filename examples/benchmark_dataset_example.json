@@ -1,0 +1,47 @@
+[
+  {
+    "query": "What is Retrieval-Augmented Generation?",
+    "expected_docs": ["rag_intro.txt", "rag_overview.md"],
+    "metadata": {
+      "category": "definition",
+      "difficulty": "easy",
+      "expected_score": 0.9
+    }
+  },
+  {
+    "query": "How does semantic chunking improve retrieval?",
+    "expected_docs": ["semantic_chunking.md", "chunking_strategies.txt"],
+    "metadata": {
+      "category": "technical",
+      "difficulty": "medium",
+      "expected_score": 0.85
+    }
+  },
+  {
+    "query": "Compare different reranking algorithms",
+    "expected_docs": ["reranking_comparison.pdf", "algorithms.txt"],
+    "metadata": {
+      "category": "comparison",
+      "difficulty": "hard",
+      "expected_score": 0.75
+    }
+  },
+  {
+    "query": "What are best practices for chunk size selection?",
+    "expected_docs": ["best_practices.md", "optimization_guide.txt"],
+    "metadata": {
+      "category": "best_practices",
+      "difficulty": "medium",
+      "expected_score": 0.8
+    }
+  },
+  {
+    "query": "How to implement query expansion?",
+    "expected_docs": ["query_expansion.md", "implementation_guide.txt"],
+    "metadata": {
+      "category": "implementation",
+      "difficulty": "hard",
+      "expected_score": 0.7
+    }
+  }
+]

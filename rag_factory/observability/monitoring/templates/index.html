@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG Factory Monitoring Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            font-size: 16px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .metric {
+            margin-bottom: 15px;
+        }
+
+        .metric-label {
+            color: #7f8c8d;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-top: 5px;
+        }
+
+        .metric-value.success {
+            color: #27ae60;
+        }
+
+        .metric-value.error {
+            color: #e74c3c;
+        }
+
+        .metric-value.warning {
+            color: #f39c12;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+
+        .error-message {
+            background: #ffe6e6;
+            color: #c0392b;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .strategy-list {
+            list-style: none;
+        }
+
+        .strategy-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border-left: 3px solid #3498db;
+        }
+
+        .strategy-name {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .strategy-stats {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        .refresh-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background: #2980b9;
+        }
+
+        .last-updated {
+            color: #7f8c8d;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>RAG Factory Monitoring Dashboard</h1>
+            <p class="subtitle">Real-time monitoring and metrics for RAG operations</p>
+            <button class="refresh-btn" onclick="refreshData()">Refresh</button>
+            <div class="last-updated" id="lastUpdated"></div>
+        </header>
+
+        <div id="errorContainer"></div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>System Overview</h2>
+                <div id="systemOverview" class="loading">Loading...</div>
+            </div>
+
+            <div class="card">
+                <h2>Query Statistics</h2>
+                <div id="queryStats" class="loading">Loading...</div>
+            </div>
+
+            <div class="card">
+                <h2>Performance Metrics</h2>
+                <div id="performanceMetrics" class="loading">Loading...</div>
+            </div>
+
+            <div class="card">
+                <h2>Cost Tracking</h2>
+                <div id="costTracking" class="loading">Loading...</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Active Strategies</h2>
+            <div id="strategiesList" class="loading">Loading...</div>
+        </div>
+    </div>
+
+    <script>
+        async function fetchData(endpoint) {
+            const response = await fetch(`/api/${endpoint}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            return data.data;
+        }
+
+        function formatNumber(num, decimals = 2) {
+            return Number(num).toFixed(decimals);
+        }
+
+        function formatUptime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            return `${hours}h ${minutes}m`;
+        }
+
+        async function updateDashboard() {
+            try {
+                // Fetch summary
+                const summary = await fetchData('metrics/summary');
+
+                // Update system overview
+                document.getElementById('systemOverview').innerHTML = `
+                    <div class="metric">
+                        <div class="metric-label">Uptime</div>
+                        <div class="metric-value">${formatUptime(summary.uptime_seconds)}</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Strategies Active</div>
+                        <div class="metric-value">${summary.strategies_count}</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Queries/Second</div>
+                        <div class="metric-value">${formatNumber(summary.queries_per_second)}</div>
+                    </div>
+                `;
+
+                // Update query stats
+                const successRate = summary.overall_success_rate;
+                const successClass = successRate >= 95 ? 'success' : successRate >= 80 ? 'warning' : 'error';
+
+                document.getElementById('queryStats').innerHTML = `
+                    <div class="metric">
+                        <div class="metric-label">Total Queries</div>
+                        <div class="metric-value">${summary.total_queries}</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Success Rate</div>
+                        <div class="metric-value ${successClass}">${formatNumber(successRate, 1)}%</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Failed Queries</div>
+                        <div class="metric-value error">${summary.failed_queries}</div>
+                    </div>
+                `;
+
+                // Update performance metrics
+                document.getElementById('performanceMetrics').innerHTML = `
+                    <div class="metric">
+                        <div class="metric-label">Avg Latency</div>
+                        <div class="metric-value">${formatNumber(summary.avg_latency_ms)} ms</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">P95 Latency</div>
+                        <div class="metric-value">${formatNumber(summary.p95_latency_ms)} ms</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">P99 Latency</div>
+                        <div class="metric-value">${formatNumber(summary.p99_latency_ms)} ms</div>
+                    </div>
+                `;
+
+                // Update cost tracking
+                document.getElementById('costTracking').innerHTML = `
+                    <div class="metric">
+                        <div class="metric-label">Total Cost</div>
+                        <div class="metric-value">$${formatNumber(summary.total_cost, 4)}</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Total Tokens</div>
+                        <div class="metric-value">${summary.total_tokens.toLocaleString()}</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Cost/Query</div>
+                        <div class="metric-value">$${formatNumber(summary.total_cost / summary.total_queries || 0, 6)}</div>
+                    </div>
+                `;
+
+                // Fetch and display strategies
+                const metrics = await fetchData('metrics');
+                let strategiesHTML = '<ul class="strategy-list">';
+
+                for (const [strategyName, strategyMetrics] of Object.entries(metrics)) {
+                    strategiesHTML += `
+                        <li class="strategy-item">
+                            <div class="strategy-name">${strategyName}</div>
+                            <div class="strategy-stats">
+                                Queries: ${strategyMetrics.total_queries} |
+                                Success: ${formatNumber(strategyMetrics.success_rate, 1)}% |
+                                Avg Latency: ${formatNumber(strategyMetrics.avg_latency_ms)} ms |
+                                Cost: $${formatNumber(strategyMetrics.total_cost, 4)}
+                            </div>
+                        </li>
+                    `;
+                }
+
+                strategiesHTML += '</ul>';
+                document.getElementById('strategiesList').innerHTML = strategiesHTML;
+
+                // Update last updated time
+                document.getElementById('lastUpdated').textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+
+                // Clear error container
+                document.getElementById('errorContainer').innerHTML = '';
+
+            } catch (error) {
+                console.error('Error updating dashboard:', error);
+                document.getElementById('errorContainer').innerHTML = `
+                    <div class="error-message">
+                        Error loading dashboard data: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function refreshData() {
+            updateDashboard();
+        }
+
+        // Initial load
+        updateDashboard();
+
+        // Auto-refresh every 5 seconds
+        setInterval(updateDashboard, 5000);
+    </script>
+</body>
+</html>

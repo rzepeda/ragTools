@@ -27,13 +27,11 @@ from typing import Any, Callable, Dict, List, Optional, cast, TYPE_CHECKING
 import yaml
 from pydantic import BaseModel, Field, field_validator
 
+from rag_factory.exceptions import ConfigurationError
+
 if TYPE_CHECKING:
     from watchdog.events import FileSystemEventHandler
     from watchdog.observers import Observer as WatchdogObserver
-
-
-class ConfigurationError(Exception):
-    """Raised when configuration is invalid or cannot be loaded."""
 
 
 class StrategyConfigSchema(BaseModel):
@@ -507,7 +505,7 @@ def _get_file_handler_base() -> type:
         return FileSystemEventHandler
     except ImportError:
         # If watchdog not installed, use object as base
-        return object  # type: ignore[return-value]
+        return object
 
 
 class ConfigFileHandler(_get_file_handler_base()):  # type: ignore[misc]
@@ -521,7 +519,7 @@ class ConfigFileHandler(_get_file_handler_base()):  # type: ignore[misc]
             config_manager: ConfigManager instance
         """
         try:
-            super().__init__()  # type: ignore[misc]
+            super().__init__()
         except TypeError:
             # If watchdog not installed, super() might not work
             pass

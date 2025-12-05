@@ -1,0 +1,17 @@
+This is a plain text sample document.
+
+It contains multiple paragraphs that can be used for testing chunking strategies.
+
+The first paragraph discusses the importance of testing.
+Testing ensures that our code works as expected and handles edge cases properly.
+
+The second paragraph talks about different types of tests.
+Unit tests verify individual components in isolation.
+Integration tests verify that components work together correctly.
+
+The third paragraph emphasizes best practices.
+Tests should be readable and maintainable.
+They should cover both happy paths and error cases.
+
+The final paragraph concludes the document.
+Good testing practices lead to more reliable software.

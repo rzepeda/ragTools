@@ -30,14 +30,7 @@ from typing import Any, Callable, Dict, List, Optional, Type
 import yaml
 
 from rag_factory.strategies.base import IRAGStrategy, StrategyConfig
-
-
-class StrategyNotFoundError(Exception):
-    """Raised when strategy name not found in registry."""
-
-
-class ConfigurationError(Exception):
-    """Raised when strategy configuration is invalid."""
+from rag_factory.exceptions import StrategyNotFoundError, ConfigurationError
 
 
 class RAGFactory:

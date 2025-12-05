@@ -1,0 +1,29 @@
+# Production Environment Overrides
+# This file contains production-specific configuration overrides
+# It will be merged with the base config.yaml when RAG_ENV=production
+
+global_settings:
+  environment: production
+  log_level: WARNING
+  cache_ttl: 7200
+
+strategies:
+  # Use larger chunk sizes for better context in production
+  semantic_search:
+    chunk_size: 512
+    metadata:
+      embedding_model: "all-MiniLM-L6-v2"
+      batch_size: 64
+
+  reranking:
+    chunk_size: 1024
+    metadata:
+      batch_size: 64
+      use_fp16: true
+
+  hybrid_search:
+    chunk_size: 1024
+
+# Production pipeline with longer timeout
+pipeline:
+  timeout: 60

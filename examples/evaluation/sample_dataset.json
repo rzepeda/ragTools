@@ -1,0 +1,63 @@
+{
+  "name": "sample_rag_evaluation",
+  "metadata": {
+    "description": "Sample evaluation dataset for RAG strategies",
+    "domain": "general knowledge",
+    "created": "2025-01-01"
+  },
+  "examples": [
+    {
+      "query_id": "q1",
+      "query": "What is machine learning?",
+      "ground_truth_answer": "Machine learning is a branch of artificial intelligence that focuses on building systems that learn from data to improve their performance over time without being explicitly programmed.",
+      "relevant_doc_ids": ["doc1", "doc2", "doc5"],
+      "relevance_scores": {
+        "doc1": 3,
+        "doc2": 2,
+        "doc5": 1
+      }
+    },
+    {
+      "query_id": "q2",
+      "query": "How does photosynthesis work?",
+      "ground_truth_answer": "Photosynthesis is the process by which plants convert light energy into chemical energy. Plants use sunlight, carbon dioxide, and water to produce glucose and oxygen.",
+      "relevant_doc_ids": ["doc3", "doc4"],
+      "relevance_scores": {
+        "doc3": 3,
+        "doc4": 2
+      }
+    },
+    {
+      "query_id": "q3",
+      "query": "What causes earthquakes?",
+      "ground_truth_answer": "Earthquakes are caused by the sudden release of energy in the Earth's crust, typically due to the movement of tectonic plates along fault lines.",
+      "relevant_doc_ids": ["doc6", "doc7", "doc8"],
+      "relevance_scores": {
+        "doc6": 3,
+        "doc7": 3,
+        "doc8": 1
+      }
+    },
+    {
+      "query_id": "q4",
+      "query": "Who invented the telephone?",
+      "ground_truth_answer": "Alexander Graham Bell is credited with inventing the telephone in 1876.",
+      "relevant_doc_ids": ["doc9", "doc10"],
+      "relevance_scores": {
+        "doc9": 3,
+        "doc10": 2
+      }
+    },
+    {
+      "query_id": "q5",
+      "query": "What is DNA?",
+      "ground_truth_answer": "DNA (deoxyribonucleic acid) is the molecule that carries genetic information in living organisms. It consists of two strands forming a double helix structure.",
+      "relevant_doc_ids": ["doc11", "doc12", "doc13"],
+      "relevance_scores": {
+        "doc11": 3,
+        "doc12": 2,
+        "doc13": 2
+      }
+    }
+  ]
+}

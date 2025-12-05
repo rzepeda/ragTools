@@ -112,7 +112,8 @@ class StrategyPipeline:
         >>> pipeline.add_stage(strategy1, "dense")
         >>> pipeline.add_stage(strategy2, "sparse")
         >>> result = await pipeline.aexecute("query", top_k=5)
-        >>> print(f"Total execution time: {result.performance_metrics['total']}")
+        >>> total_time = result.performance_metrics['total']
+        >>> print(f"Total execution time: {total_time}")
     """
 
     def __init__(
@@ -239,7 +240,8 @@ class StrategyPipeline:
                     try:
                         stage_output = stage.fallback.retrieve(query, top_k)
                         results.extend(stage_output)
-                    except Exception as fallback_error:  # pylint: disable=broad-exception-caught
+                    # pylint: disable=broad-exception-caught
+                    except Exception as fallback_error:
                         if stage.required:
                             raise
                         self._handle_stage_error(stage, fallback_error)
@@ -296,7 +298,8 @@ class StrategyPipeline:
                             top_k
                         )
                         results.extend(stage_output)
-                    except Exception as fallback_error:  # pylint: disable=broad-exception-caught
+                    # pylint: disable=broad-exception-caught
+                    except Exception as fallback_error:
                         if stage.required:
                             raise
                         self._handle_stage_error(stage, fallback_error)
@@ -336,7 +339,9 @@ class StrategyPipeline:
             task = self._execute_stage_async(stage, query, top_k)
             tasks.append(task)
 
-        stage_results_list = await asyncio.gather(*tasks, return_exceptions=True)
+        stage_results_list = await asyncio.gather(
+            *tasks, return_exceptions=True
+        )
 
         # Process results
         results: List[Chunk] = []
@@ -352,7 +357,8 @@ class StrategyPipeline:
                             top_k
                         )
                         results.extend(fallback_result)
-                    except Exception as fallback_error:  # pylint: disable=broad-exception-caught
+                    # pylint: disable=broad-exception-caught
+                    except Exception as fallback_error:
                         if stage.required:
                             # Re-raise the original error for required stages
                             raise result from fallback_error

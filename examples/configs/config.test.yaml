@@ -1,0 +1,32 @@
+# Test Environment Overrides
+# This file contains test-specific configuration overrides
+# It will be merged with the base config.yaml when RAG_ENV=test
+
+global_settings:
+  environment: test
+  log_level: DEBUG
+  cache_enabled: false
+  cache_ttl: 60
+
+strategies:
+  # Use smaller chunk sizes for faster testing
+  semantic_search:
+    chunk_size: 128
+    chunk_overlap: 10
+    top_k: 5
+    metadata:
+      embedding_model: "all-MiniLM-L6-v2"
+
+  reranking:
+    chunk_size: 256
+    top_k: 3
+
+# Simplified pipeline for testing
+pipeline:
+  mode: sequential
+  timeout: 10
+  stages:
+    - strategy: semantic_search
+      name: test_retrieval
+      config:
+        top_k: 5

@@ -1,0 +1,2 @@
+[console_scripts]
+rag-factory = rag_factory.cli.main:app
