@@ -199,9 +199,14 @@ class Chunk(Base):
         text: The actual text content of the chunk
         embedding: Vector embedding for similarity search (nullable)
         metadata: Flexible JSONB field for custom metadata
+        parent_chunk_id: Foreign key to parent chunk in hierarchy (nullable)
+        hierarchy_level: Depth in hierarchy (0=document, 1=section, 2=paragraph, 3=sentence)
+        hierarchy_metadata: JSONB with position_in_parent, total_siblings, depth_from_root
         created_at: Timestamp when chunk was created
         updated_at: Timestamp when chunk was last updated
         document: Relationship to parent Document record
+        parent: Relationship to parent Chunk record (nullable)
+        children: Relationship to child Chunk records
     """
 
     __tablename__ = "chunks"
@@ -245,6 +250,32 @@ class Chunk(Base):
         comment="Flexible metadata storage"
     )
 
+    # Hierarchy support columns
+    parent_chunk_id = Column(
+        GUID,
+        ForeignKey("chunks.chunk_id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+        comment="Parent chunk in hierarchy (null for root chunks)"
+    )
+
+    hierarchy_level = Column(
+        Integer,
+        nullable=False,
+        default=0,
+        server_default="0",
+        comment="Depth in hierarchy: 0=document, 1=section, 2=paragraph, 3=sentence"
+    )
+
+    hierarchy_metadata = Column(
+        "hierarchy_metadata",
+        JSONType,
+        default=dict,
+        nullable=False,
+        server_default="{}",
+        comment="Hierarchy metadata: position_in_parent, total_siblings, depth_from_root"
+    )
+
     created_at = Column(
         TIMESTAMP,
         nullable=False,
@@ -264,6 +295,21 @@ class Chunk(Base):
     document = relationship(
         "Document",
         back_populates="chunks"
+    )
+
+    # Hierarchy relationships
+    parent = relationship(
+        "Chunk",
+        remote_side=[chunk_id],
+        back_populates="children",
+        foreign_keys=[parent_chunk_id]
+    )
+
+    children = relationship(
+        "Chunk",
+        back_populates="parent",
+        foreign_keys=[parent_chunk_id],
+        cascade="all, delete-orphan"
     )
 
     # Indexes for performance

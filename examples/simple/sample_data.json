@@ -1,0 +1,31 @@
+{
+  "documents": [
+    {
+      "id": "doc_1",
+      "title": "Introduction to RAG",
+      "text": "Retrieval-Augmented Generation (RAG) is a technique that enhances large language models by retrieving relevant information from a knowledge base before generating responses.",
+      "metadata": {
+        "category": "introduction",
+        "author": "RAG Team"
+      }
+    },
+    {
+      "id": "doc_2",
+      "title": "Chunking Strategies",
+      "text": "Effective chunking is crucial for RAG systems. Different strategies include fixed-size chunking, semantic chunking, and structural chunking based on document structure.",
+      "metadata": {
+        "category": "techniques",
+        "author": "RAG Team"
+      }
+    },
+    {
+      "id": "doc_3",
+      "title": "Vector Databases",
+      "text": "Vector databases store embeddings and enable efficient similarity search. Popular options include PostgreSQL with pgvector, Pinecone, and Weaviate.",
+      "metadata": {
+        "category": "infrastructure",
+        "author": "RAG Team"
+      }
+    }
+  ]
+}

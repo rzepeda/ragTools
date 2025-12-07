@@ -1,0 +1,41 @@
+# Logging configuration
+logging:
+  level: INFO
+  file: null  # Set to a file path to enable file logging
+
+# Default strategy to use
+default_strategy: structural
+
+# Strategy configurations
+strategies:
+  structural:
+    method: structural
+    target_chunk_size: 256
+    chunk_overlap: 20
+    min_chunk_size: 128
+    max_chunk_size: 1024
+    respect_headers: true
+    respect_paragraphs: true
+    required: true
+  
+  fixed_size:
+    method: fixed_size
+    target_chunk_size: 300
+    chunk_overlap: 30
+    min_chunk_size: 128
+    max_chunk_size: 1024
+    required: false
+  
+  semantic:
+    method: semantic
+    target_chunk_size: 400
+    chunk_overlap: 40
+    min_chunk_size: 128
+    max_chunk_size: 1024
+    required: false
+
+# Performance settings
+performance:
+  batch_size: 10
+  max_retries: 3
+  timeout_seconds: 30

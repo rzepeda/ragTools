@@ -1,0 +1,2 @@
+rag-factory
+pyyaml>=6.0

@@ -25,6 +25,7 @@ httpx>=0.26.0
 beautifulsoup4>=4.12.0
 pypdf2>=3.0.0
 numpy>=1.24.0
+networkx>=3.2.1  # Knowledge graph strategy
 
 # Reranking strategy dependencies
 # Optional: Uncomment the reranker implementations you need
@@ -32,6 +33,12 @@ numpy>=1.24.0
 # torch>=2.1.0                  # Required for sentence-transformers and BGE
 # transformers>=4.36.0          # For BGE reranker
 # scipy>=1.11.0                 # For ranking metrics
+
+# Late chunking strategy dependencies (Epic 7.2)
+# These are required for the late chunking experimental strategy
+transformers>=4.36.0            # Transformer models for token embeddings
+torch>=2.1.2                    # PyTorch for deep learning
+tokenizers>=0.15.0              # Fast tokenization
 
 # Observability dependencies (Epic 8)
 structlog>=24.1.0              # Structured logging
@@ -61,3 +68,9 @@ rouge-score>=0.1.2             # For text evaluation (optional)
 typer>=0.12.0                  # CLI framework
 rich>=13.7.0                   # Rich terminal output
 prompt-toolkit>=3.0.43         # REPL functionality
+
+# Fine-tuned embeddings dependencies (Epic 7.3)
+onnx>=1.15.0                   # ONNX model support
+onnxruntime>=1.16.3            # ONNX inference
+mlflow>=2.9.2                  # Model tracking & registry (optional)
+umap-learn>=0.5.5              # Embedding visualization

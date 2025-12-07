@@ -1,0 +1,20 @@
+# Configuration for medium example
+
+chunking:
+  structural:
+    target_size: 256
+    respect_headers: true
+    respect_paragraphs: true
+  
+  fixed_size:
+    target_size: 200
+    overlap: 20
+  
+  hybrid:
+    target_size: 256
+    use_embeddings: false
+
+# Display settings
+display:
+  max_chunks_shown: 2
+  show_metadata: true

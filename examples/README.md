@@ -1,213 +1,218 @@
-# RAG Factory CLI Examples
+# RAG Factory Examples
 
-This directory contains example files for using the RAG Factory CLI.
+Welcome to the RAG Factory examples! This directory contains comprehensive examples demonstrating how to use the RAG Factory library, from simple getting-started examples to advanced production patterns.
 
-## Files
+## 📚 Example Categories
 
-### Configuration Examples
+### 🚀 Getting Started
 
-#### `cli_config_example.yaml`
-Sample YAML configuration file demonstrating various CLI options:
-- Strategy selection
-- Chunking parameters (size, overlap)
-- Retrieval settings (top-k)
-- Strategy-specific settings
-- Metadata fields
+#### [Simple Example](./simple/)
+**Complexity:** Beginner  
+**Time:** 5 minutes  
+**What you'll learn:** Basic chunking with RAG Factory
 
-**Usage:**
-```bash
-# Validate the configuration
-rag-factory config cli_config_example.yaml
-
-# Use with index command
-rag-factory index ./docs --config cli_config_example.yaml
-
-# Use with query command
-rag-factory query "test" --config cli_config_example.yaml
-```
-
-### Benchmark Examples
-
-#### `benchmark_dataset_example.json`
-Sample benchmark dataset showing the expected format for benchmark queries:
-- Query text
-- Expected relevant documents
-- Metadata (category, difficulty, expected scores)
-
-**Usage:**
-```bash
-# Run benchmark
-rag-factory benchmark benchmark_dataset_example.json
-
-# Benchmark specific strategies
-rag-factory benchmark benchmark_dataset_example.json --strategies reranking,semantic_chunker
-
-# Export results
-rag-factory benchmark benchmark_dataset_example.json --output results.json
-```
-
-## Creating Your Own Configuration
-
-### YAML Configuration Template
-
-```yaml
-# my_config.yaml
-strategy_name: your_strategy_name  # Required
-
-# Optional parameters
-chunk_size: 512
-chunk_overlap: 50
-top_k: 10
-
-# Add strategy-specific settings here
-# ...
-```
-
-### JSON Configuration Template
-
-```json
-{
-  "strategy_name": "your_strategy_name",
-  "chunk_size": 512,
-  "chunk_overlap": 50,
-  "top_k": 10
-}
-```
-
-## Creating Benchmark Datasets
-
-Benchmark datasets should be JSON arrays of query objects:
-
-```json
-[
-  {
-    "query": "Your query text here",
-    "expected_docs": ["doc1.txt", "doc2.txt"],
-    "metadata": {
-      "category": "your_category",
-      "difficulty": "easy|medium|hard",
-      "expected_score": 0.85
-    }
-  }
-]
-```
-
-### Required Fields
-- `query` (string): The query text to execute
-
-### Optional Fields
-- `expected_docs` (array): List of document filenames expected to be relevant
-- `metadata` (object): Additional information about the query
-  - `category` (string): Query category for analysis
-  - `difficulty` (string): Expected difficulty level
-  - `expected_score` (number): Expected relevance score
-
-## Quick Start Examples
-
-### Example 1: Basic Indexing and Querying
+The simplest possible example to get you started. Shows how to:
+- Import the library
+- Create a chunking strategy
+- Process a document
+- Display results
 
 ```bash
-# Create some test documents
-mkdir -p test_docs
-echo "Machine learning is a subset of AI." > test_docs/ml.txt
-echo "Deep learning uses neural networks." > test_docs/dl.txt
-
-# Index the documents
-rag-factory index test_docs
-
-# Query the indexed documents
-rag-factory query "What is machine learning?"
+cd simple
+pip install -r requirements.txt
+python basic_retrieval.py
 ```
 
-### Example 2: Using Configuration Files
+#### [Medium Example](./medium/)
+**Complexity:** Intermediate  
+**Time:** 15 minutes  
+**What you'll learn:** Multiple strategies and performance comparison
+
+Demonstrates using multiple chunking strategies together:
+- Structural chunking (respects document structure)
+- Fixed-size chunking (fast baseline)
+- Hybrid chunking (combines approaches)
+- Configuration via YAML
+- Performance timing and comparison
 
 ```bash
-# Copy example config and modify as needed
-cp cli_config_example.yaml my_config.yaml
-
-# Validate your config
-rag-factory config my_config.yaml
-
-# Use your config
-rag-factory index test_docs --config my_config.yaml
-rag-factory query "neural networks" --config my_config.yaml
+cd medium
+pip install -r requirements.txt
+python strategy_pipeline.py
 ```
 
-### Example 3: Running Benchmarks
+#### [Advanced Example](./advanced/)
+**Complexity:** Advanced  
+**Time:** 30 minutes  
+**What you'll learn:** Production-ready patterns
+
+Full-featured RAG system with:
+- Multiple strategies with retry logic
+- Comprehensive logging and metrics
+- Batch processing
+- Error handling
+- Configuration management
+- Performance optimization
 
 ```bash
-# Create benchmark dataset
-cat > my_benchmark.json << 'EOF'
-[
-  {
-    "query": "What is machine learning?",
-    "expected_docs": ["ml.txt"],
-    "metadata": {"category": "definition"}
-  },
-  {
-    "query": "Explain neural networks",
-    "expected_docs": ["dl.txt"],
-    "metadata": {"category": "technical"}
-  }
-]
-EOF
-
-# Run benchmark
-rag-factory benchmark my_benchmark.json --output results.json
-
-# View results
-cat results.json
+cd advanced
+pip install -r requirements.txt
+python full_system.py
 ```
 
-### Example 4: Interactive REPL Session
+### 🎯 Domain-Specific Examples
+
+Real-world use cases showing how to apply RAG Factory to specific domains:
+
+- **[Legal](./domain/legal/)** - Contract analysis, case law retrieval
+- **[Medical](./domain/medical/)** - Clinical notes, research papers
+- **[Customer Support](./domain/support/)** - Ticket resolution, knowledge base
+
+### 🔌 Framework Integrations
+
+Examples showing how to integrate RAG Factory with popular frameworks:
+
+- **[FastAPI](./integrations/fastapi/)** - REST API with async support
+- **[Flask](./integrations/flask/)** - Web application
+- **[LangChain](./integrations/langchain/)** - Custom retriever integration
+- **[Streamlit](./integrations/streamlit/)** - Interactive UI
+- **[CLI](./integrations/cli/)** - Command-line tool
+
+### 🐳 Docker Setup
+
+**[Docker Compose](./docker/)** - Complete development environment
+
+One-command setup with:
+- PostgreSQL with pgvector
+- Redis for caching
+- Application container
+- Sample data
 
 ```bash
-# Start REPL with configuration
-rag-factory repl --config my_config.yaml
-
-# In the REPL:
-rag-factory> strategies
-rag-factory> index test_docs
-rag-factory> query "machine learning"
-rag-factory> set strategy semantic_chunker
-rag-factory> show
-rag-factory> exit
+cd docker
+cp .env.example .env
+# Edit .env with your API keys
+docker-compose up
 ```
 
-## Tips and Best Practices
+### 📓 Jupyter Notebooks
 
-1. **Start Simple:** Begin with default settings before customizing
-2. **Validate Configs:** Always validate configuration files before use
-3. **Test Strategies:** Use benchmarks to compare different strategies
-4. **Use REPL:** Interactive mode is great for experimentation
-5. **Check Documentation:** Run `rag-factory COMMAND --help` for detailed options
+Interactive notebooks for exploration and experimentation:
 
-## Troubleshooting
+- **[01_exploration.ipynb](./notebooks/)** - Basic usage and visualization
+- **[02_performance.ipynb](./notebooks/)** - Performance benchmarking
+- **[03_experimentation.ipynb](./notebooks/)** - Parameter tuning
 
-### Configuration Issues
-
-If you get validation errors:
 ```bash
-# Check config syntax
-rag-factory config my_config.yaml --show
-
-# Use strict mode to catch warnings
-rag-factory config my_config.yaml --strict
+cd notebooks
+pip install -r requirements.txt
+jupyter notebook
 ```
 
-### Index Not Found
+### 🛠️ Legacy CLI Examples
 
-If queries fail with "index not found":
+Original CLI examples (see subdirectory README for details):
+
+- `cli_config_example.yaml` - CLI configuration
+- `benchmark_dataset_example.json` - Benchmark datasets
+- Various strategy examples
+
+## 🎓 Learning Path
+
+We recommend following this progression:
+
+1. **Start Here:** [Simple Example](./simple/) - Get familiar with basic concepts
+2. **Next:** [Medium Example](./medium/) - Learn about multiple strategies
+3. **Then:** [Advanced Example](./advanced/) - See production patterns
+4. **Explore:** Pick a [domain example](./domain/) relevant to your use case
+5. **Integrate:** Check out [framework integrations](./integrations/)
+6. **Deploy:** Use the [Docker setup](./docker/) for deployment
+
+## 🚀 Quick Start
+
 ```bash
-# Make sure you've indexed first
-rag-factory index ./docs
+# 1. Clone and install
+git clone <repository>
+cd rag_factory
+pip install -e .
 
-# Or specify the index location
-rag-factory query "test" --index /path/to/index
+# 2. Run the simple example
+cd examples/simple
+python basic_retrieval.py
+
+# 3. Try the medium example
+cd ../medium
+python strategy_pipeline.py
+
+# 4. Explore advanced features
+cd ../advanced
+python full_system.py
 ```
 
-## More Information
+## 📖 Documentation
 
-- See the full [CLI User Guide](../docs/CLI-USER-GUIDE.md)
-- Read the [story documentation](../docs/stories/epic-08.5/story-8.5.1-cli-strategy-testing.md)
-- Check the [completion summary](../docs/stories/epic-08.5/story-8.5.1-COMPLETION-SUMMARY.md)
+Each example directory contains:
+- **README.md** - Detailed setup instructions and explanation
+- **requirements.txt** - Python dependencies
+- **Sample data** - Example documents to process
+- **Configuration files** - YAML configs where applicable
+
+## 🧪 Testing
+
+All examples are tested automatically. Run the test suite:
+
+```bash
+# Test syntax and structure
+pytest tests/unit/examples/
+
+# Test that examples run
+pytest tests/integration/examples/
+```
+
+## 💡 Tips and Best Practices
+
+1. **Start Simple:** Begin with the simple example before moving to complex ones
+2. **Read the READMEs:** Each example has detailed documentation
+3. **Experiment:** Modify the examples to fit your use case
+4. **Use Virtual Environments:** Keep dependencies isolated
+5. **Check Logs:** Enable logging to understand what's happening
+
+## 🐛 Troubleshooting
+
+### Import Errors
+
+```bash
+# Install in editable mode from project root
+pip install -e .
+```
+
+### Missing Dependencies
+
+```bash
+# Install example-specific requirements
+cd examples/simple  # or medium, advanced, etc.
+pip install -r requirements.txt
+```
+
+### Database Connection Issues
+
+```bash
+# Use Docker for easy database setup
+cd examples/docker
+docker-compose up postgres
+```
+
+## 🤝 Contributing
+
+Found a bug or want to add an example? See [CONTRIBUTING.md](../CONTRIBUTING.md)
+
+## 📚 Additional Resources
+
+- [Full Documentation](../docs/)
+- [API Reference](../docs/api/)
+- [Strategy Guide](../docs/guides/strategy-selection.md)
+- [CLI User Guide](../docs/CLI-USER-GUIDE.md)
+
+## 📄 License
+
+See [LICENSE](../LICENSE) for details.

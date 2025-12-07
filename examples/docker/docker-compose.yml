@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  # PostgreSQL with pgvector extension
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: rag_postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ragdb}
+      POSTGRES_USER: ${POSTGRES_USER:-raguser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ragpassword}
+      POSTGRES_HOST_AUTH_METHOD: ${POSTGRES_HOST_AUTH_METHOD:-scram-sha-256}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-raguser} -d ${POSTGRES_DB:-ragdb}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - rag_network
+    restart: unless-stopped
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: rag_redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
+    networks:
+      - rag_network
+    restart: unless-stopped
+
+  # RAG Factory application
+  rag_app:
+    build:
+      context: ../..
+      dockerfile: examples/docker/Dockerfile
+    container_name: rag_application
+    environment:
+      # Database configuration
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB:-ragdb}
+      DB_USER: ${POSTGRES_USER:-raguser}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-ragpassword}
+      
+      # Redis configuration
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      
+      # API keys (set these in .env file)
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      COHERE_API_KEY: ${COHERE_API_KEY:-}
+      
+      # Application settings
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      WORKERS: ${WORKERS:-4}
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./sample_data:/app/data:ro
+      - app_logs:/app/logs
+    networks:
+      - rag_network
+    restart: unless-stopped
+    command: python -m examples.simple.basic_retrieval
+
+# Named volumes for data persistence
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  app_logs:
+    driver: local
+
+# Network for service communication
+networks:
+  rag_network:
+    driver: bridge

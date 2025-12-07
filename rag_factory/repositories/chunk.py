@@ -538,3 +538,152 @@ class ChunkRepository(BaseRepository[Chunk]):
         except SQLAlchemyError as e:
             self.session.rollback()
             raise DatabaseConnectionError(f"Failed to delete chunks: {str(e)}")
+
+    # Hierarchy query methods
+
+    def get_parent(self, chunk_id: UUID) -> Optional[Chunk]:
+        """Get the parent chunk of a given chunk.
+
+        Args:
+            chunk_id: UUID of the chunk
+
+        Returns:
+            Parent Chunk if exists, None otherwise
+
+        Raises:
+            DatabaseConnectionError: If query fails
+        """
+        try:
+            chunk = self.get_by_id(chunk_id)
+            if not chunk or not chunk.parent_chunk_id:
+                return None
+            return self.get_by_id(chunk.parent_chunk_id)
+        except SQLAlchemyError as e:
+            raise DatabaseConnectionError(f"Failed to get parent chunk: {str(e)}")
+
+    def get_children(self, chunk_id: UUID) -> List[Chunk]:
+        """Get all child chunks of a given chunk.
+
+        Args:
+            chunk_id: UUID of the parent chunk
+
+        Returns:
+            List of child Chunk entities ordered by chunk_index
+
+        Raises:
+            DatabaseConnectionError: If query fails
+        """
+        try:
+            return self.session.query(Chunk)\
+                .filter(Chunk.parent_chunk_id == chunk_id)\
+                .order_by(Chunk.chunk_index)\
+                .all()
+        except SQLAlchemyError as e:
+            raise DatabaseConnectionError(f"Failed to get children chunks: {str(e)}")
+
+    def get_siblings(self, chunk_id: UUID) -> List[Chunk]:
+        """Get all sibling chunks (chunks with same parent).
+
+        Args:
+            chunk_id: UUID of the chunk
+
+        Returns:
+            List of sibling Chunk entities (including the chunk itself)
+
+        Raises:
+            DatabaseConnectionError: If query fails
+        """
+        try:
+            chunk = self.get_by_id(chunk_id)
+            if not chunk or not chunk.parent_chunk_id:
+                return []
+            
+            return self.session.query(Chunk)\
+                .filter(Chunk.parent_chunk_id == chunk.parent_chunk_id)\
+                .order_by(Chunk.chunk_index)\
+                .all()
+        except SQLAlchemyError as e:
+            raise DatabaseConnectionError(f"Failed to get sibling chunks: {str(e)}")
+
+    def get_ancestors(self, chunk_id: UUID, max_depth: int = 10) -> List[Chunk]:
+        """Get all ancestor chunks using recursive query.
+
+        Uses the get_chunk_ancestors database function created in migration.
+
+        Args:
+            chunk_id: UUID of the chunk
+            max_depth: Maximum depth to traverse (default: 10)
+
+        Returns:
+            List of ancestor Chunk entities ordered by depth (closest first)
+
+        Raises:
+            DatabaseConnectionError: If query fails
+        """
+        try:
+            query = text("""
+                SELECT chunk_id, parent_chunk_id, hierarchy_level, text, metadata, depth
+                FROM get_chunk_ancestors(:chunk_id::uuid, :max_depth)
+                WHERE depth > 0
+                ORDER BY depth
+            """)
+
+            results = self.session.execute(
+                query,
+                {"chunk_id": str(chunk_id), "max_depth": max_depth}
+            ).fetchall()
+
+            ancestors = []
+            for row in results:
+                chunk = self.get_by_id(UUID(str(row[0])))
+                if chunk:
+                    ancestors.append(chunk)
+
+            return ancestors
+
+        except SQLAlchemyError as e:
+            raise DatabaseConnectionError(f"Failed to get ancestors: {str(e)}")
+
+    def validate_hierarchy(self) -> List[Dict[str, Any]]:
+        """Run hierarchy validation queries to detect issues.
+
+        Uses the chunk_hierarchy_validation view created in migration.
+
+        Returns:
+            List of validation issues (empty if all OK)
+
+        Raises:
+            DatabaseConnectionError: If validation query fails
+        """
+        try:
+            query = text("""
+                SELECT 
+                    chunk_id,
+                    parent_chunk_id,
+                    hierarchy_level,
+                    document_id,
+                    depth,
+                    validation_status,
+                    validation_message
+                FROM chunk_hierarchy_validation
+                ORDER BY validation_status DESC, depth
+            """)
+
+            results = self.session.execute(query).fetchall()
+
+            issues = []
+            for row in results:
+                issues.append({
+                    "chunk_id": str(row[0]),
+                    "parent_chunk_id": str(row[1]) if row[1] else None,
+                    "hierarchy_level": row[2],
+                    "document_id": str(row[3]),
+                    "depth": row[4],
+                    "status": row[5],
+                    "message": row[6]
+                })
+
+            return issues
+
+        except SQLAlchemyError as e:
+            raise DatabaseConnectionError(f"Hierarchy validation failed: {str(e)}")
