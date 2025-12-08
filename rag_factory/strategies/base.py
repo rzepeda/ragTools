@@ -29,7 +29,10 @@ Example usage:
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Set
+
+from rag_factory.services.dependencies import StrategyDependencies, ServiceDependency
+
 
 
 @dataclass
@@ -138,24 +141,59 @@ class IRAGStrategy(ABC):
         >>> answer = strategy.process_query("What is RAG?", chunks)
     """
 
-    @abstractmethod
-    def initialize(self, config: StrategyConfig) -> None:
+    def __init__(
+        self,
+        config: Dict[str, Any],
+        dependencies: StrategyDependencies
+    ) -> None:
         """
-        Initialize the strategy with configuration.
-
-        This method is called before any other operations and should set up
-        all necessary resources and parameters.
-
+        Initialize the strategy with configuration and dependencies.
+        
+        This method validates that all required services are present before
+        allowing the strategy to be instantiated. Concrete strategies should
+        call super().__init__() and then perform their own initialization.
+        
         Args:
-            config: Configuration parameters for the strategy
-
-        Returns:
-            None
-
+            config: Strategy-specific configuration parameters
+            dependencies: Injected services required by the strategy
+            
+        Raises:
+            ValueError: If required services are missing from dependencies
+            
         Example:
-            >>> strategy = MyStrategy()
-            >>> config = StrategyConfig(chunk_size=1024)
-            >>> strategy.initialize(config)
+            >>> from rag_factory.services.dependencies import StrategyDependencies, ServiceDependency
+            >>> deps = StrategyDependencies(llm_service=my_llm, embedding_service=my_embedder)
+            >>> config = {"chunk_size": 1024, "top_k": 10}
+            >>> strategy = MyConcreteStrategy(config, deps)
+        """
+        self.config = config
+        self.deps = dependencies
+        
+        # Validate dependencies
+        required = self.requires_services()
+        is_valid, missing = dependencies.validate_for_strategy(required)
+        
+        if not is_valid:
+            service_names = [s.name for s in missing]
+            raise ValueError(
+                f"{self.__class__.__name__} requires services: {', '.join(service_names)}"
+            )
+    
+    @abstractmethod
+    def requires_services(self) -> Set[ServiceDependency]:
+        """
+        Declare what services this strategy requires.
+        
+        Concrete strategies must implement this method to declare their
+        service dependencies. The base class will validate that all
+        required services are present during initialization.
+        
+        Returns:
+            Set of required ServiceDependency enums
+            
+        Example:
+            >>> def requires_services(self) -> Set[ServiceDependency]:
+            ...     return {ServiceDependency.LLM, ServiceDependency.EMBEDDING}
         """
         ...
 

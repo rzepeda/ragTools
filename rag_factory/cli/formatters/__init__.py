@@ -13,6 +13,9 @@ from rag_factory.cli.formatters.results import (
     format_query_results,
     format_strategy_list,
 )
+from rag_factory.cli.formatters.validation import (
+    format_validation_results,
+)
 
 __all__ = [
     "format_error",
@@ -24,4 +27,5 @@ __all__ = [
     "format_benchmark_results",
     "format_query_results",
     "format_strategy_list",
+    "format_validation_results",
 ]

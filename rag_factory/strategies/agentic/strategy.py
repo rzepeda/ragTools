@@ -5,7 +5,7 @@ This module provides the main strategy class that integrates agent-based
 tool selection with the RAG pipeline.
 """
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Set
 import logging
 
 from .agent import SimpleAgent
@@ -17,15 +17,13 @@ from .tool_implementations import (
 )
 from .query_analyzer import QueryAnalyzer
 from .config import AgenticStrategyConfig
-from ...services.llm import LLMService
-from ...services.embedding import EmbeddingService
-from ...repositories.chunk import ChunkRepository
-from ...repositories.document import DocumentRepository
+from ...services.dependencies import StrategyDependencies, ServiceDependency
+from ..base import IRAGStrategy
 
 logger = logging.getLogger(__name__)
 
 
-class AgenticRAGStrategy:
+class AgenticRAGStrategy(IRAGStrategy):
     """
     Agentic RAG strategy where an agent selects appropriate tools
     to retrieve information based on query type.
@@ -37,44 +35,45 @@ class AgenticRAGStrategy:
 
     def __init__(
         self,
-        llm_service: LLMService,
-        embedding_service: EmbeddingService,
-        chunk_repository: ChunkRepository,
-        document_repository: DocumentRepository,
-        config: Optional[Dict[str, Any]] = None
+        config: Dict[str, Any],
+        dependencies: StrategyDependencies
     ):
         """Initialize agentic RAG strategy.
         
         Args:
-            llm_service: LLM service for agent decisions
-            embedding_service: Embedding service for vector search
-            chunk_repository: Repository for chunk operations
-            document_repository: Repository for document operations
-            config: Optional configuration dictionary
+            config: Strategy configuration dictionary
+            dependencies: Injected service dependencies
         """
-        # Parse configuration
-        if config is None:
-            config = {}
-        self.config = AgenticStrategyConfig(**config)
+        # Initialize base class (validates dependencies)
+        super().__init__(config, dependencies)
         
-        # Store services
-        self.llm_service = llm_service
-        self.embedding_service = embedding_service
-        self.chunk_repository = chunk_repository
-        self.document_repository = document_repository
+        # Parse configuration
+        self.strategy_config = AgenticStrategyConfig(**config)
+        
+        # Note: chunk_repository and document_repository would need to be
+        # added to StrategyDependencies or passed via config
+        # For now, we'll access services from self.deps
         
         # Initialize tools
         self.tools = self._initialize_tools()
         
         # Initialize agent
-        self.agent = SimpleAgent(self.llm_service, self.tools)
+        self.agent = SimpleAgent(self.deps.llm_service, self.tools)
         
         # Initialize query analyzer if enabled
         self.query_analyzer = (
-            QueryAnalyzer(self.llm_service)
-            if self.config.enable_query_analysis
+            QueryAnalyzer(self.deps.llm_service)
+            if self.strategy_config.enable_query_analysis
             else None
         )
+    
+    def requires_services(self) -> Set[ServiceDependency]:
+        """Declare required services.
+        
+        Returns:
+            Set of required service dependencies
+        """
+        return {ServiceDependency.LLM, ServiceDependency.EMBEDDING, ServiceDependency.DATABASE}
 
     def _initialize_tools(self) -> List:
         """Initialize available tools.
@@ -82,20 +81,55 @@ class AgenticRAGStrategy:
         Returns:
             List of tool instances
         """
-        all_tools = [
-            SemanticSearchTool(self.chunk_repository, self.embedding_service),
-            DocumentReaderTool(self.document_repository, self.chunk_repository),
-            MetadataSearchTool(self.chunk_repository, self.embedding_service),
-            HybridSearchTool(self.chunk_repository, self.embedding_service)
-        ]
+        # TODO: Update when repositories are added to dependencies
+        # For now, tools would need to be initialized differently
+        # or repositories need to be part of StrategyDependencies
+        all_tools = []
         
         # Filter by enabled tools if specified
-        if self.config.enabled_tools:
-            enabled_names = set(self.config.enabled_tools)
+        if self.strategy_config.enabled_tools:
+            enabled_names = set(self.strategy_config.enabled_tools)
             all_tools = [t for t in all_tools if t.name in enabled_names]
         
         logger.info(f"Initialized {len(all_tools)} tools: {[t.name for t in all_tools]}")
         return all_tools
+    
+    def prepare_data(self, documents: List[Dict[str, Any]]):
+        """Prepare and chunk documents for retrieval.
+        
+        Args:
+            documents: List of documents to prepare
+            
+        Returns:
+            PreparedData container
+        """
+        # TODO: Implement document preparation for agentic strategy
+        raise NotImplementedError("prepare_data not yet implemented for AgenticRAGStrategy")
+    
+    async def aretrieve(self, query: str, top_k: int):
+        """Async retrieve - delegates to sync retrieve for now.
+        
+        Args:
+            query: Search query
+            top_k: Number of results
+            
+        Returns:
+            List of chunks
+        """
+        return self.retrieve(query, top_k)
+    
+    def process_query(self, query: str, context):
+        """Process query with context to generate answer.
+        
+        Args:
+            query: User query
+            context: Retrieved context chunks
+            
+        Returns:
+            Generated answer
+        """
+        # TODO: Implement query processing for agentic strategy
+        raise NotImplementedError("process_query not yet implemented for AgenticRAGStrategy")
 
     def retrieve(self, query: str, top_k: int = 5, **kwargs) -> List[Dict[str, Any]]:
         """Retrieve relevant information using agentic approach.
@@ -121,7 +155,7 @@ class AgenticRAGStrategy:
                 )
 
             # Run agent
-            result = self.agent.run(query, max_iterations=self.config.max_iterations)
+            result = self.agent.run(query, max_iterations=self.strategy_config.max_iterations)
 
             # Extract results
             chunks = result["results"][:top_k]
@@ -144,7 +178,7 @@ class AgenticRAGStrategy:
             logger.error(f"Agentic retrieval failed: {e}", exc_info=True)
 
             # Fallback to semantic search if enabled
-            if self.config.fallback_to_semantic:
+            if self.strategy_config.fallback_to_semantic:
                 logger.info("Falling back to semantic search")
                 return self._fallback_search(query, top_k)
 
@@ -215,5 +249,5 @@ class AgenticRAGStrategy:
             "description": self.description,
             "num_tools": len(self.tools),
             "tools": [t.name for t in self.tools],
-            "config": self.config.dict()
+            "config": self.strategy_config.dict()
         }

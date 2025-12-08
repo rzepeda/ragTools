@@ -39,4 +39,227 @@ Requires-Dist: prompt-toolkit>=3.0.43; extra == "cli"
 Provides-Extra: all
 Requires-Dist: rag-factory[cli,dev,watch]; extra == "all"
 
-# My Project
+# RAG Factory
+
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+**A flexible, extensible factory system for combining multiple Retrieval-Augmented Generation (RAG) strategies**
+
+---
+
+## 🚀 Quick Start
+
+```python
+from rag_factory.factory import RAGFactory
+
+# Create a factory instance
+factory = RAGFactory()
+
+# Create a strategy
+config = {"chunk_size": 512, "top_k": 5}
+strategy = factory.create_strategy("contextual", config)
+
+# Perform retrieval
+results = strategy.retrieve("What is machine learning?")
+```
+
+## ✨ Features
+
+- **10 Production-Ready RAG Strategies**: Choose from Contextual Retrieval, Knowledge Graph, Multi-Query, Hierarchical RAG, and more
+- **Flexible Configuration**: Configure via Python dictionaries, YAML files, or environment variables
+- **Strategy Pipelines**: Combine multiple strategies for enhanced retrieval performance
+- **Performance Optimized**: Built-in caching, batch processing, and performance monitoring
+- **PostgreSQL + pgvector**: Efficient vector similarity search
+- **Observability**: Comprehensive logging, metrics, and cost tracking
+
+## 📚 Available Strategies
+
+| Strategy | Description | Use Case |
+|----------|-------------|----------|
+| **Agentic RAG** | LLM agents dynamically select retrieval tools | Complex queries requiring multi-step reasoning |
+| **Context-Aware Chunking** | Intelligent document chunking with context | Long documents with hierarchical structure |
+| **Contextual Retrieval** | Adds context to chunks before embedding | Improving retrieval accuracy |
+| **Hierarchical RAG** | Multi-level document hierarchy | Documents with clear section structure |
+| **Knowledge Graph** | Graph-based entity and relationship extraction | Domain knowledge with complex relationships |
+| **Late Chunking** | Embed entire documents before chunking | Preserving full document context |
+| **Multi-Query** | Generate multiple query variants | Ambiguous or multi-faceted queries |
+| **Query Expansion** | Expand queries with related terms | Improving recall |
+| **Reranking** | Re-score results with cross-encoder | Improving precision |
+| **Self-Reflective** | Iterative query refinement based on results | Complex information needs |
+
+## 📦 Installation
+
+### Basic Installation
+
+```bash
+pip install rag-factory
+```
+
+### With All Features
+
+```bash
+pip install rag-factory[all]
+```
+
+### From Source
+
+```bash
+git clone https://github.com/yourusername/rag-factory.git
+cd rag-factory
+pip install -e .
+```
+
+## 🏗️ Prerequisites
+
+- Python 3.8+
+- PostgreSQL 12+ with pgvector extension
+- (Optional) Redis for caching
+
+## 📖 Documentation
+
+Full documentation is available at: [https://rag-factory.readthedocs.io](https://rag-factory.readthedocs.io)
+
+- **[Getting Started](docs/getting-started/quick-start.md)** - Quick start guide
+- **[Installation Guide](docs/getting-started/installation.md)** - Detailed installation instructions
+- **[Strategy Selection](docs/guides/strategy-selection.md)** - Choose the right strategy
+- **[Architecture](docs/architecture/overview.md)** - System architecture and design
+- **[API Reference](docs/api-reference/index.md)** - Complete API documentation
+- **[Contributing](docs/contributing/index.md)** - How to contribute
+
+## 💡 Usage Examples
+
+### Basic Retrieval
+
+```python
+from rag_factory.repositories.document import DocumentRepository
+from rag_factory.repositories.chunk import ChunkRepository
+from rag_factory.database.connection import get_connection
+from rag_factory.services.embedding_service import EmbeddingService
+
+# Initialize services
+conn = get_connection()
+doc_repo = DocumentRepository(conn)
+chunk_repo = ChunkRepository(conn)
+embedding_service = EmbeddingService()
+
+# Index a document
+document = doc_repo.create(
+    content="Machine learning is a subset of AI...",
+    metadata={"source": "ml_intro"}
+)
+
+# Generate embeddings and search
+query_embedding = embedding_service.embed_text("What is ML?")
+results = chunk_repo.search_similar(query_embedding, top_k=5)
+```
+
+### Strategy Pipeline
+
+```python
+from rag_factory.pipeline import StrategyPipeline
+from rag_factory.factory import RAGFactory
+
+factory = RAGFactory()
+
+# Create a pipeline with multiple strategies
+pipeline = StrategyPipeline([
+    factory.create_strategy("multi_query", {"num_variants": 3}),
+    factory.create_strategy("contextual", {"context_window": 2}),
+    factory.create_strategy("reranking", {"final_top_k": 5})
+])
+
+# Execute pipeline
+results = pipeline.execute("What is machine learning?")
+```
+
+### Using Configuration Files
+
+```yaml
+# config.yaml
+strategy_name: contextual
+chunk_size: 512
+chunk_overlap: 50
+top_k: 5
+context_window: 2
+```
+
+```python
+from rag_factory.factory import RAGFactory
+
+factory = RAGFactory()
+strategy = factory.create_from_config("config.yaml")
+results = strategy.retrieve("query")
+```
+
+## 🎯 Use Cases
+
+- **Question Answering Systems**: Build accurate Q&A systems over your documents
+- **Document Search**: Semantic search with advanced retrieval strategies
+- **Knowledge Management**: Extract and query structured knowledge
+- **Research Assistants**: Multi-strategy retrieval for comprehensive research
+- **Customer Support**: Intelligent document retrieval for support agents
+
+## 🏗️ Architecture
+
+RAG Factory uses the **Factory** and **Strategy** design patterns:
+
+```
+Client → RAGFactory → Strategy Registry → Strategies → Database/Services
+```
+
+Key components:
+- **RAGFactory**: Central factory for strategy creation
+- **Strategies**: 10 interchangeable RAG strategies
+- **Services**: Embedding, LLM, and caching services
+- **Repositories**: Data access layer
+- **Observability**: Logging, metrics, and monitoring
+
+## 🤝 Contributing
+
+We welcome contributions! See our [Contributing Guide](docs/contributing/index.md) for details.
+
+### Development Setup
+
+```bash
+# Clone repository
+git clone https://github.com/yourusername/rag-factory.git
+cd rag-factory
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install development dependencies
+pip install -e ".[dev]"
+
+# Run tests
+pytest
+
+# Build documentation
+mkdocs serve
+```
+
+## 📄 License
+
+RAG Factory is released under the MIT License. See [LICENSE](LICENSE) file for details.
+
+## 🔗 Links
+
+- **Documentation**: [https://rag-factory.readthedocs.io](https://rag-factory.readthedocs.io)
+- **GitHub**: [https://github.com/yourusername/rag-factory](https://github.com/yourusername/rag-factory)
+- **PyPI**: [https://pypi.org/project/rag-factory/](https://pypi.org/project/rag-factory/)
+- **Issues**: [https://github.com/yourusername/rag-factory/issues](https://github.com/yourusername/rag-factory/issues)
+
+## 🙏 Acknowledgments
+
+Built with:
+- [PostgreSQL](https://www.postgresql.org/) + [pgvector](https://github.com/pgvector/pgvector)
+- [Sentence-Transformers](https://www.sbert.net/)
+- [OpenAI](https://openai.com/) / [Anthropic](https://www.anthropic.com/)
+- [MkDocs Material](https://squidfunk.github.io/mkdocs-material/)
+
+---
+
+**Made with ❤️ by the RAG Factory Team**

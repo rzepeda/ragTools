@@ -1,3 +1,3 @@
-"""CLI command implementations."""
+"""CLI commands package."""
 
-__all__ = ["benchmark", "config", "index", "query", "repl", "strategies"]
+__all__ = ["benchmark", "config", "index", "query", "repl", "strategies", "validate_pipeline"]

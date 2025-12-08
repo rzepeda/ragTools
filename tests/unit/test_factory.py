@@ -25,16 +25,40 @@ from rag_factory.strategies.base import (
     Chunk,
     PreparedData,
 )
+from rag_factory.services.dependencies import ServiceDependency
+from typing import Set
 
 
 # Test fixtures and helper classes
 
 
 class TestStrategy(IRAGStrategy):
-    """Minimal test strategy for testing purposes."""
+    """Minimal test strategy for testing purposes (legacy pattern)."""
+
+    def __init__(self, config=None, dependencies=None):
+        """Initialize without calling super to support legacy pattern."""
+        # Don't call super().__init__ to avoid DI validation for legacy tests
+        self.deps = dependencies
+        if config is not None and dependencies is not None:
+            # New DI pattern - config is a dict
+            super().__init__(config, dependencies)
+            # Convert dict to object with attributes for backward compat
+            if isinstance(self.config, dict):
+                class ConfigObj:
+                    def __init__(self, d):
+                        for k, v in d.items():
+                            setattr(self, k, v)
+                self.config = ConfigObj(self.config)
+        else:
+            # Legacy pattern - will be initialized via initialize()
+            self.config = None
+
+    def requires_services(self) -> Set[ServiceDependency]:
+        """Legacy test strategy requires no services."""
+        return set()
 
     def initialize(self, config: StrategyConfig) -> None:
-        """Initialize with config."""
+        """Initialize with config (legacy pattern)."""
         self.config = config
 
     def prepare_data(self, documents: List[Dict[str, Any]]) -> PreparedData:
@@ -65,10 +89,32 @@ class TestStrategy(IRAGStrategy):
 
 
 class BrokenStrategy(IRAGStrategy):
-    """Strategy that fails during initialization."""
+    """Strategy that fails during initialization (legacy pattern)."""
+
+    def __init__(self, config=None, dependencies=None):
+        """Initialize without calling super to support legacy pattern."""
+        # Don't call super().__init__ to avoid DI validation for legacy tests
+        self.deps = dependencies
+        if config is not None and dependencies is not None:
+            # New DI pattern - config is a dict
+            super().__init__(config, dependencies)
+            # Convert dict to object with attributes for backward compat
+            if isinstance(self.config, dict):
+                class ConfigObj:
+                    def __init__(self, d):
+                        for k, v in d.items():
+                            setattr(self, k, v)
+                self.config = ConfigObj(self.config)
+        else:
+            # Legacy pattern - will be initialized via initialize()
+            self.config = None
+
+    def requires_services(self) -> Set[ServiceDependency]:
+        """Legacy test strategy requires no services."""
+        return set()
 
     def initialize(self, config: StrategyConfig) -> None:
-        """Initialize and raise error."""
+        """Initialize and raise error (legacy pattern)."""
         raise RuntimeError("Initialization failed")
 
     def prepare_data(self, documents: List[Dict[str, Any]]) -> PreparedData:
@@ -343,21 +389,21 @@ def test_create_strategy_without_config(factory: RAGFactory) -> None:
 
 
 def test_invalid_config_raises_error(factory: RAGFactory) -> None:
-    """Test invalid configuration raises error."""
+    """Test invalid configuration raises error (legacy pattern)."""
     factory.register_strategy("test", TestStrategy)
 
     with pytest.raises(ValueError, match="must be non-negative"):
-        factory.create_strategy("test", {"chunk_size": -1})
+        factory.create_strategy_legacy("test", {"chunk_size": -1})
 
 
 def test_strategy_initialization_error_propagates(
     factory: RAGFactory,
 ) -> None:
-    """Test errors during strategy initialization propagate correctly."""
+    """Test errors during strategy initialization propagate correctly (legacy pattern)."""
     factory.register_strategy("broken", BrokenStrategy)
 
     with pytest.raises(RuntimeError, match="Initialization failed"):
-        factory.create_strategy("broken", {"chunk_size": 512})
+        factory.create_strategy_legacy("broken", {"chunk_size": 512})
 
 
 # TC2.5: Decorator Tests

@@ -53,11 +53,13 @@ def main(
 try:
     from rag_factory.cli.commands import (
         benchmark,
+        check_consistency,
         config,
         index,
         query,
         repl,
         strategies,
+        validate_pipeline,
     )
 
     app.command(name="index")(index.index_command)
@@ -66,6 +68,8 @@ try:
     app.command(name="config")(config.validate_config)
     app.command(name="benchmark")(benchmark.run_benchmark)
     app.command(name="repl")(repl.start_repl)
+    app.command(name="validate-pipeline")(validate_pipeline.validate_pipeline)
+    app.command(name="check-consistency")(check_consistency.check_consistency)
 
 except ImportError as e:
     console.print(f"[red]Error importing commands: {e}[/red]")

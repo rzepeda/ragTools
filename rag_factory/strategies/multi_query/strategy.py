@@ -1,6 +1,6 @@
 """Multi-Query RAG Strategy Implementation."""
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Set
 import logging
 import asyncio
 
@@ -9,11 +9,13 @@ from .variant_generator import QueryVariantGenerator
 from .parallel_executor import ParallelQueryExecutor
 from .deduplicator import ResultDeduplicator
 from .ranker import ResultRanker
+from ...services.dependencies import StrategyDependencies, ServiceDependency
+from ..base import IRAGStrategy
 
 logger = logging.getLogger(__name__)
 
 
-class MultiQueryRAGStrategy:
+class MultiQueryRAGStrategy(IRAGStrategy):
     """Multi-Query RAG: Generate multiple query variants and merge results.
 
     This strategy:
@@ -28,29 +30,31 @@ class MultiQueryRAGStrategy:
 
     def __init__(
         self,
-        vector_store_service,
-        llm_service,
-        embedding_service=None,
-        config: Optional[MultiQueryConfig] = None
+        config: Dict[str, Any],
+        dependencies: StrategyDependencies
     ):
         """Initialize multi-query strategy.
 
         Args:
-            vector_store_service: Vector store for retrieval
-            llm_service: LLM service for variant generation
-            embedding_service: Optional embedding service for near-duplicate detection
-            config: Multi-query configuration
+            config: Strategy configuration dictionary
+            dependencies: Injected service dependencies
         """
-        self.vector_store = vector_store_service
-        self.llm_service = llm_service
-        self.embedding_service = embedding_service
-        self.config = config or MultiQueryConfig()
+        # Initialize base class (validates dependencies)
+        super().__init__(config, dependencies)
+        
+        # Parse configuration
+        self.strategy_config = config if isinstance(config, MultiQueryConfig) else MultiQueryConfig(**config)
 
         # Initialize components
-        self.variant_generator = QueryVariantGenerator(llm_service, self.config)
-        self.parallel_executor = ParallelQueryExecutor(vector_store_service, self.config)
-        self.deduplicator = ResultDeduplicator(self.config, embedding_service)
-        self.ranker = ResultRanker(self.config)
+        self.variant_generator = QueryVariantGenerator(self.deps.llm_service, self.strategy_config)
+        # TODO: vector_store needs to be from dependencies
+        self.parallel_executor = ParallelQueryExecutor(None, self.strategy_config)
+        self.deduplicator = ResultDeduplicator(self.strategy_config, self.deps.embedding_service)
+        self.ranker = ResultRanker(self.strategy_config)
+    
+    def requires_services(self) -> Set[ServiceDependency]:
+        """Declare required services."""
+        return {ServiceDependency.LLM, ServiceDependency.EMBEDDING, ServiceDependency.DATABASE}
 
     async def aretrieve(
         self,
@@ -92,11 +96,19 @@ class MultiQueryRAGStrategy:
             logger.error(f"Multi-query retrieval failed: {e}")
 
             # Fallback to single query
-            if self.config.fallback_to_original:
+            if self.strategy_config.fallback_to_original:
                 logger.info("Falling back to single-query retrieval")
                 return await self._fallback_retrieve(query)
             else:
                 raise
+    
+    def prepare_data(self, documents: List[Dict[str, Any]]):
+        """Prepare and chunk documents for retrieval."""
+        raise NotImplementedError("prepare_data not yet implemented for MultiQueryRAGStrategy")
+    
+    def process_query(self, query: str, context):
+        """Process query with context."""
+        raise NotImplementedError("process_query not yet implemented for MultiQueryRAGStrategy")
 
     def retrieve(self, query: str, **kwargs) -> List[Dict[str, Any]]:
         """Synchronous retrieve (wrapper for async).
@@ -145,10 +157,11 @@ class MultiQueryRAGStrategy:
             loop = asyncio.get_event_loop()
             return await loop.run_in_executor(
                 None,
-                lambda: self.vector_store.search(
-                    query=query,
-                    top_k=self.config.final_top_k
-                )
+                lambda: None  # TODO: vector_store from dependencies
+                # lambda: self.vector_store.search(
+                #     query=query,
+                #     top_k=self.strategy_config.final_top_k
+                # )
             )
 
     @property

@@ -62,11 +62,11 @@ def validate_strategy_name(strategy_name: str) -> str:
 
         error_msg = f"Strategy '{strategy_name}' not found."
         if suggestions:
-            error_msg += f"\n\nDid you mean one of these?\n"
+            error_msg += "\n\nDid you mean one of these?\n"
             for suggestion in suggestions[:3]:
                 error_msg += f"  - {suggestion}\n"
         else:
-            error_msg += f"\n\nAvailable strategies:\n"
+            error_msg += "\n\nAvailable strategies:\n"
             for strategy in available_strategies[:5]:
                 error_msg += f"  - {strategy}\n"
             if len(available_strategies) > 5:
@@ -111,11 +111,11 @@ def validate_config_file(config_path: str) -> Dict[str, Any]:
         return config
 
     except yaml.YAMLError as e:
-        raise ValueError(f"Invalid YAML in configuration file:\n{e}")
+        raise ValueError(f"Invalid YAML in configuration file:\n{e}") from e
     except json.JSONDecodeError as e:
-        raise ValueError(f"Invalid JSON in configuration file:\n{e}")
+        raise ValueError(f"Invalid JSON in configuration file:\n{e}") from e
     except Exception as e:
-        raise ValueError(f"Error loading configuration file: {e}")
+        raise ValueError(f"Error loading configuration file: {e}") from e
 
 
 def parse_strategy_list(strategies_str: str) -> List[str]:

@@ -5,7 +5,7 @@ This module implements the main strategy class that combines vector search
 with graph-based entity relationships for enhanced retrieval.
 """
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Set
 import logging
 
 from .entity_extractor import EntityExtractor
@@ -14,11 +14,13 @@ from .graph_store import GraphStore
 from .memory_graph_store import MemoryGraphStore
 from .hybrid_retriever import HybridRetriever
 from .config import KnowledgeGraphConfig
+from ...services.dependencies import StrategyDependencies, ServiceDependency
+from ..base import IRAGStrategy
 
 logger = logging.getLogger(__name__)
 
 
-class KnowledgeGraphRAGStrategy:
+class KnowledgeGraphRAGStrategy(IRAGStrategy):
     """
     Knowledge Graph RAG: Combine vector search with graph relationships.
     
@@ -28,39 +30,49 @@ class KnowledgeGraphRAGStrategy:
 
     def __init__(
         self,
-        vector_store_service: Any,
-        llm_service: Any,
-        config: Optional[KnowledgeGraphConfig] = None
+        config: Dict[str, Any],
+        dependencies: StrategyDependencies
     ):
         """
         Initialize knowledge graph RAG strategy.
         
         Args:
-            vector_store_service: Vector store for retrieval
-            llm_service: LLM service for entity/relationship extraction
-            config: Knowledge graph configuration
+            config: Strategy configuration dictionary
+            dependencies: Injected service dependencies
         """
-        self.vector_store = vector_store_service
-        self.llm_service = llm_service
-        self.config = config or KnowledgeGraphConfig()
+        # Initialize base class (validates dependencies)
+        super().__init__(config, dependencies)
+        
+        # Parse configuration
+        self.strategy_config = config if isinstance(config, KnowledgeGraphConfig) else KnowledgeGraphConfig(**config)
         
         # Initialize components
-        self.entity_extractor = EntityExtractor(llm_service, self.config)
-        self.relationship_extractor = RelationshipExtractor(llm_service, self.config)
+        self.entity_extractor = EntityExtractor(self.deps.llm_service, self.strategy_config)
+        self.relationship_extractor = RelationshipExtractor(self.deps.llm_service, self.strategy_config)
         
         # Initialize graph store (default to in-memory)
-        graph_backend = self.config.graph_backend
+        # TODO: Graph service should be used from dependencies
+        graph_backend = self.strategy_config.graph_backend
         if graph_backend == "memory":
             self.graph_store = MemoryGraphStore()
         else:
             raise ValueError(f"Unsupported graph backend: {graph_backend}")
         
         # Initialize hybrid retriever
+        # TODO: vector_store needs to be from dependencies
         self.hybrid_retriever = HybridRetriever(
-            vector_store_service,
+            None,  # vector_store_service placeholder
             self.graph_store,
-            self.config
+            self.strategy_config
         )
+    
+    def requires_services(self) -> Set[ServiceDependency]:
+        """Declare required services.
+        
+        Returns:
+            Set of required service dependencies
+        """
+        return {ServiceDependency.LLM, ServiceDependency.EMBEDDING, ServiceDependency.GRAPH}
 
     def index_document(
         self,
@@ -206,6 +218,18 @@ class KnowledgeGraphRAGStrategy:
             })
         
         return chunks
+    
+    def prepare_data(self, documents: List[Dict[str, Any]]):
+        """Prepare and chunk documents for retrieval."""
+        raise NotImplementedError("prepare_data not yet implemented for KnowledgeGraphRAGStrategy")
+    
+    async def aretrieve(self, query: str, top_k: int):
+        """Async retrieve."""
+        return self.retrieve(query, top_k)
+    
+    def process_query(self, query: str, context):
+        """Process query with context."""
+        raise NotImplementedError("process_query not yet implemented for KnowledgeGraphRAGStrategy")
 
     @property
     def name(self) -> str:

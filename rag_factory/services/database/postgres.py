@@ -1,0 +1,326 @@
+"""PostgreSQL database service implementation with pgvector.
+
+This module provides a database service that implements IDatabaseService
+using PostgreSQL with pgvector extension for vector similarity search.
+"""
+
+from typing import Dict, Any, List, Optional, TYPE_CHECKING
+import logging
+import json
+
+if TYPE_CHECKING:
+    import asyncpg
+
+try:
+    import asyncpg  # noqa: F811
+    ASYNCPG_AVAILABLE = True
+except ImportError:
+    ASYNCPG_AVAILABLE = False
+
+from rag_factory.services.interfaces import IDatabaseService
+
+logger = logging.getLogger(__name__)
+
+
+class PostgresqlDatabaseService(IDatabaseService):
+    """PostgreSQL database service with pgvector.
+
+    This service implements IDatabaseService using PostgreSQL with the
+    pgvector extension for storing and retrieving document chunks with
+    vector embeddings.
+
+    Example:
+        >>> service = PostgresqlDatabaseService(
+        ...     host="localhost",
+        ...     port=5432,
+        ...     database="rag_db",
+        ...     user="postgres",
+        ...     password="password"
+        ... )
+        >>> chunks = [{
+        ...     "text": "Hello world",
+        ...     "embedding": [0.1, 0.2, 0.3],
+        ...     "metadata": {"source": "doc1"}
+        ... }]
+        >>> await service.store_chunks(chunks)
+    """
+
+    def __init__(
+        self,
+        host: str = "localhost",
+        port: int = 5432,
+        database: str = "rag_db",
+        user: str = "postgres",
+        password: str = "",
+        table_name: str = "chunks",
+        vector_dimensions: int = 384
+    ):
+        """Initialize PostgreSQL database service.
+
+        Args:
+            host: Database host
+            port: Database port
+            database: Database name
+            user: Database user
+            password: Database password
+            table_name: Name of the chunks table (default: chunks)
+            vector_dimensions: Dimension of embedding vectors (default: 384)
+
+        Raises:
+            ImportError: If asyncpg package is not installed
+        """
+        if not ASYNCPG_AVAILABLE:
+            raise ImportError(
+                "asyncpg package not installed. Install with:\n"
+                "  pip install asyncpg"
+            )
+
+        self.host = host
+        self.port = port
+        self.database = database
+        self.user = user
+        self.password = password
+        self.table_name = table_name
+        self.vector_dimensions = vector_dimensions
+        self._pool: Optional["asyncpg.Pool"] = None  # type: ignore
+
+        logger.info(
+            f"Initialized PostgreSQL service for {host}:{port}/{database}"
+        )
+
+    async def _get_pool(self) -> "asyncpg.Pool":  # type: ignore
+        """Get or create connection pool.
+
+        Returns:
+            asyncpg connection pool
+        """
+        if self._pool is None:
+            self._pool = await asyncpg.create_pool(
+                host=self.host,
+                port=self.port,
+                database=self.database,
+                user=self.user,
+                password=self.password,
+                min_size=2,
+                max_size=10
+            )
+
+            # Ensure table exists
+            await self._ensure_table()
+
+        return self._pool
+
+    async def _ensure_table(self):
+        """Ensure the chunks table exists with pgvector extension."""
+        async with self._pool.acquire() as conn:
+            # Enable pgvector extension
+            await conn.execute("CREATE EXTENSION IF NOT EXISTS vector")
+
+            # Create chunks table
+            await conn.execute(f"""
+                CREATE TABLE IF NOT EXISTS {self.table_name} (
+                    id SERIAL PRIMARY KEY,
+                    chunk_id TEXT UNIQUE,
+                    text TEXT NOT NULL,
+                    embedding vector({self.vector_dimensions}),
+                    metadata JSONB,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
+            # Create index for vector similarity search
+            await conn.execute(f"""
+                CREATE INDEX IF NOT EXISTS {self.table_name}_embedding_idx
+                ON {self.table_name}
+                USING ivfflat (embedding vector_cosine_ops)
+                WITH (lists = 100)
+            """)
+
+            logger.info(f"Ensured table {self.table_name} exists")
+
+    async def store_chunks(self, chunks: List[Dict[str, Any]]) -> None:
+        """Store document chunks.
+
+        Args:
+            chunks: List of chunk dictionaries. Each chunk should contain
+                   at minimum: text content and embedding vector. Additional
+                   fields like metadata, chunk_id, etc. are implementation-specific.
+
+        Raises:
+            Exception: If storage fails
+        """
+        if not chunks:
+            return
+
+        pool = await self._get_pool()
+
+        async with pool.acquire() as conn:
+            # Prepare data for insertion
+            for chunk in chunks:
+                chunk_id = chunk.get("chunk_id", chunk.get("id"))
+                text = chunk.get("text", "")
+                embedding = chunk.get("embedding", [])
+                metadata = chunk.get("metadata", {})
+
+                # Convert embedding to string format for pgvector
+                embedding_str = "[" + ",".join(str(x) for x in embedding) + "]"
+
+                # Insert or update chunk
+                await conn.execute(
+                    f"""
+                    INSERT INTO {self.table_name} (chunk_id, text, embedding, metadata)
+                    VALUES ($1, $2, $3::vector, $4)
+                    ON CONFLICT (chunk_id)
+                    DO UPDATE SET
+                        text = EXCLUDED.text,
+                        embedding = EXCLUDED.embedding,
+                        metadata = EXCLUDED.metadata
+                    """,
+                    chunk_id,
+                    text,
+                    embedding_str,
+                    json.dumps(metadata)
+                )
+
+        logger.debug(f"Stored {len(chunks)} chunks")
+
+    async def search_chunks(
+        self,
+        query_embedding: List[float],
+        top_k: int = 10
+    ) -> List[Dict[str, Any]]:
+        """Search chunks by similarity.
+
+        Performs vector similarity search to find chunks most similar
+        to the query embedding.
+
+        Args:
+            query_embedding: Query vector to search for
+            top_k: Maximum number of results to return
+
+        Returns:
+            List of chunk dictionaries, sorted by similarity score in
+            descending order. Each chunk should contain at minimum the
+            text content and similarity score.
+
+        Raises:
+            Exception: If search fails
+        """
+        pool = await self._get_pool()
+
+        # Convert embedding to string format for pgvector
+        embedding_str = "[" + ",".join(str(x) for x in query_embedding) + "]"
+
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(
+                f"""
+                SELECT
+                    chunk_id,
+                    text,
+                    metadata,
+                    1 - (embedding <=> $1::vector) as similarity
+                FROM {self.table_name}
+                WHERE embedding IS NOT NULL
+                ORDER BY embedding <=> $1::vector
+                LIMIT $2
+                """,
+                embedding_str,
+                top_k
+            )
+
+        # Convert rows to dictionaries
+        results = []
+        for row in rows:
+            results.append({
+                "chunk_id": row["chunk_id"],
+                "text": row["text"],
+                "metadata": json.loads(row["metadata"]) if row["metadata"] else {},
+                "similarity": float(row["similarity"])
+            })
+
+        logger.debug(f"Found {len(results)} similar chunks")
+        return results
+
+    async def get_chunk(self, chunk_id: str) -> Dict[str, Any]:
+        """Retrieve chunk by ID.
+
+        Args:
+            chunk_id: Unique identifier of the chunk to retrieve
+
+        Returns:
+            Chunk dictionary containing text content and metadata
+
+        Raises:
+            Exception: If chunk is not found or retrieval fails
+        """
+        pool = await self._get_pool()
+
+        async with pool.acquire() as conn:
+            row = await conn.fetchrow(
+                f"""
+                SELECT chunk_id, text, metadata
+                FROM {self.table_name}
+                WHERE chunk_id = $1
+                """,
+                chunk_id
+            )
+
+        if not row:
+            raise ValueError(f"Chunk not found: {chunk_id}")
+
+        return {
+            "chunk_id": row["chunk_id"],
+            "text": row["text"],
+            "metadata": json.loads(row["metadata"]) if row["metadata"] else {}
+        }
+
+    async def get_chunks_for_documents(self, document_ids: List[str]) -> List[Dict[str, Any]]:
+        """Retrieve all chunks for a list of documents.
+
+        Args:
+            document_ids: List of document IDs to retrieve chunks for
+
+        Returns:
+            List of chunk dictionaries belonging to the specified documents
+        """
+        if not document_ids:
+            return []
+
+        pool = await self._get_pool()
+
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(
+                f"""
+                SELECT chunk_id, text, metadata
+                FROM {self.table_name}
+                WHERE metadata->>'document_id' = ANY($1)
+                """,
+                document_ids
+            )
+
+        return [
+            {
+                "chunk_id": row["chunk_id"],
+                "text": row["text"],
+                "metadata": json.loads(row["metadata"]) if row["metadata"] else {}
+            }
+            for row in rows
+        ]
+
+    async def close(self):
+        """Close the database connection pool.
+
+        Should be called when the service is no longer needed.
+        """
+        if self._pool:
+            await self._pool.close()
+            self._pool = None
+            logger.info("Closed PostgreSQL connection pool")
+
+    async def __aenter__(self):
+        """Async context manager entry."""
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Async context manager exit."""
+        await self.close()
