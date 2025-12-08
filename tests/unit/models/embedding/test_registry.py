@@ -263,6 +263,146 @@ def test_registry_persistence(tmp_path):
     assert retrieved.model_name == "Test Model"
 
 
+def test_register_multiple_versions(temp_registry, sample_metadata):
+    """Test registering multiple versions of the same model."""
+    # Register v1.0.0
+    temp_registry.register_model(sample_metadata)
+    
+    # Register v1.1.0
+    v2_metadata = sample_metadata.model_copy()
+    v2_metadata.version = "1.1.0"
+    v2_metadata.embedding_dim = 768  # Changed in v2
+    temp_registry.register_model(v2_metadata)
+    
+    # Verify both exist
+    v1 = temp_registry.get_model("test_model_v1", version="1.0.0")
+    v2 = temp_registry.get_model("test_model_v1", version="1.1.0")
+    
+    assert v1.version == "1.0.0"
+    assert v1.embedding_dim == 384
+    assert v2.version == "1.1.0"
+    assert v2.embedding_dim == 768
+    
+    # Verify latest is v1.1.0
+    latest = temp_registry.get_model("test_model_v1")
+    assert latest.version == "1.1.0"
+
+
+def test_list_models_versions(temp_registry, sample_metadata):
+    """Test listing models with version filtering."""
+    temp_registry.register_model(sample_metadata)
+    
+    v2_metadata = sample_metadata.model_copy()
+    v2_metadata.version = "1.1.0"
+    temp_registry.register_model(v2_metadata)
+    
+    # List latest only (default)
+    latest_models = temp_registry.list_models()
+    assert len(latest_models) == 1
+    assert latest_models[0].version == "1.1.0"
+    
+    # List all versions
+    all_models = temp_registry.list_models(latest_only=False)
+    assert len(all_models) == 2
+    versions = sorted([m.version for m in all_models])
+    assert versions == ["1.0.0", "1.1.0"]
+
+
+def test_delete_specific_version(temp_registry, sample_metadata):
+    """Test deleting a specific version."""
+    temp_registry.register_model(sample_metadata)
+    
+    v2_metadata = sample_metadata.model_copy()
+    v2_metadata.version = "1.1.0"
+    temp_registry.register_model(v2_metadata)
+    
+    # Delete v1.0.0
+    success = temp_registry.delete_model("test_model_v1", version="1.0.0")
+    assert success is True
+    
+    # Verify v1 is gone but v2 remains
+    assert temp_registry.get_model("test_model_v1", version="1.0.0") is None
+    assert temp_registry.get_model("test_model_v1", version="1.1.0") is not None
+    
+    # Verify latest is still v2
+    latest = temp_registry.get_model("test_model_v1")
+    assert latest.version == "1.1.0"
+
+
+def test_delete_all_versions(temp_registry, sample_metadata):
+    """Test deleting all versions of a model."""
+    temp_registry.register_model(sample_metadata)
+    
+    v2_metadata = sample_metadata.model_copy()
+    v2_metadata.version = "1.1.0"
+    temp_registry.register_model(v2_metadata)
+    
+    # Delete all versions
+    success = temp_registry.delete_model("test_model_v1")
+    assert success is True
+    
+    # Verify everything is gone
+    assert temp_registry.get_model("test_model_v1") is None
+    assert len(temp_registry.list_models(latest_only=False)) == 0
+
+
+def test_set_health_status(temp_registry, sample_metadata):
+    """Test updating health status."""
+    temp_registry.register_model(sample_metadata)
+    
+    # Set to degraded
+    temp_registry.set_health_status("test_model_v1", "degraded")
+    
+    model = temp_registry.get_model("test_model_v1")
+    assert model.health_status == "degraded"
+    
+    # Set specific version
+    v2_metadata = sample_metadata.model_copy()
+    v2_metadata.version = "1.1.0"
+    temp_registry.register_model(v2_metadata)
+    
+    temp_registry.set_health_status("test_model_v1", "failed", version="1.1.0")
+    
+    v1 = temp_registry.get_model("test_model_v1", version="1.0.0")
+    v2 = temp_registry.get_model("test_model_v1", version="1.1.0")
+    
+    assert v1.health_status == "degraded"  # Unchanged
+    assert v2.health_status == "failed"
+
+
+def test_registry_persistence_versions(tmp_path):
+    """Test that versioned registry persists to disk."""
+    registry_path = str(tmp_path / "test_registry_v")
+    
+    # Create registry and add versions
+    registry1 = ModelRegistry(registry_path=registry_path)
+    metadata = EmbeddingModelMetadata(
+        model_id="test_model",
+        model_name="Test Model",
+        version="1.0.0",
+        format=ModelFormat.SENTENCE_TRANSFORMERS,
+        embedding_dim=384,
+        max_seq_length=512
+    )
+    registry1.register_model(metadata)
+    
+    v2 = metadata.model_copy()
+    v2.version = "2.0.0"
+    registry1.register_model(v2)
+
+    # Reload
+    registry2 = ModelRegistry(registry_path=registry_path)
+    
+    # Verify versions
+    v1 = registry2.get_model("test_model", version="1.0.0")
+    v2 = registry2.get_model("test_model", version="2.0.0")
+    
+    assert v1 is not None
+    assert v2 is not None
+    assert v1.version == "1.0.0"
+    assert v2.version == "2.0.0"
+
+
 def test_empty_registry(temp_registry):
     """Test operations on empty registry."""
     models = temp_registry.list_models()

@@ -44,6 +44,9 @@ class EmbeddingModelMetadata(BaseModel):
         created_by: Creator identifier
         description: Model description
         tags: List of tags for categorization
+        parent_version: Parent version for lineage tracking
+        health_status: Model health status ("healthy", "degraded", "failed")
+        onnx_opset_version: ONNX opset version (for ONNX models)
     """
     model_id: str
     model_name: str
@@ -69,6 +72,11 @@ class EmbeddingModelMetadata(BaseModel):
     created_by: Optional[str] = None
     description: Optional[str] = None
     tags: List[str] = Field(default_factory=list)
+    
+    # Versioning and health
+    parent_version: Optional[str] = None
+    health_status: str = "healthy"
+    onnx_opset_version: Optional[int] = None
 
 
 class ModelConfig(BaseModel):
@@ -83,6 +91,7 @@ class ModelConfig(BaseModel):
         use_onnx: Use ONNX runtime for inference
         device: Device to run on ("cpu", "cuda", "mps")
         batch_size: Batch size for inference
+        tokenizer_name: Tokenizer name for ONNX models (e.g., "cl100k_base")
         additional_config: Additional configuration parameters
     """
     model_path: str
@@ -93,4 +102,5 @@ class ModelConfig(BaseModel):
     use_onnx: bool = False
     device: str = "cpu"
     batch_size: int = 32
+    tokenizer_name: Optional[str] = None
     additional_config: Dict[str, Any] = Field(default_factory=dict)

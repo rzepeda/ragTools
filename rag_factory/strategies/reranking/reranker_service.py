@@ -14,6 +14,7 @@ from .base import IReranker, RerankConfig, RerankResponse, RerankResult, Reranke
 from .cross_encoder_reranker import CrossEncoderReranker
 from .cohere_reranker import CohereReranker
 from .bge_reranker import BGEReranker
+from .cosine_reranker import CosineReranker
 from .cache import RerankCache
 
 logger = logging.getLogger(__name__)
@@ -70,13 +71,28 @@ class RerankerService:
         reranker_map = {
             RerankerModel.CROSS_ENCODER: CrossEncoderReranker,
             RerankerModel.COHERE: CohereReranker,
-            RerankerModel.BGE: BGEReranker
+            RerankerModel.BGE: BGEReranker,
+            RerankerModel.COSINE: CosineReranker
         }
 
         reranker_class = reranker_map.get(self.config.model)
         if not reranker_class:
             raise ValueError(f"Unknown re-ranker model: {self.config.model}")
 
+        # For CosineReranker, we need to pass the embedding provider
+        if self.config.model == RerankerModel.COSINE:
+            embedding_provider = self.config.model_config.get("embedding_provider")
+            if not embedding_provider:
+                raise ValueError(
+                    "CosineReranker requires 'embedding_provider' in model_config"
+                )
+            return reranker_class(
+                self.config,
+                embedding_provider=embedding_provider,
+                metric=self.config.model_config.get("metric", "cosine"),
+                normalize=self.config.model_config.get("normalize", True)
+            )
+        
         return reranker_class(self.config)
 
     def rerank(

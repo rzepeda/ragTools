@@ -7,19 +7,27 @@ documents by using more sophisticated models to reorder initial retrieval result
 
 from .base import (
     IReranker,
-    RerankerModel,
+    RerankConfig,
     RerankResult,
     RerankResponse,
-    RerankConfig,
+    RerankerModel,
 )
 from .reranker_service import RerankerService, CandidateDocument
+from .cross_encoder_reranker import CrossEncoderReranker
+from .cohere_reranker import CohereReranker
+from .bge_reranker import BGEReranker
+from .cosine_reranker import CosineReranker
 
 __all__ = [
     "IReranker",
-    "RerankerModel",
+    "RerankConfig",
     "RerankResult",
     "RerankResponse",
-    "RerankConfig",
+    "RerankerModel",
     "RerankerService",
     "CandidateDocument",
+    "CrossEncoderReranker",
+    "CohereReranker",
+    "BGEReranker",
+    "CosineReranker",
 ]

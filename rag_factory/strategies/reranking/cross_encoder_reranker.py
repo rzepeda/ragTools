@@ -54,8 +54,11 @@ class CrossEncoderReranker(IReranker):
 
         if not SENTENCE_TRANSFORMERS_AVAILABLE:
             raise ImportError(
-                "sentence-transformers is required for CrossEncoderReranker. "
-                "Install it with: pip install sentence-transformers torch"
+                "sentence-transformers and torch are required for CrossEncoderReranker. "
+                "Install with: pip install sentence-transformers torch\n\n"
+                "For lightweight deployment without PyTorch (~2.5GB), consider using:\n"
+                "  - CohereReranker (API-based, high quality)\n"
+                "  - CosineReranker (local, no dependencies)"
             )
 
         # Get model name

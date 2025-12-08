@@ -51,7 +51,7 @@ def test_late_chunking_workflow(test_vector_store):
         "chunking_method": EmbeddingChunkingMethod.SEMANTIC_BOUNDARY.value,
         "target_chunk_size": 128,
         "compute_coherence_scores": True,
-        "device": "cpu"
+        "encoding": "cl100k_base"
     }
 
     strategy = LateChunkingRAGStrategy(
@@ -97,7 +97,7 @@ def test_fixed_size_chunking_integration(test_vector_store):
         "target_chunk_size": 50,
         "chunk_overlap_tokens": 10,
         "compute_coherence_scores": False,
-        "device": "cpu"
+        "encoding": "cl100k_base"
     }
 
     strategy = LateChunkingRAGStrategy(test_vector_store, config)
@@ -117,7 +117,7 @@ def test_adaptive_chunking_integration(test_vector_store):
         "chunking_method": "adaptive",
         "min_chunk_size": 20,
         "max_chunk_size": 100,
-        "device": "cpu"
+        "encoding": "cl100k_base"
     }
 
     strategy = LateChunkingRAGStrategy(test_vector_store, config)
@@ -143,7 +143,7 @@ def test_multiple_documents(test_vector_store):
     config = {
         "model_name": "sentence-transformers/all-MiniLM-L6-v2",
         "chunking_method": "semantic_boundary",
-        "device": "cpu"
+        "encoding": "cl100k_base"
     }
 
     strategy = LateChunkingRAGStrategy(test_vector_store, config)
@@ -172,7 +172,7 @@ def test_strategy_properties(test_vector_store):
     """Test strategy name and description."""
     config = {
         "model_name": "sentence-transformers/all-MiniLM-L6-v2",
-        "device": "cpu"
+        "encoding": "cl100k_base"
     }
 
     strategy = LateChunkingRAGStrategy(test_vector_store, config)
@@ -189,7 +189,7 @@ def test_coherence_scores_computed(test_vector_store):
         "model_name": "sentence-transformers/all-MiniLM-L6-v2",
         "chunking_method": "semantic_boundary",
         "compute_coherence_scores": True,
-        "device": "cpu"
+        "encoding": "cl100k_base"
     }
 
     strategy = LateChunkingRAGStrategy(test_vector_store, config)
@@ -209,7 +209,7 @@ def test_short_document(test_vector_store):
     """Test handling of very short documents."""
     config = {
         "model_name": "sentence-transformers/all-MiniLM-L6-v2",
-        "device": "cpu"
+        "encoding": "cl100k_base"
     }
 
     strategy = LateChunkingRAGStrategy(test_vector_store, config)
@@ -227,7 +227,7 @@ def test_chunk_embeddings_valid(test_vector_store):
     """Test that chunk embeddings are valid vectors."""
     config = {
         "model_name": "sentence-transformers/all-MiniLM-L6-v2",
-        "device": "cpu"
+        "encoding": "cl100k_base"
     }
 
     strategy = LateChunkingRAGStrategy(test_vector_store, config)
@@ -241,3 +241,36 @@ def test_chunk_embeddings_valid(test_vector_store):
         assert isinstance(embedding, list)
         assert len(embedding) > 0
         assert all(isinstance(x, (int, float)) for x in embedding)
+
+
+@pytest.mark.integration
+def test_embedding_quality(test_vector_store):
+    """Test that ONNX embeddings are of good quality."""
+    import numpy as np
+    
+    config = {
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "encoding": "cl100k_base"
+    }
+
+    strategy = LateChunkingRAGStrategy(test_vector_store, config)
+
+    # Test with sample text
+    text = "The quick brown fox jumps over the lazy dog."
+    strategy.index_document(text, "quality_test")
+
+    # Get embeddings
+    for chunk in test_vector_store.chunks:
+        embedding = np.array(chunk["embedding"])
+        
+        # Check embeddings are not all zeros
+        assert np.any(embedding != 0), "Embeddings should not be all zeros"
+        
+        # Check embeddings are in reasonable range
+        assert np.all(np.abs(embedding) < 100), "Embeddings should be in reasonable range"
+        
+        # Check norm is reasonable (not exploding or vanishing)
+        norm = np.linalg.norm(embedding)
+        assert norm > 0.1, "Embedding norm should not be too small"
+        assert norm < 1000, "Embedding norm should not be too large"
+

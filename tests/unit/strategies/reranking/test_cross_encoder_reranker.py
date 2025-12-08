@@ -184,5 +184,5 @@ def test_import_error_without_dependencies():
     with patch('rag_factory.strategies.reranking.cross_encoder_reranker.SENTENCE_TRANSFORMERS_AVAILABLE', False):
         config = RerankConfig()
 
-        with pytest.raises(ImportError, match="sentence-transformers is required"):
+        with pytest.raises(ImportError, match="sentence-transformers and torch are required"):
             CrossEncoderReranker(config)

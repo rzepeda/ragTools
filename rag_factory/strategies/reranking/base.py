@@ -16,6 +16,7 @@ class RerankerModel(Enum):
     CROSS_ENCODER = "cross_encoder"
     COHERE = "cohere"
     BGE = "bge"
+    COSINE = "cosine"  # Lightweight cosine similarity reranker
     CUSTOM = "custom"
 
 

@@ -68,7 +68,9 @@ class LateChunkingConfig(BaseModel):
     # Document embedding
     use_long_context_model: bool = True
     max_document_tokens: int = 16384
-    model_name: str = "sentence-transformers/all-mpnet-base-v2"
+    model_name: str = "sentence-transformers/all-MiniLM-L6-v2"
+    model_path: Optional[str] = None  # Path to local ONNX model
+    encoding: str = "cl100k_base"  # Tiktoken encoding name
 
     # Chunking
     chunking_method: EmbeddingChunkingMethod = EmbeddingChunkingMethod.SEMANTIC_BOUNDARY
@@ -87,7 +89,7 @@ class LateChunkingConfig(BaseModel):
 
     # Performance
     batch_size: int = 1
-    device: str = "cpu"  # or "cuda"
+
 
 
 class CoherenceMetrics(BaseModel):

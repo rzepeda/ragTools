@@ -54,8 +54,11 @@ class BGEReranker(IReranker):
 
         if not TRANSFORMERS_AVAILABLE:
             raise ImportError(
-                "transformers is required for BGEReranker. "
-                "Install it with: pip install transformers torch"
+                "transformers and torch are required for BGEReranker. "
+                "Install with: pip install transformers torch\n\n"
+                "For lightweight deployment without PyTorch (~2.5GB), consider using:\n"
+                "  - CohereReranker (API-based, high quality)\n"
+                "  - CosineReranker (local, no dependencies)"
             )
 
         # Get model name

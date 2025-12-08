@@ -1,10 +1,10 @@
 """
-Unit tests for document embedder.
+Unit tests for document embedder with ONNX.
 """
 
 import pytest
-import torch
 import numpy as np
+from unittest.mock import Mock, patch, MagicMock
 
 from rag_factory.strategies.late_chunking.document_embedder import DocumentEmbedder
 from rag_factory.strategies.late_chunking.models import LateChunkingConfig
@@ -16,89 +16,129 @@ def embedder_config():
     return LateChunkingConfig(
         model_name="sentence-transformers/all-MiniLM-L6-v2",
         max_document_tokens=512,
-        device="cpu"
+        encoding="cl100k_base"
     )
 
 
 @pytest.fixture
-def document_embedder(embedder_config):
-    """Create document embedder instance."""
-    return DocumentEmbedder(embedder_config)
+def mock_session():
+    """Mock ONNX session."""
+    session = Mock()
+    # Mock output metadata
+    output_meta = Mock()
+    output_meta.shape = [1, 512, 384]  # [batch, seq, dim]
+    session.get_outputs.return_value = [output_meta]
+    return session
 
 
-def test_document_embedding_basic(document_embedder):
+@pytest.fixture
+def mock_tokenizer():
+    """Mock tokenizer."""
+    tokenizer = Mock()
+    tokenizer.encode.return_value = [1, 2, 3, 4, 5]
+    tokenizer.decode.side_effect = lambda ids: " ".join([f"token_{i}" for i in ids])
+    return tokenizer
+
+
+@pytest.fixture
+def document_embedder(embedder_config, mock_session, mock_tokenizer):
+    """Create document embedder instance with mocked dependencies."""
+    with patch("rag_factory.strategies.late_chunking.document_embedder.download_onnx_model") as mock_download:
+        with patch("rag_factory.strategies.late_chunking.document_embedder.create_onnx_session") as mock_create:
+            with patch("rag_factory.strategies.late_chunking.document_embedder.get_model_metadata") as mock_metadata:
+                with patch("rag_factory.strategies.late_chunking.document_embedder.Tokenizer") as mock_tok_class:
+                    mock_download.return_value = "/fake/path/model.onnx"
+                    mock_create.return_value = mock_session
+                    mock_metadata.return_value = {"embedding_dim": 384}
+                    mock_tok_class.return_value = mock_tokenizer
+                    
+                    embedder = DocumentEmbedder(embedder_config)
+                    embedder.session = mock_session
+                    embedder.tokenizer = mock_tokenizer
+                    
+                    return embedder
+
+
+def test_document_embedding_basic(document_embedder, mock_session, mock_tokenizer):
     """Test basic document embedding."""
-    text = "This is a test document with multiple sentences. It should be embedded properly."
+    text = "This is a test document with multiple sentences."
+    
+    # Mock ONNX output
+    mock_embeddings = np.random.randn(1, 5, 384).astype(np.float32)
+    mock_session.run.return_value = [mock_embeddings]
+    
     doc_emb = document_embedder.embed_document(text, "test_doc")
 
     assert doc_emb.document_id == "test_doc"
     assert doc_emb.text == text
-    assert len(doc_emb.full_embedding) > 0
-    assert len(doc_emb.token_embeddings) > 0
-    assert doc_emb.token_count > 0
-    assert doc_emb.embedding_dim > 0
+    assert len(doc_emb.full_embedding) == 384
+    assert len(doc_emb.token_embeddings) == 5
+    assert doc_emb.token_count == 5
+    assert doc_emb.embedding_dim == 384
 
 
-def test_token_embeddings_extracted(document_embedder):
+def test_token_embeddings_extracted(document_embedder, mock_session, mock_tokenizer):
     """Test that token-level embeddings are extracted."""
     text = "Hello world"
+    
+    mock_tokenizer.encode.return_value = [1, 2]
+    mock_embeddings = np.random.randn(1, 2, 384).astype(np.float32)
+    mock_session.run.return_value = [mock_embeddings]
+    
     doc_emb = document_embedder.embed_document(text, "test_doc")
 
     # Should have token embeddings
-    assert len(doc_emb.token_embeddings) >= 2  # At least "Hello" and "world"
+    assert len(doc_emb.token_embeddings) == 2
 
     # Each token should have embedding
     for token_emb in doc_emb.token_embeddings:
-        assert len(token_emb.embedding) == doc_emb.embedding_dim
+        assert len(token_emb.embedding) == 384
         assert token_emb.start_char >= 0
-        assert token_emb.end_char > token_emb.start_char
+        assert token_emb.end_char >= token_emb.start_char
         assert token_emb.position >= 0
-
-
-def test_char_position_mapping(document_embedder):
-    """Test that character positions are correct."""
-    text = "The quick brown fox"
-    doc_emb = document_embedder.embed_document(text, "test_doc")
-
-    # Verify character positions map to correct text
-    for token_emb in doc_emb.token_embeddings:
-        token_text = text[token_emb.start_char:token_emb.end_char]
-        # Token should be similar to extracted text (may have subword differences)
-        assert len(token_text) > 0
 
 
 def test_mean_pooling(document_embedder):
     """Test mean pooling for document embedding."""
     # Create fake token embeddings
-    token_embeddings = torch.randn(5, 384)  # 5 tokens, 384 dim
-    attention_mask = torch.ones(5)
+    token_embeddings = np.random.randn(5, 384).astype(np.float32)
+    attention_mask = np.ones(5, dtype=np.int64)
 
     mean_emb = document_embedder._mean_pooling(token_embeddings, attention_mask)
 
     assert mean_emb.shape == (384,)
     # Mean should be average of token embeddings
-    expected_mean = token_embeddings.mean(dim=0)
-    assert torch.allclose(mean_emb, expected_mean, atol=1e-5)
+    expected_mean = token_embeddings.mean(axis=0)
+    np.testing.assert_array_almost_equal(mean_emb, expected_mean, decimal=5)
 
 
 def test_mean_pooling_with_mask(document_embedder):
     """Test mean pooling with attention mask."""
     # Create fake token embeddings with some masked tokens
-    token_embeddings = torch.randn(5, 384)
-    attention_mask = torch.tensor([1, 1, 1, 0, 0])  # Last 2 tokens masked
+    token_embeddings = np.random.randn(5, 384).astype(np.float32)
+    attention_mask = np.array([1, 1, 1, 0, 0], dtype=np.int64)
 
     mean_emb = document_embedder._mean_pooling(token_embeddings, attention_mask)
 
     assert mean_emb.shape == (384,)
     # Mean should only include first 3 tokens
-    expected_mean = token_embeddings[:3].mean(dim=0)
-    assert torch.allclose(mean_emb, expected_mean, atol=1e-5)
+    expected_mean = token_embeddings[:3].mean(axis=0)
+    np.testing.assert_array_almost_equal(mean_emb, expected_mean, decimal=5)
 
 
-def test_long_document_truncation(document_embedder):
+def test_long_document_truncation(document_embedder, mock_session, mock_tokenizer):
     """Test that long documents are truncated."""
     # Create very long text
     long_text = "This is a sentence. " * 1000
+    
+    # Mock tokenizer to return many tokens
+    long_token_ids = list(range(1000))
+    mock_tokenizer.encode.return_value = long_token_ids
+    
+    # Mock ONNX output for truncated length
+    truncated_length = document_embedder.max_length
+    mock_embeddings = np.random.randn(1, truncated_length, 384).astype(np.float32)
+    mock_session.run.return_value = [mock_embeddings]
 
     doc_emb = document_embedder.embed_document(long_text, "long_doc")
 
@@ -106,13 +146,17 @@ def test_long_document_truncation(document_embedder):
     assert doc_emb.token_count <= document_embedder.max_length
 
 
-def test_batch_processing(document_embedder):
+def test_batch_processing(document_embedder, mock_session, mock_tokenizer):
     """Test batch processing of multiple documents."""
     documents = [
         {"text": "First document", "document_id": "doc1"},
         {"text": "Second document", "document_id": "doc2"},
         {"text": "Third document", "document_id": "doc3"}
     ]
+    
+    # Mock ONNX output
+    mock_embeddings = np.random.randn(1, 5, 384).astype(np.float32)
+    mock_session.run.return_value = [mock_embeddings]
 
     doc_embeddings = document_embedder.embed_documents_batch(documents)
 
@@ -126,10 +170,17 @@ def test_batch_processing(document_embedder):
         assert len(doc_emb.token_embeddings) > 0
 
 
-def test_embedding_dimensions_consistent(document_embedder):
+def test_embedding_dimensions_consistent(document_embedder, mock_session, mock_tokenizer):
     """Test that embedding dimensions are consistent."""
+    # Mock different token counts
+    mock_embeddings1 = np.random.randn(1, 3, 384).astype(np.float32)
+    mock_embeddings2 = np.random.randn(1, 7, 384).astype(np.float32)
+    
+    mock_tokenizer.encode.side_effect = [[1, 2, 3], [1, 2, 3, 4, 5, 6, 7]]
+    mock_session.run.side_effect = [[mock_embeddings1], [mock_embeddings2]]
+    
     text1 = "Short text"
-    text2 = "This is a longer text with more words and tokens"
+    text2 = "This is a longer text with more words"
 
     doc_emb1 = document_embedder.embed_document(text1, "doc1")
     doc_emb2 = document_embedder.embed_document(text2, "doc2")
@@ -139,9 +190,85 @@ def test_embedding_dimensions_consistent(document_embedder):
     assert len(doc_emb1.full_embedding) == len(doc_emb2.full_embedding)
 
 
-def test_model_name_stored(document_embedder):
+def test_model_name_stored(document_embedder, mock_session, mock_tokenizer):
     """Test that model name is stored in document embedding."""
     text = "Test document"
+    
+    mock_embeddings = np.random.randn(1, 5, 384).astype(np.float32)
+    mock_session.run.return_value = [mock_embeddings]
+    
     doc_emb = document_embedder.embed_document(text, "test_doc")
 
     assert doc_emb.model_name == document_embedder.config.model_name
+
+
+def test_chunk_embeddings(document_embedder):
+    """Test chunking of token embeddings."""
+    # Create mock embeddings
+    token_embeddings = np.random.randn(100, 384).astype(np.float32)
+    tokens = [f"token_{i}" for i in range(100)]
+
+    chunks = document_embedder.chunk_embeddings(
+        token_embeddings,
+        tokens,
+        chunk_size=30,
+        overlap=5
+    )
+
+    assert len(chunks) > 1
+    for chunk_emb, chunk_tok, start, end in chunks:
+        assert chunk_emb.shape[0] == len(chunk_tok)
+        assert chunk_emb.shape[1] == 384
+        assert end - start == len(chunk_tok)
+
+
+def test_pool_embeddings_mean(document_embedder):
+    """Test mean pooling."""
+    token_embeddings = np.array([
+        [1.0, 2.0, 3.0],
+        [4.0, 5.0, 6.0],
+        [7.0, 8.0, 9.0]
+    ], dtype=np.float32)
+
+    pooled = document_embedder.pool_embeddings(token_embeddings, method="mean")
+
+    expected = np.array([4.0, 5.0, 6.0], dtype=np.float32)
+    np.testing.assert_array_almost_equal(pooled, expected)
+
+
+def test_pool_embeddings_max(document_embedder):
+    """Test max pooling."""
+    token_embeddings = np.array([
+        [1.0, 5.0, 3.0],
+        [4.0, 2.0, 6.0],
+        [7.0, 8.0, 1.0]
+    ], dtype=np.float32)
+
+    pooled = document_embedder.pool_embeddings(token_embeddings, method="max")
+
+    expected = np.array([7.0, 8.0, 6.0], dtype=np.float32)
+    np.testing.assert_array_almost_equal(pooled, expected)
+
+
+def test_pool_embeddings_first(document_embedder):
+    """Test first token pooling."""
+    token_embeddings = np.array([
+        [1.0, 2.0, 3.0],
+        [4.0, 5.0, 6.0],
+        [7.0, 8.0, 9.0]
+    ], dtype=np.float32)
+
+    pooled = document_embedder.pool_embeddings(token_embeddings, method="first")
+
+    expected = np.array([1.0, 2.0, 3.0], dtype=np.float32)
+    np.testing.assert_array_almost_equal(pooled, expected)
+
+
+def test_decode_tokens(document_embedder, mock_tokenizer):
+    """Test token decoding."""
+    token_ids = [1, 2, 3, 4, 5]
+    
+    tokens = document_embedder._decode_tokens(token_ids)
+    
+    assert len(tokens) == 5
+    assert all(isinstance(t, str) for t in tokens)

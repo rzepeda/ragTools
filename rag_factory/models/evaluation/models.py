@@ -21,6 +21,8 @@ class ABTestConfig(BaseModel):
     test_name: str
     model_a_id: str
     model_b_id: str
+    model_a_version: Optional[str] = None
+    model_b_version: Optional[str] = None
     traffic_split: float = 0.5
     duration_days: int = 7
     minimum_samples: int = 1000
@@ -50,6 +52,8 @@ class ABTestResult(BaseModel):
     test_name: str
     model_a_id: str
     model_b_id: str
+    model_a_version: Optional[str] = None
+    model_b_version: Optional[str] = None
 
     # Sample counts
     model_a_samples: int

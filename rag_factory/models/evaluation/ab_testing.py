@@ -63,7 +63,8 @@ class ABTestingFramework:
         self,
         test_name: str,
         model_id: str,
-        metrics: Dict[str, float]
+        metrics: Dict[str, float],
+        version: Optional[str] = None
     ) -> None:
         """Record result from a single request.
         
@@ -71,6 +72,7 @@ class ABTestingFramework:
             test_name: Name of the test
             model_id: Model identifier that was used
             metrics: Dictionary of metric_name -> value
+            version: Model version (optional)
         """
         if test_name not in self.active_tests:
             logger.warning(f"Test {test_name} not active")
@@ -78,6 +80,7 @@ class ABTestingFramework:
 
         result = {
             "model_id": model_id,
+            "version": version,
             "timestamp": datetime.now(),
             "metrics": metrics
         }
@@ -114,9 +117,19 @@ class ABTestingFramework:
         config = self.active_tests[test_name]
         results = self.results[test_name]
 
-        # Split results by model
-        model_a_results = [r for r in results if r["model_id"] == config.model_a_id]
-        model_b_results = [r for r in results if r["model_id"] == config.model_b_id]
+        # Filter results by model ID and version
+        def filter_results(model_id: str, version: Optional[str]) -> List[Dict[str, Any]]:
+            filtered = []
+            for r in results:
+                if r["model_id"] != model_id:
+                    continue
+                if version and r.get("version") != version:
+                    continue
+                filtered.append(r)
+            return filtered
+
+        model_a_results = filter_results(config.model_a_id, config.model_a_version)
+        model_b_results = filter_results(config.model_b_id, config.model_b_version)
 
         # Check minimum samples
         if len(model_a_results) < config.minimum_samples or len(model_b_results) < config.minimum_samples:
@@ -185,6 +198,8 @@ class ABTestingFramework:
             test_name=test_name,
             model_a_id=config.model_a_id,
             model_b_id=config.model_b_id,
+            model_a_version=config.model_a_version,
+            model_b_version=config.model_b_version,
             model_a_samples=len(model_a_results),
             model_b_samples=len(model_b_results),
             metrics=metrics_comparison,
