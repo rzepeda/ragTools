@@ -16,6 +16,7 @@ rag_factory/cli/__init__.py
 rag_factory/cli/main.py
 rag_factory/cli/commands/__init__.py
 rag_factory/cli/commands/benchmark.py
+rag_factory/cli/commands/check_consistency.py
 rag_factory/cli/commands/config.py
 rag_factory/cli/commands/index.py
 rag_factory/cli/commands/query.py
@@ -23,6 +24,7 @@ rag_factory/cli/commands/repl.py
 rag_factory/cli/commands/strategies.py
 rag_factory/cli/commands/validate_pipeline.py
 rag_factory/cli/formatters/__init__.py
+rag_factory/cli/formatters/consistency.py
 rag_factory/cli/formatters/output.py
 rag_factory/cli/formatters/results.py
 rag_factory/cli/formatters/validation.py
@@ -37,7 +39,9 @@ rag_factory/core/retrieval_interface.py
 rag_factory/database/__init__.py
 rag_factory/database/config.py
 rag_factory/database/connection.py
+rag_factory/database/migrations.py
 rag_factory/database/models.py
+rag_factory/database/vector_indexing.py
 rag_factory/evaluation/__init__.py
 rag_factory/evaluation/analysis/__init__.py
 rag_factory/evaluation/analysis/comparison.py

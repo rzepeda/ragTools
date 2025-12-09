@@ -8,7 +8,7 @@ from JSON, JSONL, and CSV formats.
 import json
 import csv
 from pathlib import Path
-from typing import Union, Dict, Any
+from typing import Union, Dict, Any, Optional
 from rag_factory.evaluation.datasets.schema import EvaluationDataset, EvaluationExample
 
 

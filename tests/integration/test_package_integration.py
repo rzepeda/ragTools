@@ -11,6 +11,7 @@ import pytest
 class TestPackageInstallation:
     """Test package installation in clean environment."""
 
+    @pytest.mark.slow
     def test_package_installable(self, tmp_path: Path) -> None:
         """Test package can be installed in clean environment."""
         # Create virtual environment

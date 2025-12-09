@@ -221,9 +221,9 @@ class Tokenizer:
             chunks.append(chunk_text)
 
             # Move to next chunk with overlap
-            start = end - overlap
-            if start >= len(tokens):
+            if end >= len(tokens):
                 break
+            start = end - overlap
 
         return chunks
 
