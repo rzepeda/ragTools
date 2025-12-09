@@ -1,0 +1,57 @@
+tests/integration/database/test_migration_integration.py::TestMigrationIntegration::test_real_migration_execution SKIPPED [  2%]
+tests/integration/database/test_pgvector_integration.py::TestPgVectorIntegration::test_full_vector_lifecycle SKIPPED [  2%]
+tests/integration/documentation/test_documentation_integration.py::TestDocumentationBuild::test_mkdocs_build_succeeds SKIPPEDlization
+tests/integration/documentation/test_documentation_integration.py::TestDocumentationBuild::test_mkdocs_serve_starts SKIPPED, port=8001): Max
+tests/integration/documentation/test_documentation_integration.py::TestDocumentationBuild::test_search_index_generated SKIPPED [  3%]
+tests/integration/documentation/test_documentation_integration.py::test_documentation_time_to_first_example SKIPPED [  3%]
+tests/integration/documentation/test_documentation_integration.py::test_api_reference_generated SKIPPED [  3%]
+tests/integration/documentation/test_documentation_integration.py::test_diagrams_rendered SKIPPED [  3%]
+tests/integration/services/test_embedding_integration.py::test_openai_full_workflow SKIPPED [  5%]
+tests/integration/services/test_embedding_integration.py::test_cohere_full_workflow SKIPPED [  5%]
+tests/integration/services/test_llm_integration.py::test_full_llm_workflow SKIPPED [  6%]
+tests/integration/services/test_llm_integration.py::test_streaming_response SKIPPED [  6%]
+tests/integration/services/test_llm_integration.py::test_local_ollama_provider SKIPPED [  6%]
+tests/integration/services/test_llm_integration.py::test_prompt_template_with_real_llm SKIPPED [  6%]
+tests/integration/services/test_llm_integration.py::test_openai_provider SKIPPED [  6%]
+tests/integration/services/test_llm_integration.py::test_concurrent_llm_requests SKIPPED [  6%]
+tests/integration/services/test_llm_integration.py::test_cost_tracking SKIPPED [  6%]
+tests/integration/services/test_llm_integration.py::test_token_counting SKIPPED [  6%]
+tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_embed_single_document SKIPPED
+tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_embed_multiple_documents SKIPPED
+tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_semantic_similarity SKIPPEDtransformers/all-
+tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_batch_consistency SKIPPEDtransformers/all-
+tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_empty_input SKIPPEDtransformers/all-
+tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_long_text_handling SKIPPEDtransformers/all-
+tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_special_characters SKIPPEDtransformers/all-
+tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_performance_target SKIPPEDtransformers/all-
+tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_provider_metadata SKIPPEDtransformers/all-
+tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_result_metadata SKIPPEDtransformers/all-
+tests/integration/services/test_service_implementations.py::TestDatabaseServices::test_neo4j_graph_service_basic_functionality SKIPPED [  7%]
+tests/integration/strategies/test_multi_query_integration.py::TestMultiQueryRealLLM::test_with_real_llm SKIPPED [ 12%]
+tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_keyword_expansion_real_llm SKIPPED [ 12%]
+tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_query_reformulation SKIPPED [ 13%]
+tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_question_generation SKIPPED [ 13%]
+tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_hyde_expansion SKIPPED [ 13%]
+tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_multi_query_generation SKIPPED [ 13%]
+tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_expansion_performance SKIPPED [ 13%]
+tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_cache_functionality SKIPPED [ 13%]
+tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_ab_testing_functionality SKIPPED [ 13%]
+tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_domain_context SKIPPED [ 13%]
+tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_error_handling_fallback SKIPPED [ 13%]
+tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_stats_tracking SKIPPED [ 13%]
+tests/integration/strategies/test_reranking_integration.py::TestRealCrossEncoderIntegration::test_real_model_reranking SKIPPED [ 14%]
+tests/integration/strategies/test_self_reflective_integration.py::TestSelfReflectiveRealLLM::test_with_real_llm SKIPPED [ 14%]
+tests/integration/test_package_integration.py::TestBuildAndDistribution::test_package_can_be_built SKIPPED [ 16%]
+tests/unit/documentation/test_code_examples.py::TestCodeExamples::test_configuration_examples_valid SKIPPED [ 31%]
+tests/unit/documentation/test_links.py::TestDocumentationLinks::test_external_links_valid SKIPPED [ 31%]
+tests/unit/strategies/chunking/test_docling_chunker.py::test_docling_chunker_initialization SKIPPED [ 66%]
+tests/unit/strategies/chunking/test_docling_chunker.py::test_docling_chunker_placeholder_warning SKIPPED [ 66%]
+tests/unit/strategies/reranking/test_cross_encoder_reranker.py::TestCrossEncoderReranker::test_initialization SKIPPED [ 82%]
+tests/unit/strategies/reranking/test_cross_encoder_reranker.py::TestCrossEncoderReranker::test_initialization_with_cuda SKIPPED [ 82%]
+tests/unit/strategies/reranking/test_cross_encoder_reranker.py::TestCrossEncoderReranker::test_rerank_basic SKIPPED [ 82%]
+tests/unit/strategies/reranking/test_cross_encoder_reranker.py::TestCrossEncoderReranker::test_rerank_batching SKIPPED [ 82%]
+tests/unit/strategies/reranking/test_cross_encoder_reranker.py::TestCrossEncoderReranker::test_validate_empty_query SKIPPED [ 82%]
+tests/unit/strategies/reranking/test_cross_encoder_reranker.py::TestCrossEncoderReranker::test_validate_empty_documents SKIPPED [ 83%]
+tests/unit/strategies/reranking/test_cross_encoder_reranker.py::TestCrossEncoderReranker::test_validate_too_many_documents SKIPPED [ 83%]
+tests/unit/strategies/reranking/test_cross_encoder_reranker.py::TestCrossEncoderReranker::test_get_model_name SKIPPED [ 83%]
+tests/unit/strategies/reranking/test_cross_encoder_reranker.py::TestCrossEncoderReranker::test_model_name_shortcut SKIPPED [ 83%]

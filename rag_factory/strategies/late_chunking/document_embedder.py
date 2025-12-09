@@ -234,10 +234,16 @@ class DocumentEmbedder:
 
             chunks.append((chunk_emb, chunk_tok, start, end))
 
+            # If we've reached the end, we're done
+            if end >= num_tokens:
+                break
+
             # Move to next chunk with overlap
             start = end - overlap
-            if start >= num_tokens:
-                break
+            
+            # Ensure we make progress (avoid infinite loop if overlap >= chunk_size)
+            if start <= chunks[-1][2]:  # If new start <= previous start
+                start = chunks[-1][2] + 1
 
         return chunks
 
