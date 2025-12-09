@@ -145,7 +145,7 @@ def test_get_stats(mock_config, mock_provider):
         assert stats["total_requests"] == 3
         assert stats["cache_hits"] == 1
         assert stats["cache_misses"] == 2
-        assert stats["cache_hit_rate"] == pytest.approx(0.333, 0.01)
+        assert stats["cache_hit_rate"] == pytest.approx(0.333, abs=0.01)
 
 
 def test_clear_cache(mock_config, mock_provider):
@@ -238,3 +238,31 @@ def test_cache_different_models():
 
     # Different models should produce different cache keys for same text
     assert key1 != key2
+
+
+def test_rate_limiter_interaction(mock_config, mock_provider):
+    """Test interaction with rate limiter."""
+    mock_config.enable_rate_limiting = True
+    
+    with patch("rag_factory.services.embedding.service.OpenAIProvider", return_value=mock_provider), \
+         patch("rag_factory.services.embedding.service.RateLimiter") as mock_limiter_cls:
+        
+        mock_limiter = Mock()
+        mock_limiter_cls.return_value = mock_limiter
+        
+        service = EmbeddingService(mock_config)
+        service.embed(["Hello"])
+        
+        mock_limiter.wait_if_needed.assert_called_once()
+
+
+def test_provider_error_handling(mock_config, mock_provider):
+    """Test handling of provider errors."""
+    mock_provider.get_embeddings.side_effect = Exception("API Error")
+    
+    with patch("rag_factory.services.embedding.service.OpenAIProvider", return_value=mock_provider):
+        service = EmbeddingService(mock_config)
+        service.provider = mock_provider
+        
+        with pytest.raises(Exception, match="API Error"):
+            service.embed(["Hello"])

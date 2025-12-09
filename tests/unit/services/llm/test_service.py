@@ -200,3 +200,33 @@ def test_stream_empty_messages_raises_error(mock_config):
 
     with pytest.raises(ValueError, match="messages cannot be empty"):
         list(service.stream([]))
+
+
+def test_provider_error_handling(mock_config, mock_provider, monkeypatch):
+    """Test handling of provider errors."""
+    service = LLMService(mock_config)
+    monkeypatch.setattr(service, "provider", mock_provider)
+    
+    mock_provider.complete.side_effect = Exception("API Error")
+    
+    messages = [Message(role=MessageRole.USER, content="Hello")]
+    
+    with pytest.raises(Exception, match="API Error"):
+        service.complete(messages)
+
+
+def test_rate_limiter_interaction(mock_config, mock_provider, monkeypatch):
+    """Test interaction with rate limiter."""
+    mock_config.enable_rate_limiting = True
+    
+    with patch("rag_factory.services.llm.service.RateLimiter") as mock_limiter_cls:
+        mock_limiter = Mock()
+        mock_limiter_cls.return_value = mock_limiter
+        
+        service = LLMService(mock_config)
+        monkeypatch.setattr(service, "provider", mock_provider)
+        
+        messages = [Message(role=MessageRole.USER, content="Hello")]
+        service.complete(messages)
+        
+        mock_limiter.wait_if_needed.assert_called_once()

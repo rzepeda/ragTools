@@ -307,6 +307,49 @@ class PostgresqlDatabaseService(IDatabaseService):
             for row in rows
         ]
 
+    async def store_chunks_with_hierarchy(self, chunks: List[Dict[str, Any]]) -> None:
+        """Store chunks with hierarchical metadata.
+        
+        This method stores chunks that include hierarchical relationship metadata
+        such as parent-child relationships, hierarchy levels, and path information.
+        
+        Args:
+            chunks: List of chunk dictionaries with hierarchy metadata.
+                   Each chunk should contain:
+                   - id: Unique chunk identifier
+                   - document_id: ID of the parent document
+                   - text: Chunk text content
+                   - level: Hierarchy level (0 = document, 1 = section, 2 = paragraph)
+                   - parent_id: ID of parent chunk (None for root level)
+                   - path: List of indices representing path from root
+                   - metadata: Additional metadata dictionary
+        
+        Raises:
+            Exception: If storage fails
+        """
+        # For PostgreSQL with pgvector, we store the hierarchy info in metadata
+        # and the text/embedding as usual.
+        
+        enriched_chunks = []
+        for chunk in chunks:
+            metadata = chunk.get("metadata", {}).copy()
+            
+            # Add hierarchy fields to metadata
+            hierarchy_fields = ["level", "parent_id", "path", "document_id"]
+            for field in hierarchy_fields:
+                if field in chunk:
+                    metadata[field] = chunk[field]
+            
+            enriched_chunk = {
+                "chunk_id": chunk.get("id"),
+                "text": chunk.get("text"),
+                "embedding": chunk.get("embedding"),
+                "metadata": metadata
+            }
+            enriched_chunks.append(enriched_chunk)
+            
+        await self.store_chunks(enriched_chunks)
+
     async def close(self):
         """Close the database connection pool.
 

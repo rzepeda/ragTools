@@ -4,19 +4,22 @@ from unittest.mock import MagicMock
 import pytest
 
 # Mock numpy and other dependencies GLOBALLY before any test collection
-sys.modules["numpy"] = MagicMock()
+try:
+    import numpy
+except ImportError:
+    sys.modules["numpy"] = MagicMock()
 
 # Mock the services package and submodules that cause issues
-sys.modules["rag_factory.services"] = MagicMock()
-sys.modules["rag_factory.services.onnx"] = MagicMock()
-sys.modules["rag_factory.services.onnx.embedding"] = MagicMock()
-sys.modules["rag_factory.services.embedding"] = MagicMock()
-sys.modules["rag_factory.services.embedding.providers"] = MagicMock()
-sys.modules["rag_factory.services.embedding.providers.onnx_local"] = MagicMock()
-sys.modules["rag_factory.services.embedding.service"] = MagicMock()
-sys.modules["rag_factory.services.api"] = MagicMock()
-sys.modules["rag_factory.services.database"] = MagicMock()
-sys.modules["rag_factory.services.local"] = MagicMock()
+# sys.modules["rag_factory.services"] = MagicMock()
+# sys.modules["rag_factory.services.onnx"] = MagicMock()
+# sys.modules["rag_factory.services.onnx.embedding"] = MagicMock()
+# sys.modules["rag_factory.services.embedding"] = MagicMock()
+# sys.modules["rag_factory.services.embedding.providers"] = MagicMock()
+# sys.modules["rag_factory.services.embedding.providers.onnx_local"] = MagicMock()
+# sys.modules["rag_factory.services.embedding.service"] = MagicMock()
+# sys.modules["rag_factory.services.api"] = MagicMock()
+# sys.modules["rag_factory.services.database"] = MagicMock()
+# sys.modules["rag_factory.services.local"] = MagicMock()
 
 # Manually load the modules we actually need
 def load_module(name, path):
@@ -27,8 +30,8 @@ def load_module(name, path):
     return module
 
 # Mock rag_factory package to prevent init
-sys.modules["rag_factory"] = MagicMock()
-sys.modules["rag_factory.strategies"] = MagicMock()
+# sys.modules["rag_factory"] = MagicMock()
+# sys.modules["rag_factory.strategies"] = MagicMock()
 
 # Load modules in dependency order to avoid cycles and init triggers
 load_module("rag_factory.core.capabilities", "/mnt/MCPProyects/ragTools/rag_factory/core/capabilities.py")
