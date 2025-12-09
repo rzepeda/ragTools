@@ -1,0 +1,114 @@
+# Epic 15: Test Coverage Improvements
+
+**Epic ID:** 15  
+**Priority:** High  
+**Status:** Planned  
+**Dependencies:** All previous epics (1-14)
+
+---
+
+## Overview
+
+This epic addresses test coverage gaps and removes deprecated tests identified in the comprehensive test coverage analysis. The goal is to improve overall test coverage from ~60% to 75%+ by adding missing tests for critical features and removing obsolete test code that tests deprecated interfaces.
+
+---
+
+## Business Value
+
+- **Quality Assurance**: Comprehensive test coverage ensures reliability and reduces bugs in production
+- **Maintainability**: Removing deprecated tests eliminates confusion and maintenance burden
+- **Confidence**: Higher test coverage enables safer refactoring and feature additions
+- **Documentation**: Tests serve as executable documentation for how features should work
+
+---
+
+## Goals
+
+1. **Remove Deprecated Tests**: Delete 482 lines of obsolete test code for the old `IRAGStrategy` interface
+2. **Complete Service Coverage**: Add missing tests for service interfaces (IRerankingService, IGraphService)
+3. **Improve CLI Coverage**: Increase CLI test coverage from 33% to 80%+
+4. **Enhance Database Testing**: Improve database feature coverage from 40% to 70%+
+5. **Add Server Tests**: Implement tests for development server (currently 0%)
+6. **Strengthen Evaluation Tests**: Improve evaluation framework coverage from 33% to 60%+
+
+---
+
+## Success Metrics
+
+- Overall test coverage increases from ~60% to 75%+
+- All deprecated tests removed (0 tests for old interfaces)
+- CLI command coverage reaches 80%+ (from 33%)
+- Database feature coverage reaches 70%+ (from 40%)
+- Development server has basic test coverage (from 0%)
+- All new tests pass with 100% success rate
+
+---
+
+## Stories
+
+### Story 15.1: Remove Deprecated Tests
+**Priority:** Critical  
+**Story Points:** 2  
+**Description:** Delete test files for deprecated `IRAGStrategy` interface
+
+### Story 15.2: Add Missing Service Interface Tests
+**Priority:** High  
+**Story Points:** 5  
+**Description:** Add comprehensive tests for IRerankingService and IGraphService interfaces
+
+### Story 15.3: Add CLI Command Tests
+**Priority:** High  
+**Story Points:** 8  
+**Description:** Add unit and integration tests for missing CLI commands (index, query, list-strategies, config-validation, benchmark, repl)
+
+### Story 15.4: Add Database Feature Tests
+**Priority:** Medium  
+**Story Points:** 8  
+**Description:** Add tests for pgvector integration, vector indexing, batch operations, and migrations
+
+### Story 15.5: Add Development Server Tests
+**Priority:** Medium  
+**Story Points:** 5  
+**Description:** Add tests for HTTP server endpoints, health checks, and API documentation
+
+### Story 15.6: Improve Evaluation Framework Tests
+**Priority:** Low  
+**Story Points:** 5  
+**Description:** Add tests for benchmarking suite, visualization, and statistical testing
+
+---
+
+## Total Story Points: 33
+
+---
+
+## Dependencies
+
+- Epic 12: Pipeline separation and new strategy interfaces must be complete
+- Epic 14: CLI validation commands must be complete
+- All service implementations from Epic 11 must be complete
+
+---
+
+## Risks and Mitigation
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Breaking existing tests while removing deprecated ones | Medium | Careful review and verification that only deprecated tests are removed |
+| Time investment for comprehensive test coverage | Low | Prioritize high-impact areas (CLI, database) first |
+| Tests may reveal bugs in existing code | Medium | This is actually a benefit - fix bugs as discovered |
+
+---
+
+## Out of Scope
+
+- Performance optimization of existing tests
+- Refactoring of existing test structure
+- Adding tests for experimental features not in the features list
+- Achieving 100% code coverage (target is 75%+)
+
+---
+
+## Notes
+
+This epic is based on the comprehensive test coverage analysis performed on 2025-12-08, which analyzed 130+ existing test files against the consolidated features list from all 14 epics.
