@@ -60,7 +60,7 @@ class TestDatabaseConnection:
         db = DatabaseConnection(config)
 
         # Should return False, not raise exception
-        assert db_connection.health_check() is False
+        assert db.health_check() is False
 
         db.close()
 

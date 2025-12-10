@@ -183,6 +183,7 @@ def upgrade() -> None:
             chunk_id UUID,
             parent_chunk_id UUID,
             hierarchy_level INTEGER,
+            chunk_index INTEGER,
             text TEXT,
             metadata JSONB,
             depth INTEGER
@@ -196,6 +197,7 @@ def upgrade() -> None:
                     c.chunk_id,
                     c.parent_chunk_id,
                     c.hierarchy_level,
+                    c.chunk_index,
                     c.text,
                     c.metadata,
                     0 as depth
@@ -209,6 +211,7 @@ def upgrade() -> None:
                     c.chunk_id,
                     c.parent_chunk_id,
                     c.hierarchy_level,
+                    c.chunk_index,
                     c.text,
                     c.metadata,
                     d.depth + 1

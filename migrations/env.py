@@ -15,6 +15,7 @@ from alembic import context
 # Import our models and configuration
 from rag_factory.database.models import Base
 from rag_factory.database.config import DatabaseConfig
+from rag_factory.database.env_validator import EnvironmentValidator
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -28,9 +29,18 @@ if config.config_file_name is not None:
 # Set target metadata for autogenerate support
 target_metadata = Base.metadata
 
-# Get database URL from environment
-db_config = DatabaseConfig()
-config.set_main_option("sqlalchemy.url", db_config.database_url)
+# Get database URL from environment with backward compatibility
+# Check if we're running tests by looking for TEST_DATABASE_URL or DATABASE_TEST_URL
+test_url = EnvironmentValidator.get_database_url(for_tests=True)
+if test_url:
+    # Use test database if available
+    db_url = test_url
+else:
+    # Fall back to main database
+    db_config = DatabaseConfig()
+    db_url = db_config.database_url
+
+config.set_main_option("sqlalchemy.url", db_url)
 
 
 def run_migrations_offline() -> None:

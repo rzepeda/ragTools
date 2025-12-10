@@ -97,21 +97,32 @@ WITH (m = 16, ef_construction = 64)
 
 ### Environment Variables
 
-All database configuration is managed via environment variables with `DB_` prefix:
+> [!IMPORTANT]
+> For complete environment variable reference, see [ENVIRONMENT_VARIABLES.md](file:///mnt/MCPProyects/ragTools/docs/database/ENVIRONMENT_VARIABLES.md)
+
+**Quick Reference:**
 
 ```bash
-# Required
-export DB_DATABASE_URL="postgresql://user:password@host:port/database"
+# Production/Development Database
+DATABASE_URL=postgresql://user:password@host:port/database
 
-# Optional (with defaults)
-export DB_POOL_SIZE=10              # Connection pool size
-export DB_MAX_OVERFLOW=20           # Max overflow connections
-export DB_POOL_TIMEOUT=30           # Connection timeout in seconds
-export DB_POOL_RECYCLE=3600         # Recycle connections after seconds
-export DB_ECHO=false                # Enable SQL query logging
-export DB_POOL_PRE_PING=true        # Test connections before use
-export DB_VECTOR_DIMENSIONS=1536    # Embedding dimensions
+# Test Database (use TEST_DATABASE_URL, not DATABASE_TEST_URL)
+TEST_DATABASE_URL=postgresql://user:password@host:port/test_database
+
+# Optional: Database Configuration (with DB_ prefix)
+DB_DATABASE_URL=postgresql://user:password@host:port/database
+DB_TEST_DATABASE_URL=postgresql://user:password@host:port/test_database
+DB_POOL_SIZE=10              # Connection pool size
+DB_MAX_OVERFLOW=20           # Max overflow connections
+DB_POOL_TIMEOUT=30           # Connection timeout in seconds
+DB_POOL_RECYCLE=3600         # Recycle connections after seconds
+DB_ECHO=false                # Enable SQL query logging
+DB_POOL_PRE_PING=true        # Test connections before use
+DB_VECTOR_DIMENSIONS=1536    # Embedding dimensions
 ```
+
+> [!NOTE]
+> The `DatabaseConfig` class uses the `DB_` prefix for all configuration variables. Both `DATABASE_URL` and `DB_DATABASE_URL` are supported.
 
 ### Pydantic Configuration
 
@@ -247,7 +258,7 @@ with DatabaseConnection() as db:
 ./scripts/setup_database.sh
 
 # 2. Run migrations
-export DB_DATABASE_URL="postgresql://postgres@localhost/rag_factory_dev"
+export DATABASE_URL="postgresql://postgres@localhost/rag_factory_dev"
 alembic upgrade head
 
 # 3. Verify
@@ -263,7 +274,7 @@ python -c "from rag_factory.database import DatabaseConnection; \
 # 2. Enable pgvector extension in project settings
 # 3. Get connection string from dashboard
 # 4. Run migrations
-export DB_DATABASE_URL="postgresql://user:pass@ep-xxx.neon.tech/neondb?sslmode=require"
+export DATABASE_URL="postgresql://user:pass@ep-xxx.neon.tech/neondb?sslmode=require"
 alembic upgrade head
 ```
 
@@ -324,7 +335,7 @@ pytest tests/unit/database/test_models.py -v
 
 ```bash
 # Requires PostgreSQL running
-export DB_DATABASE_URL="postgresql://postgres@localhost/rag_factory_test"
+export TEST_DATABASE_URL="postgresql://postgres@localhost/rag_factory_test"
 ./scripts/test_database.sh
 
 # Run integration tests
