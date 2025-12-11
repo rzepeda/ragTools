@@ -1,0 +1,81 @@
+================================================================================
+TEST RESULTS SUMMARY - BY FILE
+================================================================================
+
+Execution Date: Thu Dec 11 07:07:16 PM -03 2025
+Total test files: 156
+Total duration: 70m 10s
+
+FILE RESULTS:
+  ✅ PASSED FILES    : 120 (76.9%)
+  ❌ FAILED FILES    : 35 (22.4%)
+  ⏭️  SKIPPED FILES   : 1 (0.6%)
+  ⏱️  TIMEOUT FILES   : 0 (0.0%)
+
+TEST RESULTS:
+  ✅ PASSED TESTS    : 1605 (82.7%)
+  ❌ FAILED TESTS    : 302 (15.6%)
+  ⏭️  SKIPPED TESTS   : 33 (1.7%)
+  📊 TOTAL TESTS     : 1940
+
+================================================================================
+FAILED TEST FILES (35)
+================================================================================
+tests/benchmarks/test_late_chunking_performance.py
+tests/benchmarks/test_model_comparison_performance.py
+tests/integration/models/test_fine_tuned_embeddings_integration.py
+tests/integration/repositories/test_repository_integration.py
+tests/integration/services/test_embedding_integration.py
+tests/integration/services/test_llm_integration.py
+tests/integration/services/test_onnx_embeddings_integration.py
+tests/integration/services/test_service_implementations.py
+tests/integration/services/test_service_integration.py
+tests/integration/strategies/test_base_integration.py
+tests/integration/strategies/test_contextual_integration.py
+tests/integration/strategies/test_hierarchical_integration.py
+tests/integration/strategies/test_keyword_indexing.py
+tests/benchmarks/test_late_chunking_performance.py
+tests/benchmarks/test_model_comparison_performance.py
+tests/integration/models/test_fine_tuned_embeddings_integration.py
+tests/integration/repositories/test_repository_integration.py
+tests/integration/services/test_embedding_integration.py
+tests/integration/services/test_llm_integration.py
+tests/integration/services/test_onnx_embeddings_integration.py
+tests/integration/services/test_service_implementations.py
+tests/integration/services/test_service_integration.py
+tests/integration/strategies/test_base_integration.py
+tests/integration/strategies/test_contextual_integration.py
+tests/integration/strategies/test_hierarchical_integration.py
+tests/integration/strategies/test_keyword_indexing.py
+tests/integration/strategies/test_knowledge_graph_integration.py
+tests/integration/strategies/test_late_chunking_integration.py
+tests/integration/strategies/test_multi_query_integration.py
+tests/integration/strategies/test_query_expansion_integration.py
+tests/integration/test_config_integration.py
+tests/integration/test_factory_integration.py
+tests/integration/test_package_integration.py
+tests/integration/test_pipeline_integration.py
+tests/unit/cli/test_check_consistency_command.py
+tests/unit/cli/test_repl_command.py
+tests/unit/database/test_connection.py
+tests/unit/database/test_models.py
+tests/unit/documentation/test_code_examples.py
+tests/unit/documentation/test_documentation_completeness.py
+tests/unit/documentation/test_links.py
+tests/unit/services/embeddings/test_onnx_local.py
+tests/unit/services/embedding/test_onnx_local_provider.py
+tests/unit/services/test_database_service.py
+tests/unit/services/test_interfaces.py
+tests/unit/strategies/agentic/test_strategy.py
+tests/unit/strategies/test_base.py
+tests/unit/test_pipeline.py
+
+================================================================================
+TIMEOUT TEST FILES (0)
+================================================================================
+
+================================================================================
+SKIPPED TEST FILES (1)
+================================================================================
+tests/integration/documentation/test_documentation_integration.py
+tests/integration/documentation/test_documentation_integration.py

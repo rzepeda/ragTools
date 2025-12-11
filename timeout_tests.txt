@@ -1,0 +1,1 @@
+tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_performance_target

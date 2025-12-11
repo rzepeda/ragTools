@@ -115,6 +115,8 @@ tests/integration/services/test_llm_integration.py::test_openai_provider
 tests/integration/services/test_llm_integration.py::test_concurrent_llm_requests
 tests/integration/services/test_llm_integration.py::test_cost_tracking
 tests/integration/services/test_llm_integration.py::test_token_counting
+tests/integration/services/test_lm_studio_connection.py::test_lm_studio_models_endpoint
+tests/integration/services/test_lm_studio_connection.py::test_lm_studio_completion
 tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_embed_single_document
 tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_embed_multiple_documents
 tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_semantic_similarity
@@ -924,7 +926,7 @@ tests/unit/services/embedding/test_onnx_local_provider.py::test_provider_initial
 tests/unit/services/embedding/test_onnx_local_provider.py::test_get_embeddings
 tests/unit/services/embedding/test_onnx_local_provider.py::test_calculate_cost_is_zero
 tests/unit/services/embedding/test_onnx_local_provider.py::test_known_model_dimensions
-tests/unit/services/embedding/test_onnx_local_provider.py::test_unknown_model_uses_config
+tests/unit/services/embedding/test_onnx_local_provider.py::test_unknown_model_uses_output_shape
 tests/unit/services/embedding/test_onnx_local_provider.py::test_custom_batch_size
 tests/unit/services/embedding/test_onnx_local_provider.py::test_model_loading_failure
 tests/unit/services/embedding/test_onnx_local_provider.py::test_get_model_name

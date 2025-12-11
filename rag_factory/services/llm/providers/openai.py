@@ -93,18 +93,27 @@ class OpenAIProvider(ILLMProvider):
         # Extract content
         content = response.choices[0].message.content or ""
 
-        # Calculate cost
-        cost = self.calculate_cost(
-            response.usage.prompt_tokens, response.usage.completion_tokens
-        )
+        # Safely extract token counts (LM Studio may have different structure)
+        try:
+            prompt_tokens = response.usage.prompt_tokens if response.usage else 0
+            completion_tokens = response.usage.completion_tokens if response.usage else 0
+            total_tokens = response.usage.total_tokens if response.usage else 0
+        except (AttributeError, KeyError):
+            # Fallback if usage info not available
+            prompt_tokens = 0
+            completion_tokens = 0
+            total_tokens = 0
+
+        # Calculate cost (will be 0 for LM Studio)
+        cost = self.calculate_cost(prompt_tokens, completion_tokens)
 
         return LLMResponse(
             content=content,
-            model=self.model,
             provider="openai",
-            prompt_tokens=response.usage.prompt_tokens,
-            completion_tokens=response.usage.completion_tokens,
-            total_tokens=response.usage.total_tokens,
+            model=self.model,
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
+            total_tokens=total_tokens,
             cost=cost,
             latency=latency,
             metadata={"finish_reason": response.choices[0].finish_reason},
@@ -171,8 +180,12 @@ class OpenAIProvider(ILLMProvider):
             completion_tokens: Number of completion tokens
 
         Returns:
-            Cost in dollars
+            Cost in dollars (0.0 for local/unknown models)
         """
+        # Return 0 cost for unknown models (e.g., LM Studio)
+        if self.model not in self.MODELS:
+            return 0.0
+            
         model_pricing = self.MODELS[self.model]
         prompt_cost = (prompt_tokens / 1_000_000) * model_pricing["cost_per_1m_prompt"]
         completion_cost = (
