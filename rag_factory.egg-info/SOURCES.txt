@@ -39,7 +39,7 @@ rag_factory/core/retrieval_interface.py
 rag_factory/database/__init__.py
 rag_factory/database/config.py
 rag_factory/database/connection.py
-rag_factory/database/migrations.py
+rag_factory/database/env_validator.py
 rag_factory/database/models.py
 rag_factory/database/vector_indexing.py
 rag_factory/evaluation/__init__.py

@@ -1,57 +1,134 @@
-tests/integration/database/test_migration_integration.py::TestMigrationIntegration::test_real_migration_execution SKIPPED [  2%]
-tests/integration/database/test_pgvector_integration.py::TestPgVectorIntegration::test_full_vector_lifecycle SKIPPED [  2%]
-tests/integration/documentation/test_documentation_integration.py::TestDocumentationBuild::test_mkdocs_build_succeeds SKIPPEDlization
-tests/integration/documentation/test_documentation_integration.py::TestDocumentationBuild::test_mkdocs_serve_starts SKIPPED, port=8001): Max
-tests/integration/documentation/test_documentation_integration.py::TestDocumentationBuild::test_search_index_generated SKIPPED [  3%]
-tests/integration/documentation/test_documentation_integration.py::test_documentation_time_to_first_example SKIPPED [  3%]
-tests/integration/documentation/test_documentation_integration.py::test_api_reference_generated SKIPPED [  3%]
-tests/integration/documentation/test_documentation_integration.py::test_diagrams_rendered SKIPPED [  3%]
-tests/integration/services/test_embedding_integration.py::test_openai_full_workflow SKIPPED [  5%]
-tests/integration/services/test_embedding_integration.py::test_cohere_full_workflow SKIPPED [  5%]
-tests/integration/services/test_llm_integration.py::test_full_llm_workflow SKIPPED [  6%]
-tests/integration/services/test_llm_integration.py::test_streaming_response SKIPPED [  6%]
-tests/integration/services/test_llm_integration.py::test_local_ollama_provider SKIPPED [  6%]
-tests/integration/services/test_llm_integration.py::test_prompt_template_with_real_llm SKIPPED [  6%]
-tests/integration/services/test_llm_integration.py::test_openai_provider SKIPPED [  6%]
-tests/integration/services/test_llm_integration.py::test_concurrent_llm_requests SKIPPED [  6%]
-tests/integration/services/test_llm_integration.py::test_cost_tracking SKIPPED [  6%]
-tests/integration/services/test_llm_integration.py::test_token_counting SKIPPED [  6%]
-tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_embed_single_document SKIPPED
-tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_embed_multiple_documents SKIPPED
-tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_semantic_similarity SKIPPEDtransformers/all-
-tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_batch_consistency SKIPPEDtransformers/all-
-tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_empty_input SKIPPEDtransformers/all-
-tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_long_text_handling SKIPPEDtransformers/all-
-tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_special_characters SKIPPEDtransformers/all-
-tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_performance_target SKIPPEDtransformers/all-
-tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_provider_metadata SKIPPEDtransformers/all-
-tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_result_metadata SKIPPEDtransformers/all-
-tests/integration/services/test_service_implementations.py::TestDatabaseServices::test_neo4j_graph_service_basic_functionality SKIPPED [  7%]
-tests/integration/strategies/test_multi_query_integration.py::TestMultiQueryRealLLM::test_with_real_llm SKIPPED [ 12%]
-tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_keyword_expansion_real_llm SKIPPED [ 12%]
-tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_query_reformulation SKIPPED [ 13%]
-tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_question_generation SKIPPED [ 13%]
-tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_hyde_expansion SKIPPED [ 13%]
-tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_multi_query_generation SKIPPED [ 13%]
-tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_expansion_performance SKIPPED [ 13%]
-tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_cache_functionality SKIPPED [ 13%]
-tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_ab_testing_functionality SKIPPED [ 13%]
-tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_domain_context SKIPPED [ 13%]
-tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_error_handling_fallback SKIPPED [ 13%]
-tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_stats_tracking SKIPPED [ 13%]
-tests/integration/strategies/test_reranking_integration.py::TestRealCrossEncoderIntegration::test_real_model_reranking SKIPPED [ 14%]
-tests/integration/strategies/test_self_reflective_integration.py::TestSelfReflectiveRealLLM::test_with_real_llm SKIPPED [ 14%]
-tests/integration/test_package_integration.py::TestBuildAndDistribution::test_package_can_be_built SKIPPED [ 16%]
-tests/unit/documentation/test_code_examples.py::TestCodeExamples::test_configuration_examples_valid SKIPPED [ 31%]
-tests/unit/documentation/test_links.py::TestDocumentationLinks::test_external_links_valid SKIPPED [ 31%]
-tests/unit/strategies/chunking/test_docling_chunker.py::test_docling_chunker_initialization SKIPPED [ 66%]
-tests/unit/strategies/chunking/test_docling_chunker.py::test_docling_chunker_placeholder_warning SKIPPED [ 66%]
-tests/unit/strategies/reranking/test_cross_encoder_reranker.py::TestCrossEncoderReranker::test_initialization SKIPPED [ 82%]
-tests/unit/strategies/reranking/test_cross_encoder_reranker.py::TestCrossEncoderReranker::test_initialization_with_cuda SKIPPED [ 82%]
-tests/unit/strategies/reranking/test_cross_encoder_reranker.py::TestCrossEncoderReranker::test_rerank_basic SKIPPED [ 82%]
-tests/unit/strategies/reranking/test_cross_encoder_reranker.py::TestCrossEncoderReranker::test_rerank_batching SKIPPED [ 82%]
-tests/unit/strategies/reranking/test_cross_encoder_reranker.py::TestCrossEncoderReranker::test_validate_empty_query SKIPPED [ 82%]
-tests/unit/strategies/reranking/test_cross_encoder_reranker.py::TestCrossEncoderReranker::test_validate_empty_documents SKIPPED [ 83%]
-tests/unit/strategies/reranking/test_cross_encoder_reranker.py::TestCrossEncoderReranker::test_validate_too_many_documents SKIPPED [ 83%]
-tests/unit/strategies/reranking/test_cross_encoder_reranker.py::TestCrossEncoderReranker::test_get_model_name SKIPPED [ 83%]
-tests/unit/strategies/reranking/test_cross_encoder_reranker.py::TestCrossEncoderReranker::test_model_name_shortcut SKIPPED [ 83%]
+tests/integration/database/test_database_integration.py::TestDatabaseIntegration::test_full_database_workflow
+tests/integration/database/test_database_integration.py::TestDatabaseIntegration::test_batch_insert_chunks
+tests/integration/database/test_database_integration.py::TestDatabaseIntegration::test_query_with_filters
+tests/integration/database/test_database_integration.py::TestDatabaseIntegration::test_metadata_queries
+tests/integration/database/test_database_integration.py::TestDatabaseIntegration::test_chunk_ordering
+tests/integration/database/test_database_integration.py::TestDatabaseIntegration::test_document_deduplication
+tests/integration/database/test_database_integration.py::TestVectorOperations::test_insert_chunk_with_embedding
+tests/integration/database/test_database_integration.py::TestVectorOperations::test_vector_similarity_search
+tests/integration/database/test_database_integration.py::TestVectorOperations::test_null_embeddings
+tests/integration/database/test_database_integration.py::TestConnectionPooling::test_connection_pool_concurrent_access
+tests/integration/database/test_database_integration.py::TestConnectionPooling::test_connection_pool_metrics
+tests/integration/database/test_database_integration.py::TestConnectionPooling::test_session_isolation
+tests/integration/database/test_database_integration.py::TestPerformance::test_batch_insert_performance
+tests/integration/database/test_database_integration.py::TestPerformance::test_query_performance
+tests/integration/database/test_migration_integration.py::TestMigrationIntegration::test_real_migration_execution
+tests/integration/database/test_migration_integration.py::TestMigrationIntegration::test_migration_with_existing_data
+tests/integration/database/test_migration_integration.py::TestMigrationIntegration::test_rollback_functionality
+tests/integration/database/test_migration_integration.py::TestMigrationIntegration::test_pgvector_extension_installed
+tests/integration/documentation/test_documentation_integration.py::TestDocumentationBuild::test_mkdocs_build_succeeds
+tests/integration/documentation/test_documentation_integration.py::TestDocumentationBuild::test_mkdocs_serve_starts
+tests/integration/documentation/test_documentation_integration.py::TestDocumentationBuild::test_search_index_generated
+tests/integration/documentation/test_documentation_integration.py::test_documentation_time_to_first_example
+tests/integration/documentation/test_documentation_integration.py::test_api_reference_generated
+tests/integration/documentation/test_documentation_integration.py::test_diagrams_rendered
+tests/integration/repositories/test_repository_integration.py::TestDocumentRepositoryIntegration::test_complete_document_lifecycle
+tests/integration/repositories/test_repository_integration.py::TestDocumentRepositoryIntegration::test_document_deduplication
+tests/integration/repositories/test_repository_integration.py::TestDocumentRepositoryIntegration::test_document_pagination
+tests/integration/repositories/test_repository_integration.py::TestDocumentRepositoryIntegration::test_document_status_filtering
+tests/integration/repositories/test_repository_integration.py::TestDocumentRepositoryIntegration::test_bulk_operations
+tests/integration/repositories/test_repository_integration.py::TestChunkRepositoryIntegration::test_complete_chunk_lifecycle
+tests/integration/repositories/test_repository_integration.py::TestChunkRepositoryIntegration::test_chunk_document_relationship
+tests/integration/repositories/test_repository_integration.py::TestChunkRepositoryIntegration::test_cascade_delete
+tests/integration/repositories/test_repository_integration.py::TestChunkRepositoryIntegration::test_bulk_chunk_operations
+tests/integration/repositories/test_repository_integration.py::TestVectorSearchIntegration::test_vector_similarity_search
+tests/integration/repositories/test_repository_integration.py::TestVectorSearchIntegration::test_vector_search_with_threshold
+tests/integration/repositories/test_repository_integration.py::TestVectorSearchIntegration::test_vector_search_with_document_filter
+tests/integration/repositories/test_repository_integration.py::TestVectorSearchIntegration::test_vector_search_with_metadata_filter
+tests/integration/repositories/test_repository_integration.py::TestVectorSearchIntegration::test_vector_search_identical_embedding
+tests/integration/repositories/test_repository_integration.py::TestRepositoryTransactions::test_transaction_commit
+tests/integration/repositories/test_repository_integration.py::TestRepositoryTransactions::test_transaction_rollback
+tests/integration/repositories/test_repository_integration.py::TestRepositoryTransactions::test_multiple_operations_in_transaction
+tests/integration/repositories/test_repository_integration.py::TestRepositoryTransactions::test_transaction_context_manager
+tests/integration/repositories/test_repository_integration.py::TestRepositoryTransactions::test_transaction_rollback_on_error
+tests/integration/services/test_embedding_integration.py::test_openai_full_workflow
+tests/integration/services/test_embedding_integration.py::test_cohere_full_workflow
+tests/integration/services/test_llm_integration.py::test_full_llm_workflow
+tests/integration/services/test_llm_integration.py::test_streaming_response
+tests/integration/services/test_llm_integration.py::test_local_ollama_provider
+tests/integration/services/test_llm_integration.py::test_prompt_template_with_real_llm
+tests/integration/services/test_llm_integration.py::test_openai_provider
+tests/integration/services/test_llm_integration.py::test_concurrent_llm_requests
+tests/integration/services/test_llm_integration.py::test_cost_tracking
+tests/integration/services/test_llm_integration.py::test_token_counting
+tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_embed_single_document
+tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_embed_multiple_documents
+tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_semantic_similarity
+tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_batch_consistency
+tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_empty_input
+tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_long_text_handling
+tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_special_characters
+tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_performance_target
+tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_provider_metadata
+tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_result_metadata
+tests/integration/services/test_service_implementations.py::TestDatabaseServices::test_neo4j_graph_service_basic_functionality
+tests/integration/strategies/test_multi_query_integration.py::TestMultiQueryRealLLM::test_with_real_llm
+tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_keyword_expansion_real_llm
+tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_query_reformulation
+tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_question_generation
+tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_hyde_expansion
+tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_multi_query_generation
+tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_expansion_performance
+tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_cache_functionality
+tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_ab_testing_functionality
+tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_domain_context
+tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_error_handling_fallback
+tests/integration/strategies/test_query_expansion_integration.py::TestQueryExpansionIntegration::test_stats_tracking
+tests/integration/strategies/test_reranking_integration.py::TestRealCrossEncoderIntegration::test_real_model_reranking
+tests/integration/strategies/test_self_reflective_integration.py::TestSelfReflectiveRealLLM::test_with_real_llm
+tests/integration/test_package_integration.py::TestBuildAndDistribution::test_package_can_be_built
+tests/unit/database/test_batch_operations.py::TestBatchOperations::test_batch_vector_insertion
+tests/unit/database/test_batch_operations.py::TestBatchOperations::test_store_chunks_with_hierarchy
+tests/unit/database/test_connection.py::TestDatabaseConnection::test_connection_initialization
+tests/unit/database/test_connection.py::TestDatabaseConnection::test_connection_with_default_config
+tests/unit/database/test_connection.py::TestDatabaseConnection::test_session_context_manager_commit
+tests/unit/database/test_connection.py::TestDatabaseConnection::test_session_context_manager_rollback
+tests/unit/database/test_connection.py::TestDatabaseConnection::test_health_check_success
+tests/unit/database/test_connection.py::TestDatabaseConnection::test_health_check_failure
+tests/unit/database/test_connection.py::TestDatabaseConnection::test_get_pool_status
+tests/unit/database/test_connection.py::TestDatabaseConnection::test_create_tables
+tests/unit/database/test_connection.py::TestDatabaseConnection::test_drop_tables
+tests/unit/database/test_connection.py::TestDatabaseConnection::test_context_manager
+tests/unit/database/test_connection.py::TestDatabaseConnection::test_multiple_sessions
+tests/unit/database/test_connection.py::TestDatabaseConnection::test_pool_configuration
+tests/unit/database/test_connection.py::TestDatabaseConnectionEvents::test_on_connect_event
+tests/unit/database/test_connection.py::TestDatabaseConnectionEvents::test_on_checkout_event
+tests/unit/database/test_migrations.py::TestAlembicMigrations::test_migration_upgrade_to_head
+tests/unit/database/test_migrations.py::TestAlembicMigrations::test_migration_downgrade
+tests/unit/database/test_migrations.py::TestAlembicMigrations::test_migration_history
+tests/unit/database/test_migrations.py::TestAlembicMigrations::test_migration_idempotency
+tests/unit/database/test_migrations.py::TestAlembicMigrations::test_get_current_version
+tests/unit/database/test_migrations.py::TestAlembicMigrations::test_migration_creates_tables
+tests/unit/database/test_migrations.py::TestAlembicMigrations::test_migration_creates_indexes
+tests/unit/database/test_models.py::TestDocumentModel::test_document_model_has_required_columns
+tests/unit/database/test_models.py::TestDocumentModel::test_document_creation
+tests/unit/database/test_models.py::TestDocumentModel::test_document_default_values
+tests/unit/database/test_models.py::TestDocumentModel::test_document_metadata_accepts_json
+tests/unit/database/test_models.py::TestDocumentModel::test_document_status_values
+tests/unit/database/test_models.py::TestDocumentModel::test_document_repr
+tests/unit/database/test_models.py::TestDocumentModel::test_document_persistence
+tests/unit/database/test_models.py::TestChunkModel::test_chunk_model_has_required_columns
+tests/unit/database/test_models.py::TestChunkModel::test_chunk_creation
+tests/unit/database/test_models.py::TestChunkModel::test_chunk_creation_with_embedding
+tests/unit/database/test_models.py::TestChunkModel::test_chunk_default_values
+tests/unit/database/test_models.py::TestChunkModel::test_chunk_metadata_accepts_json
+tests/unit/database/test_models.py::TestChunkModel::test_chunk_repr
+tests/unit/database/test_models.py::TestChunkModel::test_chunk_repr_without_embedding
+tests/unit/database/test_models.py::TestChunkModel::test_chunk_persistence
+tests/unit/database/test_models.py::TestModelRelationships::test_foreign_key_relationship
+tests/unit/database/test_models.py::TestModelRelationships::test_document_chunks_relationship
+tests/unit/database/test_models.py::TestModelRelationships::test_chunk_document_relationship
+tests/unit/database/test_models.py::TestModelRelationships::test_cascade_delete
+tests/unit/database/test_models.py::TestModelIndexes::test_document_indexes
+tests/unit/database/test_models.py::TestModelIndexes::test_chunk_indexes
+tests/unit/database/test_pgvector.py::TestPgVectorIntegration::test_cosine_similarity_search
+tests/unit/database/test_pgvector.py::TestPgVectorIntegration::test_vector_storage_format
+tests/unit/database/test_pgvector.py::TestPgVectorIntegration::test_empty_chunks_storage
+tests/unit/database/test_vector_indexing.py::TestVectorIndexing::test_create_hnsw_index
+tests/unit/database/test_vector_indexing.py::TestVectorIndexing::test_create_ivfflat_index
+tests/unit/database/test_vector_indexing.py::TestVectorIndexing::test_drop_index
+tests/unit/database/test_vector_indexing.py::TestVectorIndexing::test_list_indexes
+tests/unit/documentation/test_code_examples.py::TestCodeExamples::test_configuration_examples_valid
+tests/unit/documentation/test_links.py::TestDocumentationLinks::test_external_links_valid
+tests/unit/strategies/chunking/test_docling_chunker.py::test_docling_chunker_initialization
+tests/unit/strategies/chunking/test_docling_chunker.py::test_docling_chunker_placeholder_warning

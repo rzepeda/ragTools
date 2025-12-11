@@ -42,18 +42,24 @@ class OpenAIProvider(ILLMProvider):
         """Initialize OpenAI provider.
 
         Args:
-            config: Configuration with 'api_key' and optional 'model'
+            config: Configuration with 'api_key', optional 'model' and 'base_url'
 
         Raises:
             ValueError: If model is not supported
         """
         self.api_key = config.get("api_key")
         self.model = config.get("model", "gpt-4-turbo")
+        self.base_url = config.get("base_url")  # For LM Studio compatibility
 
-        if self.model not in self.MODELS:
+        # Only validate model if using OpenAI API (not LM Studio)
+        if not self.base_url and self.model not in self.MODELS:
             raise ValueError(f"Unknown OpenAI model: {self.model}")
 
-        self.client = OpenAI(api_key=self.api_key)
+        # Use custom base_url if provided (for LM Studio)
+        if self.base_url:
+            self.client = OpenAI(api_key=self.api_key, base_url=self.base_url)
+        else:
+            self.client = OpenAI(api_key=self.api_key)
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=1, max=10))
     def complete(self, messages: List[Message], **kwargs) -> LLMResponse:

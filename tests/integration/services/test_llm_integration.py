@@ -123,15 +123,30 @@ def test_prompt_template_with_real_llm():
 
 
 @pytest.mark.integration
-@pytest.mark.skipif(not os.getenv("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set")
+@pytest.mark.skipif(
+    not os.getenv("LM_STUDIO_BASE_URL") and not os.getenv("OPENAI_API_KEY"),
+    reason="LM_STUDIO_BASE_URL or OPENAI_API_KEY not set"
+)
 def test_openai_provider():
-    """Test OpenAI provider integration."""
-    config = LLMServiceConfig(
-        provider="openai",
-        model="gpt-3.5-turbo",
-        provider_config={"api_key": os.getenv("OPENAI_API_KEY")},
-        enable_rate_limiting=True,
-    )
+    """Test OpenAI-compatible provider (LM Studio or OpenAI)."""
+    # Prefer LM Studio if configured, fallback to OpenAI
+    if os.getenv("LM_STUDIO_BASE_URL"):
+        config = LLMServiceConfig(
+            provider="openai",
+            model=os.getenv("LM_STUDIO_MODEL", "local-model"),
+            provider_config={
+                "api_key": os.getenv("LM_STUDIO_API_KEY", "lm-studio"),
+                "base_url": os.getenv("LM_STUDIO_BASE_URL")
+            },
+            enable_rate_limiting=True,
+        )
+    else:
+        config = LLMServiceConfig(
+            provider="openai",
+            model="gpt-3.5-turbo",
+            provider_config={"api_key": os.getenv("OPENAI_API_KEY")},
+            enable_rate_limiting=True,
+        )
 
     service = LLMService(config)
 
@@ -140,7 +155,11 @@ def test_openai_provider():
 
     assert response.content
     assert response.total_tokens > 0
-    assert response.cost > 0
+    # LM Studio has zero cost, OpenAI has cost
+    if os.getenv("LM_STUDIO_BASE_URL"):
+        assert response.cost == 0.0
+    else:
+        assert response.cost > 0
     assert response.provider == "openai"
 
 

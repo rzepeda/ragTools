@@ -19,10 +19,9 @@ pytestmark = pytest.mark.slow
 class TestONNXEmbeddingsIntegration:
     """Integration tests with real ONNX models.
     
-    Note: These tests require ONNX models to be pre-converted and cached.
+    Note: These tests use Xenova ONNX models from environment configuration.
     To prepare:
-        python scripts/convert_model_to_onnx.py \\
-            --model-name sentence-transformers/all-MiniLM-L6-v2
+        python scripts/download_embedding_model.py
     """
 
     @pytest.fixture(scope="class")
@@ -34,10 +33,8 @@ class TestONNXEmbeddingsIntegration:
         try:
             from rag_factory.services.embedding.providers.onnx_local import ONNXLocalProvider
             
-            # Use default model (all-MiniLM-L6-v2)
-            provider = ONNXLocalProvider({
-                "model": "sentence-transformers/all-MiniLM-L6-v2"
-            })
+            # Use model from environment (Xenova/all-mpnet-base-v2, 768 dimensions)
+            provider = ONNXLocalProvider({})
             return provider
         except Exception as e:
             pytest.skip(f"Could not load ONNX provider: {e}")
@@ -172,8 +169,8 @@ class TestONNXEmbeddingsIntegration:
 
     def test_provider_metadata(self, embedding_provider):
         """Test provider metadata."""
-        assert embedding_provider.get_model_name() == "sentence-transformers/all-MiniLM-L6-v2"
-        assert embedding_provider.get_dimensions() == 384
+        assert embedding_provider.get_model_name() == "Xenova/all-mpnet-base-v2"
+        assert embedding_provider.get_dimensions() == 768
         assert embedding_provider.get_max_batch_size() > 0
         assert embedding_provider.calculate_cost(1000) == 0.0
 
@@ -181,8 +178,8 @@ class TestONNXEmbeddingsIntegration:
         """Test that result contains correct metadata."""
         result = embedding_provider.get_embeddings(["Test"])
 
-        assert result.model == "sentence-transformers/all-MiniLM-L6-v2"
-        assert result.dimensions == 384
+        assert result.model == "Xenova/all-mpnet-base-v2"
+        assert result.dimensions == 768
         assert result.provider == "onnx-local"
         assert result.cost == 0.0
         assert result.token_count > 0

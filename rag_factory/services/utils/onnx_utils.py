@@ -57,33 +57,105 @@ def download_onnx_model(
     filename: str = "model.onnx",
     revision: Optional[str] = None,
 ) -> Path:
-    """Download ONNX model from HuggingFace Hub.
+    """Download ONNX model from HuggingFace Hub or use local path.
+    
+    This function supports:
+    1. Local model paths (if model exists locally)
+    2. Xenova ONNX models (pre-converted, recommended)
+    3. Direct HuggingFace download (if ONNX files available)
+    4. Environment variable configuration
     
     Args:
-        model_name: HuggingFace model identifier (e.g., 'sentence-transformers/all-MiniLM-L6-v2')
-        cache_dir: Directory for model caching (default: ~/.cache/rag_factory/onnx_models)
+        model_name: HuggingFace model identifier or local path
+        cache_dir: Directory for model caching (default: from EMBEDDING_MODEL_PATH env or ~/.cache/rag_factory/onnx_models)
         filename: Name of the ONNX model file to download
         revision: Specific model revision/branch to download
         
     Returns:
-        Path to downloaded ONNX model file
+        Path to ONNX model file
         
     Raises:
         ImportError: If huggingface-hub is not installed
-        ValueError: If model cannot be downloaded
+        ValueError: If model cannot be downloaded or found
     """
+    import os
+    
     check_dependencies()
     
+    # Check for environment variable configuration
+    env_model_path = os.getenv("EMBEDDING_MODEL_PATH")
+    env_model_name = os.getenv("EMBEDDING_MODEL_NAME")
+    
+    # Use environment variable for cache_dir if not specified
     if cache_dir is None:
-        cache_dir = Path.home() / ".cache" / "rag_factory" / "onnx_models"
+        if env_model_path:
+            cache_dir = Path(env_model_path)
+        else:
+            cache_dir = Path.home() / ".cache" / "rag_factory" / "onnx_models"
     
     cache_dir = Path(cache_dir)
-    cache_dir.mkdir(parents=True, exist_ok=True)
     
+    # Use environment variable for model_name if it matches default
+    if env_model_name and model_name == "sentence-transformers/all-MiniLM-L6-v2":
+        logger.info(f"Using model from EMBEDDING_MODEL_NAME env: {env_model_name}")
+        model_name = env_model_name
+    
+    # Check if model_name is a local path
+    potential_local_path = Path(model_name)
+    if potential_local_path.exists() and potential_local_path.is_file():
+        logger.info(f"Using local ONNX model: {potential_local_path}")
+        return potential_local_path
+    
+    # Check if model exists in cache directory
+    model_dir_name = model_name.replace("/", "_")
+    local_model_dir = cache_dir / model_dir_name
+    
+    if local_model_dir.exists():
+        # Look for ONNX files in the directory (recursively, Xenova models have onnx/ subdirectory)
+        onnx_files = list(local_model_dir.rglob("*.onnx"))
+        if onnx_files:
+            # Prefer the main model.onnx if available, otherwise use first one
+            main_model = next((f for f in onnx_files if f.name == "model.onnx"), onnx_files[0])
+            logger.info(f"Using cached ONNX model: {main_model}")
+            return main_model
+    
+    # Model not found locally, try to download
+    cache_dir.mkdir(parents=True, exist_ok=True)
     logger.info(f"Downloading ONNX model: {model_name}")
     
+    # Try Xenova version first (they have pre-converted ONNX models)
+    xenova_model = None
+    if not model_name.startswith("Xenova/"):
+        # Extract model name and try Xenova version
+        base_model = model_name.split("/")[-1]
+        xenova_model = f"Xenova/{base_model}"
+        logger.info(f"Trying Xenova ONNX model: {xenova_model}")
+        
+        try:
+            from huggingface_hub import snapshot_download
+            
+            model_path = snapshot_download(
+                repo_id=xenova_model,
+                cache_dir=str(cache_dir),
+                local_dir=str(cache_dir / xenova_model.replace("/", "_")),
+                local_dir_use_symlinks=False,
+            )
+            
+            # Find ONNX file in downloaded directory (recursively)
+            model_dir = Path(model_path)
+            onnx_files = list(model_dir.rglob("*.onnx"))
+            
+            if onnx_files:
+                # Prefer the main model.onnx if available
+                main_model = next((f for f in onnx_files if f.name == "model.onnx"), onnx_files[0])
+                logger.info(f"✅ Downloaded Xenova model to: {main_model}")
+                return main_model
+                
+        except Exception as e:
+            logger.debug(f"Xenova model not available: {e}")
+    
+    # Try original model name
     try:
-        # Try to download ONNX model file
         model_file = hf_hub_download(
             repo_id=model_name,
             filename=filename,
@@ -97,14 +169,29 @@ def download_onnx_model(
         
     except Exception as e:
         logger.error(f"Failed to download ONNX model '{model_name}': {e}")
-        raise ValueError(
+        
+        # Provide helpful error message
+        error_msg = (
             f"Could not download ONNX model '{model_name}'.\n"
             f"Error: {e}\n\n"
-            f"The model may not have an ONNX version available.\n"
-            f"You can convert it using:\n"
-            f"  python scripts/convert_model_to_onnx.py --model-name {model_name}\n\n"
-            f"See documentation for model conversion guide."
+            f"💡 Solutions:\n"
         )
+        
+        if not model_name.startswith("Xenova/"):
+            error_msg += (
+                f"  1. Use pre-converted Xenova model (recommended):\n"
+                f"     Set EMBEDDING_MODEL_NAME=Xenova/{model_name.split('/')[-1]}\n\n"
+            )
+        
+        error_msg += (
+            f"  2. Download model manually:\n"
+            f"     python scripts/download_embedding_model.py --model {model_name}\n\n"
+            f"  3. Use a different model:\n"
+            f"     python scripts/download_embedding_model.py --list\n"
+        )
+        
+        raise ValueError(error_msg)
+
 
 
 def download_tokenizer_config(

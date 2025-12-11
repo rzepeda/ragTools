@@ -100,29 +100,70 @@ WITH (m = 16, ef_construction = 64)
 > [!IMPORTANT]
 > For complete environment variable reference, see [ENVIRONMENT_VARIABLES.md](file:///mnt/MCPProyects/ragTools/docs/database/ENVIRONMENT_VARIABLES.md)
 
-**Quick Reference:**
+#### Required Variables
 
+**Production/Development:**
 ```bash
-# Production/Development Database
-DATABASE_URL=postgresql://user:password@host:port/database
-
-# Test Database (use TEST_DATABASE_URL, not DATABASE_TEST_URL)
-TEST_DATABASE_URL=postgresql://user:password@host:port/test_database
-
-# Optional: Database Configuration (with DB_ prefix)
-DB_DATABASE_URL=postgresql://user:password@host:port/database
-DB_TEST_DATABASE_URL=postgresql://user:password@host:port/test_database
-DB_POOL_SIZE=10              # Connection pool size
-DB_MAX_OVERFLOW=20           # Max overflow connections
-DB_POOL_TIMEOUT=30           # Connection timeout in seconds
-DB_POOL_RECYCLE=3600         # Recycle connections after seconds
-DB_ECHO=false                # Enable SQL query logging
-DB_POOL_PRE_PING=true        # Test connections before use
-DB_VECTOR_DIMENSIONS=1536    # Embedding dimensions
+# Main database connection
+DATABASE_URL=postgresql://user:password@host:5432/database_name
 ```
 
+**Testing:**
+```bash
+# Test database connection (use TEST_DATABASE_URL, not DATABASE_TEST_URL)
+TEST_DATABASE_URL=postgresql://user:password@host:5432/test_database
+```
+
+#### Configuration Examples
+
+**Local Development:**
+```bash
+# .env file
+DATABASE_URL=postgresql://rag_user:rag_password@localhost:5432/rag_factory
+TEST_DATABASE_URL=postgresql://rag_user:rag_password@localhost:5432/rag_test
+```
+
+**VM Development (Accessing Host Services):**
+```bash
+# .env file
+HOST_IP=192.168.56.1
+DATABASE_URL=postgresql://rag_user:rag_password@${HOST_IP}:5432/rag_factory
+TEST_DATABASE_URL=postgresql://rag_user:rag_password@${HOST_IP}:5432/rag_test
+```
+
+**Docker Compose:**
+```bash
+# .env file
+DATABASE_URL=postgresql://rag_user:rag_password@postgres:5432/rag_factory
+TEST_DATABASE_URL=postgresql://rag_user:rag_password@postgres:5432/rag_test
+```
+
+**Cloud (Neon, Supabase, etc.):**
+```bash
+# .env file
+DATABASE_URL=postgresql://user:pass@ep-xxx.neon.tech/neondb?sslmode=require
+TEST_DATABASE_URL=postgresql://user:pass@ep-xxx.neon.tech/test_db?sslmode=require
+```
+
+#### Environment Variable Reference
+
+| Variable | Purpose | Required | Default | Example |
+|----------|---------|----------|---------|---------|
+| `DATABASE_URL` | Main database connection | Yes | - | `postgresql://localhost/db` |
+| `TEST_DATABASE_URL` | Test database connection | For tests | - | `postgresql://localhost/test_db` |
+| `DB_DATABASE_URL` | Alternative main connection (with prefix) | No | Uses `DATABASE_URL` | `postgresql://localhost/db` |
+| `DB_TEST_DATABASE_URL` | Alternative test connection (with prefix) | No | Uses `TEST_DATABASE_URL` | `postgresql://localhost/test_db` |
+| `DB_POOL_SIZE` | Connection pool size | No | `10` | `20` |
+| `DB_MAX_OVERFLOW` | Max overflow connections | No | `20` | `40` |
+| `DB_POOL_TIMEOUT` | Connection timeout (seconds) | No | `30` | `60` |
+| `DB_POOL_RECYCLE` | Recycle connections after (seconds) | No | `3600` | `7200` |
+| `DB_ECHO` | Enable SQL query logging | No | `false` | `true` |
+| `DB_POOL_PRE_PING` | Test connections before use | No | `true` | `false` |
+| `DB_VECTOR_DIMENSIONS` | Embedding dimensions | No | `1536` | `768` |
+| `HOST_IP` | VM host machine IP | VM only | - | `192.168.56.1` |
+
 > [!NOTE]
-> The `DatabaseConfig` class uses the `DB_` prefix for all configuration variables. Both `DATABASE_URL` and `DB_DATABASE_URL` are supported.
+> The `DatabaseConfig` class uses the `DB_` prefix for all configuration variables. Both `DATABASE_URL` and `DB_DATABASE_URL` are supported for backward compatibility.
 
 ### Pydantic Configuration
 
@@ -249,51 +290,82 @@ with DatabaseConnection() as db:
 # Connections automatically closed
 ```
 
-## Database Setup
+## Quick Start
 
-### Local PostgreSQL Setup
+### 1. Install PostgreSQL with pgvector
 
+#### Option A: Docker (Recommended)
 ```bash
-# 1. Run setup script
-./scripts/setup_database.sh
-
-# 2. Run migrations
-export DATABASE_URL="postgresql://postgres@localhost/rag_factory_dev"
-alembic upgrade head
-
-# 3. Verify
-python -c "from rag_factory.database import DatabaseConnection; \
-           db = DatabaseConnection(); \
-           print('Health check:', db.health_check())"
+docker run -d \
+  --name rag-postgres \
+  -e POSTGRES_USER=rag_user \
+  -e POSTGRES_PASSWORD=rag_password \
+  -e POSTGRES_DB=rag_factory \
+  -p 5432:5432 \
+  ankane/pgvector
 ```
 
-### Using Neon (Managed PostgreSQL)
+#### Option B: Local Installation
+```bash
+# Ubuntu/Debian
+sudo apt-get install postgresql-15 postgresql-15-pgvector
+
+# macOS
+brew install postgresql@15 pgvector
+```
+
+### 2. Configure Environment
+
+Create `.env` file in project root:
+```bash
+DATABASE_URL=postgresql://rag_user:rag_password@localhost:5432/rag_factory
+TEST_DATABASE_URL=postgresql://rag_user:rag_password@localhost:5432/rag_test
+```
+
+### 3. Run Migrations
 
 ```bash
-# 1. Create Neon project at https://neon.tech
-# 2. Enable pgvector extension in project settings
-# 3. Get connection string from dashboard
-# 4. Run migrations
-export DATABASE_URL="postgresql://user:pass@ep-xxx.neon.tech/neondb?sslmode=require"
+# Upgrade to latest schema
 alembic upgrade head
 ```
+
+### 4. Verify Setup
+
+```bash
+# Test connection
+python -c "from rag_factory.database.connection import DatabaseConnection; db = DatabaseConnection(); print('✓ Connection successful' if db.health_check() else '✗ Connection failed')"
+
+# Check migration status
+alembic current
+
+# Run database tests
+pytest tests/unit/database/ -v
+```
+
+### Troubleshooting
+
+**Issue: Connection refused**
+- Verify PostgreSQL is running: `pg_isready`
+- Check DATABASE_URL matches your PostgreSQL configuration
+- Ensure PostgreSQL is listening on the correct port
+
+**Issue: pgvector extension not found**
+- Install pgvector extension: `sudo apt-get install postgresql-15-pgvector`
+- Enable in database: `psql -d rag_factory -c "CREATE EXTENSION vector"`
+
+**Issue: Alembic can't find migrations**
+- Ensure you're in the project root directory
+- Verify `alembic.ini` exists
+- Check `migrations/` directory exists
 
 ## Migrations
 
-### Creating a New Migration
-
-```bash
-# Auto-generate migration from model changes
-alembic revision --autogenerate -m "description of changes"
-
-# Create empty migration
-alembic revision -m "manual migration"
-```
+The project uses [Alembic](https://alembic.sqlalchemy.org/) for database schema migrations.
 
 ### Running Migrations
 
 ```bash
-# Upgrade to latest
+# Upgrade to latest version
 alembic upgrade head
 
 # Upgrade one version
@@ -306,8 +378,60 @@ alembic downgrade -1
 alembic current
 
 # Show migration history
-alembic history
+alembic history --verbose
 ```
+
+### Creating Migrations
+
+```bash
+# Auto-generate migration from model changes
+alembic revision --autogenerate -m "add user table"
+
+# Create empty migration for manual changes
+alembic revision -m "add custom index"
+```
+
+### Migration Best Practices
+
+1. **Review Auto-Generated Migrations**
+   - Always review migrations before applying
+   - Auto-generation may miss some changes (indexes, constraints, custom types)
+   - Add custom logic as needed
+   - Verify both `upgrade()` and `downgrade()` functions
+
+2. **Test Migrations**
+   ```bash
+   # Test upgrade
+   alembic upgrade head
+   
+   # Test downgrade
+   alembic downgrade -1
+   
+   # Test upgrade again
+   alembic upgrade head
+   ```
+
+3. **Use Transactions**
+   - Migrations run in transactions by default
+   - Failed migrations automatically rollback
+   - Use `op.execute()` for raw SQL
+   - For non-transactional operations (e.g., CREATE INDEX CONCURRENTLY), use:
+     ```python
+     def upgrade():
+         op.execute("COMMIT")  # End transaction
+         op.execute("CREATE INDEX CONCURRENTLY ...")
+     ```
+
+4. **Handle Data Migrations**
+   - Separate schema and data migrations when possible
+   - Use `op.bulk_insert()` for data
+   - Consider using `op.execute()` for complex data transformations
+   - Test with production-like data volumes
+
+5. **Version Control**
+   - Commit migrations with the code changes that require them
+   - Never modify existing migrations that have been deployed
+   - Use descriptive migration messages
 
 ### Rollback
 
@@ -317,30 +441,204 @@ alembic downgrade <revision_id>
 
 # Rollback all migrations
 alembic downgrade base
+
+# Rollback to previous version
+alembic downgrade -1
 ```
+
+### Troubleshooting
+
+**Issue: "Target database is not up to date"**
+```bash
+# Check current version
+alembic current
+
+# Stamp database to specific version (if you know the current state)
+alembic stamp head
+
+# Or stamp to a specific revision
+alembic stamp <revision_id>
+```
+
+**Issue: "Can't locate revision identified by 'xxx'"**
+```bash
+# This usually means the alembic_version table is out of sync
+# Option 1: Reset to base and reapply
+alembic downgrade base
+alembic upgrade head
+
+# Option 2: Manually fix the alembic_version table
+psql $DATABASE_URL -c "UPDATE alembic_version SET version_num='<correct_revision>';"
+```
+
+**Issue: "Multiple head revisions are present"**
+```bash
+# Show all heads
+alembic heads
+
+# Merge the heads
+alembic merge -m "merge heads" <revision1> <revision2>
+```
+
+**Issue: Migration fails partway through**
+```bash
+# Check what state the database is in
+alembic current
+
+# If transaction rolled back, you can retry
+alembic upgrade head
+
+# If migration partially applied (non-transactional operations):
+# 1. Manually fix the database state
+# 2. Stamp to the target revision
+alembic stamp <target_revision>
+```
+
+See [Alembic Documentation](https://alembic.sqlalchemy.org/) for more details.
 
 ## Testing
 
-### Unit Tests
+### Test Database Setup
+
+#### 1. Set Environment Variable
 
 ```bash
-# Run all database unit tests
-pytest tests/unit/database/ -v
-
-# Run specific test file
-pytest tests/unit/database/test_models.py -v
+# In .env or export
+export TEST_DATABASE_URL="postgresql://rag_user:rag_password@localhost:5432/rag_test"
 ```
+
+#### 2. Create Test Database
+
+```bash
+# Using setup script
+python tests/setup_test_db.py
+
+# Or manually
+createdb rag_test
+psql rag_test -c "CREATE EXTENSION IF NOT EXISTS vector"
+```
+
+#### 3. Run Migrations
+
+```bash
+# Set Alembic to use test database
+alembic -x test=true upgrade head
+
+# Or use TEST_DATABASE_URL
+DATABASE_URL=$TEST_DATABASE_URL alembic upgrade head
+```
+
+### Running Tests
+
+```bash
+# All database tests
+pytest tests/unit/database/ tests/integration/database/ -v
+
+# Specific test file
+pytest tests/unit/database/test_models.py -v
+
+# With coverage
+pytest tests/unit/database/ --cov=rag_factory.database --cov-report=html
+```
+
+### Test Fixtures
+
+The project provides several pytest fixtures for database testing (defined in `tests/conftest.py`):
+
+#### `db_connection` - Sync Database Session
+
+Provides a synchronous database session with Alembic-managed schema. The database is set up once per test session and cleaned between tests.
+
+```python
+def test_create_document(db_connection):
+    """Test creating a document."""
+    from rag_factory.database.models import Document
+    
+    doc = Document(
+        filename="test.txt",
+        source_path="/path/to/test.txt",
+        content_hash="abc123"
+    )
+    
+    db_connection.add(doc)
+    db_connection.commit()
+    
+    # Verify
+    result = db_connection.query(Document).filter_by(filename="test.txt").first()
+    assert result is not None
+    assert result.content_hash == "abc123"
+```
+
+#### `db_service` - Async Database Service
+
+Provides an async database service for testing async operations. Useful for integration tests that need to test the full service layer.
+
+```python
+import pytest
+
+@pytest.mark.asyncio
+async def test_store_chunks(db_service):
+    """Test storing chunks with embeddings."""
+    chunks = [
+        {
+            "id": "chunk-1",
+            "text": "test content",
+            "embedding": [0.1, 0.2, 0.3] * 512  # 1536 dimensions
+        }
+    ]
+    
+    await db_service.store_chunks(chunks)
+    
+    # Search for similar chunks
+    results = await db_service.search_chunks([0.1, 0.2, 0.3] * 512, top_k=1)
+    assert len(results) == 1
+    assert results[0]["text"] == "test content"
+```
+
+#### `clean_database` - Empty Database
+
+Provides a guaranteed empty database session. Useful when you need to test with a known clean state.
+
+```python
+def test_with_clean_db(clean_database):
+    """Test with guaranteed empty database."""
+    from rag_factory.database.models import Document
+    
+    # Database is empty
+    count = clean_database.query(Document).count()
+    assert count == 0
+    
+    # Add test data
+    doc = Document(filename="test.txt", source_path="/path", content_hash="abc")
+    clean_database.add(doc)
+    clean_database.commit()
+    
+    # Verify
+    assert clean_database.query(Document).count() == 1
+```
+
+See [tests/README.md](../../tests/README.md) for complete fixture documentation.
 
 ### Integration Tests
 
+Integration tests require a real PostgreSQL database with pgvector extension:
+
 ```bash
-# Requires PostgreSQL running
-export TEST_DATABASE_URL="postgresql://postgres@localhost/rag_factory_test"
-./scripts/test_database.sh
+# Set test database URL
+export TEST_DATABASE_URL="postgresql://rag_user:rag_password@localhost:5432/rag_test"
 
 # Run integration tests
 pytest tests/integration/database/ -v -m integration
+
+# Run specific integration test
+pytest tests/integration/database/test_pgvector_integration.py -v
 ```
+
+**Requirements for integration tests:**
+- PostgreSQL 12+ with pgvector extension
+- Test database created and accessible
+- `TEST_DATABASE_URL` environment variable set
+- Alembic migrations applied to test database
 
 ## Performance Optimization
 
@@ -449,8 +747,25 @@ LIMIT 10;
 
 ## References
 
-- [pgvector Documentation](https://github.com/pgvector/pgvector)
-- [SQLAlchemy Documentation](https://docs.sqlalchemy.org/)
-- [Alembic Documentation](https://alembic.sqlalchemy.org/)
-- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
-- [Neon Documentation](https://neon.tech/docs)
+### Project Documentation
+
+- [Epic 16: Database Migration System Consolidation](../epics/epic-16-database-consolidation.md) - Migration system consolidation rationale and plan
+- [Environment Variables Guide](ENVIRONMENT_VARIABLES.md) - Complete environment variable reference
+- [Migration Manager Removal Guide](MIGRATION_MANAGER_REMOVAL.md) - Guide for migrating from custom MigrationManager
+- [Test Documentation](../../tests/README.md) - Complete testing guide and fixture documentation
+- [Migration Audit](MIGRATION_AUDIT.md) - Detailed audit of migration systems
+- [Consolidation Plan](CONSOLIDATION_PLAN.md) - Step-by-step consolidation plan
+
+### Related Epics
+
+- [Epic 2: Database & Storage Infrastructure](../epics/epic-02-database-storage.md) - Initial database implementation
+- [Epic 11: Dependency Injection](../epics/epic-11-dependency-injection.md) - Service architecture
+- [Epic 15: Test Coverage Improvements](../epics/epic-15-test-coverage-improvements) - Testing strategy
+
+### External Documentation
+
+- [Alembic Documentation](https://alembic.sqlalchemy.org/) - Database migration tool
+- [SQLAlchemy Documentation](https://docs.sqlalchemy.org/) - Python SQL toolkit and ORM
+- [pgvector Documentation](https://github.com/pgvector/pgvector) - Vector similarity search for PostgreSQL
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/) - PostgreSQL database
+- [Neon Documentation](https://neon.tech/docs) - Serverless PostgreSQL platform

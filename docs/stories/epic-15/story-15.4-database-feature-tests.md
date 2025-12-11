@@ -221,46 +221,68 @@ class TestVectorIndexing:
 ```python
 """Unit tests for database migrations."""
 import pytest
-from rag_factory.database.migrations import MigrationManager
+from alembic import command
+from alembic.config import Config
+from alembic.script import ScriptDirectory
 
 class TestDatabaseMigrations:
-    """Test suite for migration system."""
+    """Test suite for Alembic migration system."""
     
-    def test_migration_execution_order(self, db_service):
+    def test_migration_execution_order(self, test_db_url):
         """Test that migrations execute in correct order."""
-        manager = MigrationManager(db_service)
+        # Configure Alembic
+        alembic_cfg = Config("alembic.ini")
+        alembic_cfg.set_main_option("sqlalchemy.url", test_db_url)
         
-        # Create test migrations
-        migrations = [
-            "001_initial_schema.sql",
-            "002_add_vectors.sql",
-            "003_add_indexes.sql"
-        ]
+        # Get migration script directory
+        script = ScriptDirectory.from_config(alembic_cfg)
         
-        executed = manager.run_migrations()
+        # Verify migrations exist and are ordered
+        revisions = list(script.walk_revisions())
+        assert len(revisions) > 0, "No migrations found"
         
-        # Verify order
-        assert executed == migrations
+        # Run migrations to head
+        command.upgrade(alembic_cfg, "head")
         
-        # Verify version tracking
-        current_version = manager.get_current_version()
-        assert current_version == "003"
+        # Verify current version
+        from alembic.runtime.migration import MigrationContext
+        from sqlalchemy import create_engine
+        
+        engine = create_engine(test_db_url)
+        with engine.connect() as conn:
+            context = MigrationContext.configure(conn)
+            current_version = context.get_current_revision()
+            assert current_version is not None, "No migration version set"
     
-    def test_migration_idempotency(self, db_service):
+    def test_migration_idempotency(self, test_db_url):
         """Test that running migrations twice doesn't cause errors."""
-        manager = MigrationManager(db_service)
+        alembic_cfg = Config("alembic.ini")
+        alembic_cfg.set_main_option("sqlalchemy.url", test_db_url)
         
         # Run migrations
-        manager.run_migrations()
-        version_1 = manager.get_current_version()
+        command.upgrade(alembic_cfg, "head")
         
-        # Run again
-        manager.run_migrations()
-        version_2 = manager.get_current_version()
+        # Get version
+        from alembic.runtime.migration import MigrationContext
+        from sqlalchemy import create_engine
+        
+        engine = create_engine(test_db_url)
+        with engine.connect() as conn:
+            context = MigrationContext.configure(conn)
+            version_1 = context.get_current_revision()
+        
+        # Run again (should be no-op)
+        command.upgrade(alembic_cfg, "head")
+        
+        # Get version again
+        with engine.connect() as conn:
+            context = MigrationContext.configure(conn)
+            version_2 = context.get_current_revision()
         
         # Should be same version, no errors
         assert version_1 == version_2
 ```
+
 
 ### Testing Strategy
 

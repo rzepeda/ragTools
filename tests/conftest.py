@@ -3,6 +3,10 @@ import importlib.util
 from unittest.mock import MagicMock
 import pytest
 
+# Load environment variables from .env file
+from dotenv import load_dotenv
+load_dotenv()  # This ensures .env is loaded before any tests run
+
 # Mock numpy and other dependencies GLOBALLY before any test collection
 try:
     import numpy

@@ -76,8 +76,8 @@ class ONNXLocalProvider(IEmbeddingProvider):
 
         Args:
             config: Configuration dictionary with:
-                - model: Model name (default: sentence-transformers/all-MiniLM-L6-v2)
-                - model_path: Path to local ONNX model (optional)
+                - model: Model name (default: from EMBEDDING_MODEL_NAME env or Xenova/all-mpnet-base-v2)
+                - model_path: Path to local ONNX model (optional, from EMBEDDING_MODEL_PATH env)
                 - max_batch_size: Maximum batch size (default: 32)
                 - cache_dir: Directory for model cache (optional)
                 - num_threads: Number of CPU threads (optional)
@@ -86,6 +86,8 @@ class ONNXLocalProvider(IEmbeddingProvider):
         Raises:
             ImportError: If required packages not installed
         """
+        import os
+        
         if not ONNX_AVAILABLE:
             raise ImportError(
                 "ONNX Runtime not installed. Install with:\n"
@@ -99,12 +101,16 @@ class ONNXLocalProvider(IEmbeddingProvider):
                 "  pip install huggingface-hub>=0.20.0"
             )
 
-        self.model_name = config.get(
-            "model", "sentence-transformers/all-MiniLM-L6-v2"
-        )
+        # Get model name from config or environment variable
+        # Default to Xenova model (has pre-converted ONNX files)
+        default_model = os.getenv("EMBEDDING_MODEL_NAME", "Xenova/all-mpnet-base-v2")
+        self.model_name = config.get("model", default_model)
+        
         self.max_batch_size = config.get("max_batch_size", 32)
         self.max_length = config.get("max_length", 512)
-        cache_dir = config.get("cache_dir", None)
+        
+        # Get cache directory from config or environment
+        cache_dir = config.get("cache_dir") or os.getenv("EMBEDDING_MODEL_PATH")
         num_threads = config.get("num_threads", None)
         model_path = config.get("model_path", None)
 
@@ -149,8 +155,31 @@ class ONNXLocalProvider(IEmbeddingProvider):
                     f"Could not determine embedding dimension for {self.model_name}"
                 )
 
-        # Initialize tokenizer using new utilities
-        self.tokenizer = Tokenizer(encoding_name="cl100k_base", use_fallback=True)
+        # Initialize tokenizer from model directory
+        # Use lightweight tokenizers library (no PyTorch dependency)
+        # The model_path points to onnx/model.onnx, so we need to go up to the model root
+        if "onnx" in str(self.model_path):
+            # Model is in onnx/ subdirectory, go up two levels
+            model_dir = self.model_path.parent.parent
+        else:
+            model_dir = self.model_path.parent
+            
+        self.hf_tokenizer = None
+        
+        try:
+            from tokenizers import Tokenizer as HFTokenizer
+            # Look for tokenizer.json in model directory
+            tokenizer_path = model_dir / "tokenizer.json"
+            if tokenizer_path.exists():
+                self.hf_tokenizer = HFTokenizer.from_file(str(tokenizer_path))
+                logger.info(f"Loaded tokenizer from {tokenizer_path}")
+            else:
+                logger.warning(f"No tokenizer.json found in {model_dir}")
+                raise FileNotFoundError("tokenizer.json not found")
+        except Exception as e:
+            logger.warning(f"Could not load tokenizer: {e}")
+            logger.warning("Falling back to basic tokenizer (may not work correctly)")
+            self.tokenizer = Tokenizer(encoding_name="cl100k_base", use_fallback=True)
 
         logger.info(
             f"Loaded ONNX model {self.model_name} with {self._dimensions} dimensions"
@@ -229,29 +258,57 @@ class ONNXLocalProvider(IEmbeddingProvider):
         Returns:
             Tuple of (input_ids, attention_mask) as numpy arrays
         """
-        input_ids = []
-        attention_mask = []
+        if self.hf_tokenizer is not None:
+            # Use tokenizers library (lightweight, no PyTorch)
+            input_ids = []
+            attention_mask = []
+            
+            for text in texts:
+                # Encode with the tokenizer
+                encoding = self.hf_tokenizer.encode(text)
+                tokens = encoding.ids
+                
+                # Truncate if needed
+                if len(tokens) > self.max_length:
+                    tokens = tokens[:self.max_length]
+                
+                # Pad to max_length
+                padding_length = self.max_length - len(tokens)
+                padded_tokens = tokens + [0] * padding_length
+                mask = [1] * len(tokens) + [0] * padding_length
+                
+                input_ids.append(padded_tokens)
+                attention_mask.append(mask)
+            
+            return (
+                np.array(input_ids, dtype=np.int64),
+                np.array(attention_mask, dtype=np.int64)
+            )
+        else:
+            # Fallback to basic tokenizer (may not work correctly)
+            input_ids = []
+            attention_mask = []
 
-        for text in texts:
-            # Encode text using our tokenizer
-            tokens = self.tokenizer.encode(text)
-            
-            # Truncate if needed
-            if len(tokens) > self.max_length:
-                tokens = tokens[:self.max_length]
-            
-            # Pad to max_length
-            padding_length = self.max_length - len(tokens)
-            padded_tokens = tokens + [0] * padding_length
-            mask = [1] * len(tokens) + [0] * padding_length
-            
-            input_ids.append(padded_tokens)
-            attention_mask.append(mask)
+            for text in texts:
+                # Encode text using our tokenizer
+                tokens = self.tokenizer.encode(text)
+                
+                # Truncate if needed
+                if len(tokens) > self.max_length:
+                    tokens = tokens[:self.max_length]
+                
+                # Pad to max_length
+                padding_length = self.max_length - len(tokens)
+                padded_tokens = tokens + [0] * padding_length
+                mask = [1] * len(tokens) + [0] * padding_length
+                
+                input_ids.append(padded_tokens)
+                attention_mask.append(mask)
 
-        return (
-            np.array(input_ids, dtype=np.int64),
-            np.array(attention_mask, dtype=np.int64)
-        )
+            return (
+                np.array(input_ids, dtype=np.int64),
+                np.array(attention_mask, dtype=np.int64)
+            )
 
     def get_dimensions(self) -> int:
         """Get embedding dimensions for the current model.
