@@ -69,7 +69,7 @@ load_module("rag_factory.cli.main", "/mnt/MCPProyects/ragTools/rag_factory/cli/m
 import os
 import asyncio
 from typing import Generator, AsyncGenerator
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine, event, text
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.pool import StaticPool
 from urllib.parse import urlparse
@@ -135,6 +135,12 @@ def db_engine(test_db_url: str):
     yield engine
     
     # Drop all tables and dispose engine
+    # Use CASCADE to handle dependent views created by migrations
+    with engine.connect() as conn:
+        # Drop views first if they exist
+        conn.execute(text("DROP VIEW IF EXISTS chunk_hierarchy_validation CASCADE"))
+        conn.commit()
+    
     Base.metadata.drop_all(engine)
     engine.dispose()
 

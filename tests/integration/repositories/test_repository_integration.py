@@ -158,7 +158,9 @@ class TestChunkRepositoryIntegration:
     def document(self, db_session):
         """Create a test document."""
         doc_repo = DocumentRepository(db_session)
-        doc = doc_repo.create("test.txt", "/path/test.txt", "hash123")
+        # Use unique hash to avoid conflicts between tests
+        unique_hash = f"hash_{uuid4()}"
+        doc = doc_repo.create("test.txt", "/path/test.txt", unique_hash)
         doc_repo.commit()
         return doc
 
@@ -193,7 +195,11 @@ class TestChunkRepositoryIntegration:
 
         # Verify update
         retrieved = repo.get_by_id(chunk.chunk_id)
-        assert retrieved.embedding == new_embedding
+        # Compare embeddings safely (handle both list and array types)
+        if isinstance(retrieved.embedding, np.ndarray):
+            assert np.allclose(retrieved.embedding, np.array(new_embedding))
+        else:
+            assert retrieved.embedding == new_embedding
 
         # Delete chunk
         result = repo.delete(chunk.chunk_id)
@@ -296,8 +302,9 @@ class TestVectorSearchIntegration:
         doc_repo = DocumentRepository(db_session)
         chunk_repo = ChunkRepository(db_session)
 
-        # Create document
-        doc = doc_repo.create("test.txt", "/path/test.txt", "hash123")
+        # Create document with unique hash
+        unique_hash = f"hash_{uuid4()}"
+        doc = doc_repo.create("test.txt", "/path/test.txt", unique_hash)
         doc_repo.commit()
 
         # Create base embedding
@@ -388,8 +395,14 @@ class TestVectorSearchIntegration:
         for chunk, score in results:
             assert chunk.document_id == doc1.document_id
 
-    def test_vector_search_with_metadata_filter(self, db_session, document):
+    def test_vector_search_with_metadata_filter(self, db_session):
         """Test vector search with metadata filtering."""
+        # Create document for this test
+        doc_repo = DocumentRepository(db_session)
+        unique_hash = f"hash_{uuid4()}"
+        document = doc_repo.create("test.txt", "/path/test.txt", unique_hash)
+        doc_repo.commit()
+        
         chunk_repo = ChunkRepository(db_session)
         embedding = np.random.rand(1536).tolist()
 
@@ -418,8 +431,14 @@ class TestVectorSearchIntegration:
         for chunk, score in results:
             assert chunk.metadata_["category"] == "science"
 
-    def test_vector_search_identical_embedding(self, db_session, document):
+    def test_vector_search_identical_embedding(self, db_session):
         """Test searching for identical embedding returns ~1.0 similarity."""
+        # Create document for this test
+        doc_repo = DocumentRepository(db_session)
+        unique_hash = f"hash_{uuid4()}"
+        document = doc_repo.create("test.txt", "/path/test.txt", unique_hash)
+        doc_repo.commit()
+        
         chunk_repo = ChunkRepository(db_session)
         embedding = np.random.rand(1536).tolist()
 
