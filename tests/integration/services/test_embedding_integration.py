@@ -8,6 +8,9 @@ import pytest
 import os
 from rag_factory.services.embedding import EmbeddingService, EmbeddingServiceConfig
 
+# Get embedding model from environment or use ONNX-compatible default
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL_NAME", "Xenova/all-mpnet-base-v2")
+
 
 @pytest.mark.integration
 @pytest.mark.skipif(
@@ -83,7 +86,7 @@ def test_local_embedding_provider():
     try:
         config = EmbeddingServiceConfig(
             provider="onnx-local",
-            model="sentence-transformers/all-MiniLM-L6-v2",
+            model=EMBEDDING_MODEL,
             enable_cache=True
         )
 
@@ -95,7 +98,7 @@ def test_local_embedding_provider():
         assert len(result.embeddings) == 2
         assert result.provider == "onnx-local"
         assert result.cost == 0.0  # Local models have no cost
-        assert len(result.embeddings[0]) == 384  # all-MiniLM-L6-v2 dimensions
+        assert len(result.embeddings[0]) == 768  # all-mpnet-base-v2 dimensions
 
     except ImportError:
         pytest.skip("ONNX dependencies not installed (optimum[onnxruntime], transformers)")
@@ -107,7 +110,7 @@ def test_large_batch_processing():
     try:
         config = EmbeddingServiceConfig(
             provider="onnx-local",
-            model="sentence-transformers/all-MiniLM-L6-v2"
+            model=EMBEDDING_MODEL
         )
 
         service = EmbeddingService(config)
@@ -138,7 +141,7 @@ def test_concurrent_embedding_requests():
 
         config = EmbeddingServiceConfig(
             provider="onnx-local",
-            model="sentence-transformers/all-MiniLM-L6-v2",
+            model=EMBEDDING_MODEL,
             enable_cache=True
         )
 
@@ -168,7 +171,7 @@ def test_cache_persistence_across_batches():
     try:
         config = EmbeddingServiceConfig(
             provider="onnx-local",
-            model="sentence-transformers/all-MiniLM-L6-v2",
+            model=EMBEDDING_MODEL,
             enable_cache=True
         )
 
@@ -202,7 +205,7 @@ def test_error_handling():
     try:
         config = EmbeddingServiceConfig(
             provider="onnx-local",
-            model="sentence-transformers/all-MiniLM-L6-v2"
+            model=EMBEDDING_MODEL
         )
 
         service = EmbeddingService(config)
@@ -221,7 +224,7 @@ def test_onnx_provider_compatibility():
     try:
         config = EmbeddingServiceConfig(
             provider="onnx-local",
-            model="sentence-transformers/all-MiniLM-L6-v2",
+            model=EMBEDDING_MODEL,
             enable_cache=False
         )
 
@@ -241,7 +244,7 @@ def test_onnx_provider_compatibility():
 
         # Verify metadata
         assert result1.provider == "onnx-local"
-        assert result1.dimensions == 384
+        assert result1.dimensions == 768
         assert result1.cost == 0.0
 
     except ImportError:

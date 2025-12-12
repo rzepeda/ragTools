@@ -2,6 +2,7 @@
 Unit tests for document embedder with ONNX.
 """
 
+import os
 import pytest
 import numpy as np
 from unittest.mock import Mock, patch, MagicMock
@@ -9,14 +10,16 @@ from unittest.mock import Mock, patch, MagicMock
 from rag_factory.strategies.late_chunking.document_embedder import DocumentEmbedder
 from rag_factory.strategies.late_chunking.models import LateChunkingConfig
 
+# Get embedding model from environment or use ONNX-compatible default
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL_NAME", "Xenova/all-mpnet-base-v2")
+
 
 @pytest.fixture
 def embedder_config():
     """Create test configuration for embedder."""
     return LateChunkingConfig(
-        model_name="sentence-transformers/all-MiniLM-L6-v2",
-        max_document_tokens=512,
-        encoding="cl100k_base"
+        model_name=EMBEDDING_MODEL,
+        max_document_tokens=512
     )
 
 

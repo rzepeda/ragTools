@@ -1,0 +1,1 @@
+tests/integration/services/test_embedding_integration.py

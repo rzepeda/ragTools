@@ -2,10 +2,14 @@
 Performance benchmarks for late chunking strategy.
 """
 
+import os
 import pytest
 import time
 
 from rag_factory.strategies.late_chunking.strategy import LateChunkingRAGStrategy
+
+# Get embedding model from environment or use ONNX-compatible default
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL_NAME", "Xenova/all-mpnet-base-v2")
 
 
 class MockVectorStore:
@@ -38,7 +42,7 @@ def benchmark_vector_store():
 def test_document_embedding_speed(benchmark_vector_store):
     """Benchmark document embedding speed."""
     config = {
-        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_name": EMBEDDING_MODEL,
         "device": "cpu"
     }
 
@@ -59,7 +63,7 @@ def test_document_embedding_speed(benchmark_vector_store):
 def test_embedding_chunking_speed(benchmark_vector_store):
     """Benchmark embedding chunking speed."""
     config = {
-        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_name": EMBEDDING_MODEL,
         "chunking_method": "fixed_size",
         "device": "cpu"
     }
@@ -84,7 +88,7 @@ def test_embedding_chunking_speed(benchmark_vector_store):
 def test_semantic_boundary_speed(benchmark_vector_store):
     """Benchmark semantic boundary detection speed."""
     config = {
-        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_name": EMBEDDING_MODEL,
         "chunking_method": "semantic_boundary",
         "similarity_threshold": 0.7,
         "device": "cpu"
@@ -108,7 +112,7 @@ def test_semantic_boundary_speed(benchmark_vector_store):
 def test_end_to_end_latency(benchmark_vector_store):
     """Benchmark end-to-end late chunking latency."""
     config = {
-        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_name": EMBEDDING_MODEL,
         "compute_coherence_scores": False,  # Disable for performance test
         "device": "cpu"
     }
@@ -130,13 +134,13 @@ def test_end_to_end_latency(benchmark_vector_store):
 def test_coherence_analysis_overhead(benchmark_vector_store):
     """Benchmark coherence analysis overhead."""
     config_without = {
-        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_name": EMBEDDING_MODEL,
         "compute_coherence_scores": False,
         "device": "cpu"
     }
 
     config_with = {
-        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_name": EMBEDDING_MODEL,
         "compute_coherence_scores": True,
         "device": "cpu"
     }
@@ -166,7 +170,7 @@ def test_coherence_analysis_overhead(benchmark_vector_store):
 def test_batch_processing_speed(benchmark_vector_store):
     """Benchmark batch processing of documents."""
     config = {
-        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_name": EMBEDDING_MODEL,
         "device": "cpu"
     }
 
@@ -191,7 +195,7 @@ def test_batch_processing_speed(benchmark_vector_store):
 def test_adaptive_chunking_speed(benchmark_vector_store):
     """Benchmark adaptive chunking speed."""
     config = {
-        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_name": EMBEDDING_MODEL,
         "chunking_method": "adaptive",
         "min_chunk_size": 20,
         "max_chunk_size": 100,
@@ -218,7 +222,7 @@ def test_memory_efficiency(benchmark_vector_store):
     import sys
 
     config = {
-        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_name": EMBEDDING_MODEL,
         "device": "cpu"
     }
 

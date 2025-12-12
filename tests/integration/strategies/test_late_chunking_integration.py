@@ -2,10 +2,14 @@
 Integration tests for late chunking strategy.
 """
 
+import os
 import pytest
 
 from rag_factory.strategies.late_chunking.strategy import LateChunkingRAGStrategy
 from rag_factory.strategies.late_chunking.models import EmbeddingChunkingMethod
+
+# Get embedding model from environment or use ONNX-compatible default
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL_NAME", "Xenova/all-mpnet-base-v2")
 
 
 class MockVectorStore:
@@ -47,11 +51,11 @@ def test_vector_store():
 def test_late_chunking_workflow(test_vector_store):
     """Test complete late chunking workflow."""
     config = {
-        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_name": EMBEDDING_MODEL,
         "chunking_method": EmbeddingChunkingMethod.SEMANTIC_BOUNDARY.value,
         "target_chunk_size": 128,
         "compute_coherence_scores": True,
-        "encoding": "cl100k_base"
+
     }
 
     strategy = LateChunkingRAGStrategy(
@@ -92,12 +96,12 @@ def test_late_chunking_workflow(test_vector_store):
 def test_fixed_size_chunking_integration(test_vector_store):
     """Test integration with fixed-size chunking."""
     config = {
-        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_name": EMBEDDING_MODEL,
         "chunking_method": "fixed_size",
         "target_chunk_size": 50,
         "chunk_overlap_tokens": 10,
         "compute_coherence_scores": False,
-        "encoding": "cl100k_base"
+
     }
 
     strategy = LateChunkingRAGStrategy(test_vector_store, config)
@@ -113,11 +117,11 @@ def test_fixed_size_chunking_integration(test_vector_store):
 def test_adaptive_chunking_integration(test_vector_store):
     """Test integration with adaptive chunking."""
     config = {
-        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_name": EMBEDDING_MODEL,
         "chunking_method": "adaptive",
         "min_chunk_size": 20,
         "max_chunk_size": 100,
-        "encoding": "cl100k_base"
+
     }
 
     strategy = LateChunkingRAGStrategy(test_vector_store, config)
@@ -141,9 +145,9 @@ def test_adaptive_chunking_integration(test_vector_store):
 def test_multiple_documents(test_vector_store):
     """Test indexing multiple documents."""
     config = {
-        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_name": EMBEDDING_MODEL,
         "chunking_method": "semantic_boundary",
-        "encoding": "cl100k_base"
+
     }
 
     strategy = LateChunkingRAGStrategy(test_vector_store, config)
@@ -171,8 +175,8 @@ def test_multiple_documents(test_vector_store):
 def test_strategy_properties(test_vector_store):
     """Test strategy name and description."""
     config = {
-        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
-        "encoding": "cl100k_base"
+        "model_name": EMBEDDING_MODEL,
+
     }
 
     strategy = LateChunkingRAGStrategy(test_vector_store, config)
@@ -186,10 +190,10 @@ def test_strategy_properties(test_vector_store):
 def test_coherence_scores_computed(test_vector_store):
     """Test that coherence scores are computed when enabled."""
     config = {
-        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_name": EMBEDDING_MODEL,
         "chunking_method": "semantic_boundary",
         "compute_coherence_scores": True,
-        "encoding": "cl100k_base"
+
     }
 
     strategy = LateChunkingRAGStrategy(test_vector_store, config)
@@ -208,8 +212,8 @@ def test_coherence_scores_computed(test_vector_store):
 def test_short_document(test_vector_store):
     """Test handling of very short documents."""
     config = {
-        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
-        "encoding": "cl100k_base"
+        "model_name": EMBEDDING_MODEL,
+
     }
 
     strategy = LateChunkingRAGStrategy(test_vector_store, config)
@@ -226,8 +230,8 @@ def test_short_document(test_vector_store):
 def test_chunk_embeddings_valid(test_vector_store):
     """Test that chunk embeddings are valid vectors."""
     config = {
-        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
-        "encoding": "cl100k_base"
+        "model_name": EMBEDDING_MODEL,
+
     }
 
     strategy = LateChunkingRAGStrategy(test_vector_store, config)
@@ -249,8 +253,8 @@ def test_embedding_quality(test_vector_store):
     import numpy as np
     
     config = {
-        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
-        "encoding": "cl100k_base"
+        "model_name": EMBEDDING_MODEL,
+
     }
 
     strategy = LateChunkingRAGStrategy(test_vector_store, config)

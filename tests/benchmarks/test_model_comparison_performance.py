@@ -1,8 +1,30 @@
-"""Performance benchmarks for model comparison."""
+"""Performance benchmarks for model comparison.
 
+NOTE: These tests require sentence-transformers library as they test the CustomModelLoader
+which is specifically designed for fine-tuned sentence-transformer models.
+For ONNX-only testing, see test_late_chunking_performance.py
+"""
+
+import os
 import pytest
 import time
 from rag_factory.models.embedding import CustomModelLoader, ModelConfig, ModelFormat
+
+# Get embedding model from environment or use ONNX-compatible default
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL_NAME", "Xenova/all-mpnet-base-v2")
+
+# Check if sentence-transformers is available
+try:
+    import sentence_transformers
+    SENTENCE_TRANSFORMERS_AVAILABLE = True
+except ImportError:
+    SENTENCE_TRANSFORMERS_AVAILABLE = False
+
+# Skip all tests in this module if sentence-transformers is not available
+pytestmark = pytest.mark.skipif(
+    not SENTENCE_TRANSFORMERS_AVAILABLE,
+    reason="sentence-transformers required for CustomModelLoader tests"
+)
 
 
 @pytest.mark.benchmark
@@ -14,8 +36,8 @@ def test_model_loading_speed():
     loader = CustomModelLoader()
 
     config = ModelConfig(
-        model_path="sentence-transformers/all-MiniLM-L6-v2",
-        model_format=ModelFormat.SENTENCE_TRANSFORMERS,
+        model_path=EMBEDDING_MODEL,
+        model_format=ModelFormat.ONNX,
         device="cpu"
     )
 
@@ -36,8 +58,8 @@ def test_model_loading_cached():
     loader = CustomModelLoader()
 
     config = ModelConfig(
-        model_path="sentence-transformers/all-MiniLM-L6-v2",
-        model_format=ModelFormat.SENTENCE_TRANSFORMERS,
+        model_path=EMBEDDING_MODEL,
+        model_format=ModelFormat.ONNX,
         device="cpu"
     )
 
@@ -62,8 +84,8 @@ def test_inference_speed():
     loader = CustomModelLoader()
 
     config = ModelConfig(
-        model_path="sentence-transformers/all-MiniLM-L6-v2",
-        model_format=ModelFormat.SENTENCE_TRANSFORMERS,
+        model_path=EMBEDDING_MODEL,
+        model_format=ModelFormat.ONNX,
         device="cpu",
         batch_size=32
     )
@@ -101,8 +123,8 @@ def test_batch_size_comparison():
 
     for batch_size in batch_sizes:
         config = ModelConfig(
-            model_path="sentence-transformers/all-MiniLM-L6-v2",
-            model_format=ModelFormat.SENTENCE_TRANSFORMERS,
+            model_path=EMBEDDING_MODEL,
+            model_format=ModelFormat.ONNX,
             device="cpu",
             batch_size=batch_size
         )
@@ -129,8 +151,8 @@ def test_embedding_quality():
     loader = CustomModelLoader()
 
     config = ModelConfig(
-        model_path="sentence-transformers/all-MiniLM-L6-v2",
-        model_format=ModelFormat.SENTENCE_TRANSFORMERS,
+        model_path=EMBEDDING_MODEL,
+        model_format=ModelFormat.ONNX,
         device="cpu",
         normalize_embeddings=True
     )
@@ -171,8 +193,8 @@ def test_memory_efficiency():
     loader = CustomModelLoader()
 
     config = ModelConfig(
-        model_path="sentence-transformers/all-MiniLM-L6-v2",
-        model_format=ModelFormat.SENTENCE_TRANSFORMERS,
+        model_path=EMBEDDING_MODEL,
+        model_format=ModelFormat.ONNX,
         device="cpu"
     )
 

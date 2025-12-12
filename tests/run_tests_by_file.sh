@@ -2,12 +2,15 @@
 # Script to run tests by file instead of individually
 # This is much faster than running each test separately
 
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 TIMEOUT=300  # 5 minutes per file (increased for files with many tests)
-RESULTS_FILE="test_results_by_file.txt"
-SUMMARY_FILE="test_summary_by_file.txt"
-FAILED_FILE="failed_test_files.txt"
-SKIPPED_FILE="skipped_test_files.txt"
-TIMEOUT_FILE="timeout_test_files.txt"
+RESULTS_FILE="$SCRIPT_DIR/test_results_by_file.txt"
+SUMMARY_FILE="$SCRIPT_DIR/test_summary_by_file.txt"
+FAILED_FILE="$SCRIPT_DIR/failed_test_files.txt"
+SKIPPED_FILE="$SCRIPT_DIR/skipped_test_files.txt"
+TIMEOUT_FILE="$SCRIPT_DIR/timeout_test_files.txt"
 
 # Initialize counters
 TOTAL_FILES=0
@@ -30,6 +33,8 @@ echo "==========================================================================
 echo "Test Runner - By File"
 echo "================================================================================"
 echo ""
+echo "Results will be saved to: $SCRIPT_DIR"
+echo ""
 
 # Activate virtual environment
 cd /mnt/MCPProyects/ragTools
@@ -45,8 +50,8 @@ fi
 
 # Get list of all test files
 echo "Collecting test files..."
-find tests -name "test_*.py" -type f | sort > test_files_list.txt
-TOTAL_FILES=$(wc -l < test_files_list.txt)
+find tests -name "test_*.py" -type f | sort > "$SCRIPT_DIR/test_files_list.txt"
+TOTAL_FILES=$(wc -l < "$SCRIPT_DIR/test_files_list.txt")
 echo "Found $TOTAL_FILES test files"
 echo ""
 
@@ -59,13 +64,13 @@ while IFS= read -r test_file; do
     echo "[$INDEX/$TOTAL_FILES] Running: $test_file"
     
     # Run test file with timeout
-    timeout $TIMEOUT pytest "$test_file" -v --tb=short 2>&1 > test_output.tmp
+    timeout $TIMEOUT pytest "$test_file" -v --tb=short 2>&1 > "$SCRIPT_DIR/test_output.tmp"
     EXIT_CODE=$?
     
     # Count tests in this file
-    FILE_PASSED=$(grep -c "PASSED" test_output.tmp 2>/dev/null | tr -d '\n' || echo "0")
-    FILE_FAILED=$(grep -c "FAILED" test_output.tmp 2>/dev/null | tr -d '\n' || echo "0")
-    FILE_SKIPPED=$(grep -c "SKIPPED" test_output.tmp 2>/dev/null | tr -d '\n' || echo "0")
+    FILE_PASSED=$(grep -c "PASSED" "$SCRIPT_DIR/test_output.tmp" 2>/dev/null | tr -d '\n' || echo "0")
+    FILE_FAILED=$(grep -c "FAILED" "$SCRIPT_DIR/test_output.tmp" 2>/dev/null | tr -d '\n' || echo "0")
+    FILE_SKIPPED=$(grep -c "SKIPPED" "$SCRIPT_DIR/test_output.tmp" 2>/dev/null | tr -d '\n' || echo "0")
     
     # Ensure we have valid numbers (remove any whitespace)
     FILE_PASSED=$(echo "$FILE_PASSED" | tr -d ' \n\r')
@@ -126,11 +131,11 @@ while IFS= read -r test_file; do
     # Save detailed output for failed/timeout files
     if [ "$STATUS" = "FAILED" ] || [ "$STATUS" = "SOME_FAILED" ] || [ "$STATUS" = "TIMEOUT" ]; then
         echo "----------------------------------------" >> "$RESULTS_FILE"
-        cat test_output.tmp >> "$RESULTS_FILE"
+        cat "$SCRIPT_DIR/test_output.tmp" >> "$RESULTS_FILE"
         echo "" >> "$RESULTS_FILE"
     fi
     
-done < test_files_list.txt
+done < "$SCRIPT_DIR/test_files_list.txt"
 
 END_TIME=$(date +%s)
 DURATION=$((END_TIME - START_TIME))
@@ -138,7 +143,7 @@ MINUTES=$((DURATION / 60))
 SECONDS=$((DURATION % 60))
 
 # Clean up
-rm -f test_output.tmp test_files_list.txt
+rm -f "$SCRIPT_DIR/test_output.tmp" "$SCRIPT_DIR/test_files_list.txt"
 
 # Calculate percentages safely
 if [ $TOTAL_FILES -gt 0 ]; then
