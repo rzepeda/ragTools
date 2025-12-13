@@ -1,50 +1,18 @@
 """Integration tests for query expansion."""
 
 import pytest
-import os
 from rag_factory.strategies.query_expansion import (
     QueryExpanderService,
     ExpansionConfig,
     ExpansionStrategy
 )
-from rag_factory.services.llm.service import LLMService
-from rag_factory.services.llm.config import LLMServiceConfig
-
-
-# Skip if no API keys available
-pytestmark = pytest.mark.skipif(
-    not os.getenv("OPENAI_API_KEY") and not os.getenv("ANTHROPIC_API_KEY"),
-    reason="No LLM API keys available"
-)
-
-
-@pytest.fixture
-def llm_service():
-    """Create LLM service for testing."""
-    # Try OpenAI first, fall back to Anthropic
-    if os.getenv("OPENAI_API_KEY"):
-        config = LLMServiceConfig(
-            provider="openai",
-            model="gpt-3.5-turbo",
-            provider_config={"api_key": os.getenv("OPENAI_API_KEY")}
-        )
-    elif os.getenv("ANTHROPIC_API_KEY"):
-        config = LLMServiceConfig(
-            provider="anthropic",
-            model="claude-3-haiku-20240307",
-            provider_config={"api_key": os.getenv("ANTHROPIC_API_KEY")}
-        )
-    else:
-        pytest.skip("No API keys available")
-
-    return LLMService(config)
 
 
 @pytest.mark.integration
 class TestQueryExpansionIntegration:
     """Integration tests for query expansion with real LLM."""
 
-    def test_keyword_expansion_real_llm(self, llm_service):
+    def test_keyword_expansion_real_llm(self, llm_service_from_env):
         """Test keyword expansion with real LLM."""
         expansion_config = ExpansionConfig(
             strategy=ExpansionStrategy.KEYWORD,
@@ -52,7 +20,7 @@ class TestQueryExpansionIntegration:
             enable_cache=True
         )
 
-        service = QueryExpanderService(expansion_config, llm_service)
+        service = QueryExpanderService(expansion_config, llm_service_from_env)
 
         result = service.expand("machine learning")
 
@@ -65,14 +33,14 @@ class TestQueryExpansionIntegration:
         print(f"Expanded: {result.primary_expansion.expanded_query}")
         print(f"Added terms: {result.primary_expansion.added_terms}")
 
-    def test_query_reformulation(self, llm_service):
+    def test_query_reformulation(self, llm_service_from_env):
         """Test query reformulation strategy."""
         expansion_config = ExpansionConfig(
             strategy=ExpansionStrategy.REFORMULATION,
             enable_cache=True
         )
 
-        service = QueryExpanderService(expansion_config, llm_service)
+        service = QueryExpanderService(expansion_config, llm_service_from_env)
 
         vague_query = "how does it work"
         result = service.expand(vague_query)
@@ -84,14 +52,14 @@ class TestQueryExpansionIntegration:
         print(f"\nOriginal: {result.original_query}")
         print(f"Reformulated: {result.primary_expansion.expanded_query}")
 
-    def test_question_generation(self, llm_service):
+    def test_question_generation(self, llm_service_from_env):
         """Test question generation strategy."""
         expansion_config = ExpansionConfig(
             strategy=ExpansionStrategy.QUESTION_GENERATION,
             enable_cache=True
         )
 
-        service = QueryExpanderService(expansion_config, llm_service)
+        service = QueryExpanderService(expansion_config, llm_service_from_env)
 
         result = service.expand("python tutorial")
 
@@ -108,7 +76,7 @@ class TestQueryExpansionIntegration:
         print(f"\nOriginal: {result.original_query}")
         print(f"Question: {result.primary_expansion.expanded_query}")
 
-    def test_hyde_expansion(self, llm_service):
+    def test_hyde_expansion(self, llm_service_from_env):
         """Test HyDE (Hypothetical Document Expansion)."""
         expansion_config = ExpansionConfig(
             strategy=ExpansionStrategy.HYDE,
@@ -116,7 +84,7 @@ class TestQueryExpansionIntegration:
             enable_cache=True
         )
 
-        service = QueryExpanderService(expansion_config, llm_service)
+        service = QueryExpanderService(expansion_config, llm_service_from_env)
 
         query = "What is the capital of France?"
         result = service.expand(query)
@@ -128,7 +96,7 @@ class TestQueryExpansionIntegration:
         print(f"\nQuery: {result.original_query}")
         print(f"Hypothetical document: {result.primary_expansion.expanded_query}")
 
-    def test_multi_query_generation(self, llm_service):
+    def test_multi_query_generation(self, llm_service_from_env):
         """Test generating multiple query variants."""
         expansion_config = ExpansionConfig(
             strategy=ExpansionStrategy.MULTI_QUERY,
@@ -137,7 +105,7 @@ class TestQueryExpansionIntegration:
             enable_cache=True
         )
 
-        service = QueryExpanderService(expansion_config, llm_service)
+        service = QueryExpanderService(expansion_config, llm_service_from_env)
 
         result = service.expand("climate change effects")
 
@@ -149,14 +117,14 @@ class TestQueryExpansionIntegration:
         for i, variant in enumerate(result.expanded_queries, 1):
             print(f"  {i}. {variant.expanded_query}")
 
-    def test_expansion_performance(self, llm_service):
+    def test_expansion_performance(self, llm_service_from_env):
         """Test expansion performance meets requirements."""
         expansion_config = ExpansionConfig(
             strategy=ExpansionStrategy.KEYWORD,
             enable_cache=True
         )
 
-        service = QueryExpanderService(expansion_config, llm_service)
+        service = QueryExpanderService(expansion_config, llm_service_from_env)
 
         result = service.expand("artificial intelligence")
 
@@ -166,14 +134,14 @@ class TestQueryExpansionIntegration:
         assert result.execution_time_ms < 1000, \
             f"Expansion took {result.execution_time_ms}ms (expected <1000ms)"
 
-    def test_cache_functionality(self, llm_service):
+    def test_cache_functionality(self, llm_service_from_env):
         """Test that caching works correctly."""
         expansion_config = ExpansionConfig(
             strategy=ExpansionStrategy.KEYWORD,
             enable_cache=True
         )
 
-        service = QueryExpanderService(expansion_config, llm_service)
+        service = QueryExpanderService(expansion_config, llm_service_from_env)
 
         query = "neural networks"
 
@@ -195,7 +163,7 @@ class TestQueryExpansionIntegration:
         print(f"\nFirst call: {time1:.0f}ms (cache miss)")
         print(f"Second call: {time2:.0f}ms (cache hit)")
 
-    def test_ab_testing_functionality(self, llm_service):
+    def test_ab_testing_functionality(self, llm_service_from_env):
         """Test A/B testing capability."""
         expansion_config = ExpansionConfig(
             strategy=ExpansionStrategy.KEYWORD,
@@ -203,7 +171,7 @@ class TestQueryExpansionIntegration:
             enable_cache=False  # Disable cache for this test
         )
 
-        service = QueryExpanderService(expansion_config, llm_service)
+        service = QueryExpanderService(expansion_config, llm_service_from_env)
 
         query = "neural networks"
 
@@ -226,7 +194,7 @@ class TestQueryExpansionIntegration:
         print(f"\nExpanded: {result_expanded.primary_expansion.expanded_query}")
         print(f"Original: {result_original.primary_expansion.expanded_query}")
 
-    def test_domain_context(self, llm_service):
+    def test_domain_context(self, llm_service_from_env):
         """Test expansion with domain context."""
         expansion_config = ExpansionConfig(
             strategy=ExpansionStrategy.KEYWORD,
@@ -234,7 +202,7 @@ class TestQueryExpansionIntegration:
             enable_cache=True
         )
 
-        service = QueryExpanderService(expansion_config, llm_service)
+        service = QueryExpanderService(expansion_config, llm_service_from_env)
 
         result = service.expand("diagnosis")
 
@@ -244,14 +212,14 @@ class TestQueryExpansionIntegration:
         print(f"\nOriginal: {result.original_query}")
         print(f"Expanded (medical context): {result.primary_expansion.expanded_query}")
 
-    def test_error_handling_fallback(self, llm_service):
+    def test_error_handling_fallback(self, llm_service_from_env):
         """Test that service handles errors gracefully."""
         expansion_config = ExpansionConfig(
             strategy=ExpansionStrategy.KEYWORD,
             enable_cache=False
         )
 
-        service = QueryExpanderService(expansion_config, llm_service)
+        service = QueryExpanderService(expansion_config, llm_service_from_env)
 
         # Force an error by using invalid query (empty after validation)
         # Actually, let's test with a normal query but break the service
@@ -268,7 +236,7 @@ class TestQueryExpansionIntegration:
         # Restore the expander
         service.expander = original_expander
 
-    def test_stats_tracking(self, llm_service):
+    def test_stats_tracking(self, llm_service_from_env):
         """Test that statistics are tracked correctly."""
         expansion_config = ExpansionConfig(
             strategy=ExpansionStrategy.KEYWORD,
@@ -276,7 +244,7 @@ class TestQueryExpansionIntegration:
             enable_cache=True
         )
 
-        service = QueryExpanderService(expansion_config, llm_service)
+        service = QueryExpanderService(expansion_config, llm_service_from_env)
 
         # Perform several expansions
         service.expand("query 1")

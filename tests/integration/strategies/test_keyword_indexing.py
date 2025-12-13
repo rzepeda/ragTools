@@ -21,7 +21,7 @@ def strategy_dependencies(mock_database_service):
         embedding_service=Mock(), # Not used but required by StrategyDependencies
         llm_service=Mock(),
         graph_service=Mock(),
-        reranking_service=Mock()
+        reranker_service=Mock()
     )
 
 @pytest.fixture

@@ -60,6 +60,10 @@ class LLMQueryExpander(IQueryExpander):
         )
 
         expanded_query = response.content.strip()
+        
+        # Strip surrounding quotes if present (some models wrap responses in quotes)
+        if expanded_query.startswith('"') and expanded_query.endswith('"'):
+            expanded_query = expanded_query[1:-1].strip()
 
         # Extract added terms
         added_terms = self.extract_added_terms(query, expanded_query)

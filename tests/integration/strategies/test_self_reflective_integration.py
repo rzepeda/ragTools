@@ -1,7 +1,6 @@
 """Integration tests for self-reflective RAG strategy."""
 
 import pytest
-import os
 from unittest.mock import Mock
 from rag_factory.strategies.self_reflective import SelfReflectiveRAGStrategy
 
@@ -133,21 +132,12 @@ Reasoning: Good match
 
 
 @pytest.mark.integration
-@pytest.mark.skipif(not os.getenv("ANTHROPIC_API_KEY"), reason="API key not set")
-class TestSelfReflectiveRealLLM:
-    """Integration tests with real LLM (optional, requires API key)."""
+class TestSelfReflectiveWithLMStudio:
+    """Integration tests with real LM Studio (uses .env configuration)."""
 
-    def test_with_real_llm(self):
-        """Test with real LLM service (requires API key)."""
-        from rag_factory.services.llm import LLMService
-        from rag_factory.services.llm.config import LLMServiceConfig
-
-        # Setup LLM
-        llm_config = LLMServiceConfig(
-            provider="anthropic",
-            model="claude-3-haiku-20240307"
-        )
-        llm_service = LLMService(llm_config)
+    def test_with_real_llm(self, llm_service_from_env):
+        """Test with real LLM service from environment (LM Studio)."""
+        from unittest.mock import Mock
 
         # Mock base strategy
         base_strategy = Mock()
@@ -158,7 +148,7 @@ class TestSelfReflectiveRealLLM:
         # Create self-reflective strategy
         strategy = SelfReflectiveRAGStrategy(
             base_retrieval_strategy=base_strategy,
-            llm_service=llm_service,
+            llm_service=llm_service_from_env,
             config={"grade_threshold": 4.0, "max_retries": 1}
         )
 

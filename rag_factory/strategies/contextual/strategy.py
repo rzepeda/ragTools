@@ -241,6 +241,23 @@ class ContextualRetrievalStrategy(IRAGStrategy):
         
         return results
 
+    async def aretrieve(self, query: str, top_k: int = 5, **kwargs) -> List[Dict[str, Any]]:
+        """
+        Retrieve chunks using contextualized embeddings (async version).
+        
+        Args:
+            query: User query
+            top_k: Number of results to return
+            **kwargs: Additional parameters
+            
+        Returns:
+            List of results (with original text by default)
+        """
+        # For now, just call the sync version
+        # TODO: Implement true async retrieval when vector_store supports it
+        return self.retrieve(query, top_k, **kwargs)
+
+
     @property
     def name(self) -> str:
         """Strategy name."""

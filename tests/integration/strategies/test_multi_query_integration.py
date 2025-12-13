@@ -1,13 +1,14 @@
 """Integration tests for Multi-Query RAG Strategy."""
 
 import pytest
-import os
 from unittest.mock import Mock, AsyncMock
 from rag_factory.strategies.multi_query import (
     MultiQueryRAGStrategy,
     MultiQueryConfig,
     RankingStrategy
 )
+from rag_factory.services.dependencies import StrategyDependencies
+
 
 
 @pytest.mark.integration
@@ -56,7 +57,23 @@ Define machine learning concepts"""
         service.agenerate = mock_generate
         return service
 
-    def test_multi_query_complete_workflow(self, mock_vector_store, mock_llm_service):
+    @pytest.fixture
+    def mock_embedding_service(self):
+        """Create a mock embedding service."""
+        service = Mock()
+        # Mock embed method returns dummy embeddings
+        service.embed = Mock(return_value=[[0.0] * 768])
+        return service
+
+    @pytest.fixture
+    def mock_database_service(self):
+        """Create a mock database service."""
+        service = Mock()
+        service.store_chunk = Mock()
+        service.get_chunks = Mock(return_value=[])
+        return service
+
+    def test_multi_query_complete_workflow(self, mock_vector_store, mock_llm_service, mock_embedding_service, mock_database_service):
         """Test complete multi-query retrieval workflow."""
         # Create strategy
         config = MultiQueryConfig(
@@ -65,9 +82,12 @@ Define machine learning concepts"""
             final_top_k=5
         )
         strategy = MultiQueryRAGStrategy(
-            vector_store_service=mock_vector_store,
-            llm_service=mock_llm_service,
-            config=config
+            config=config,
+            dependencies=StrategyDependencies(
+                llm_service=mock_llm_service,
+                embedding_service=mock_embedding_service,
+                database_service=mock_database_service
+            )
         )
 
         # Retrieve with multi-query
@@ -84,7 +104,7 @@ Define machine learning concepts"""
         assert scores == sorted(scores, reverse=True)
 
     @pytest.mark.asyncio
-    async def test_multi_query_async_workflow(self, mock_vector_store, mock_llm_service):
+    async def test_multi_query_async_workflow(self, mock_vector_store, mock_llm_service, mock_embedding_service, mock_database_service):
         """Test async multi-query retrieval workflow."""
         config = MultiQueryConfig(
             num_variants=3,
@@ -92,9 +112,12 @@ Define machine learning concepts"""
             final_top_k=5
         )
         strategy = MultiQueryRAGStrategy(
-            vector_store_service=mock_vector_store,
-            llm_service=mock_llm_service,
-            config=config
+            config=config,
+            dependencies=StrategyDependencies(
+                llm_service=mock_llm_service,
+                embedding_service=mock_embedding_service,
+                database_service=mock_database_service
+            )
         )
 
         # Async retrieve
@@ -105,13 +128,16 @@ Define machine learning concepts"""
         assert all("frequency" in r for r in results)
         assert all("frequency_boost_factor" in r for r in results)
 
-    def test_variant_diversity(self, mock_vector_store, mock_llm_service):
+    def test_variant_diversity(self, mock_vector_store, mock_llm_service, mock_embedding_service, mock_database_service):
         """Test that generated variants are diverse."""
         config = MultiQueryConfig(num_variants=4, log_variants=True)
         strategy = MultiQueryRAGStrategy(
-            vector_store_service=mock_vector_store,
-            llm_service=mock_llm_service,
-            config=config
+            config=config,
+            dependencies=StrategyDependencies(
+                llm_service=mock_llm_service,
+                embedding_service=mock_embedding_service,
+                database_service=mock_database_service
+            )
         )
 
         # Retrieve
@@ -123,7 +149,7 @@ Define machine learning concepts"""
         assert len(results) > 0
 
     @pytest.mark.asyncio
-    async def test_performance_requirements(self, mock_vector_store, mock_llm_service):
+    async def test_performance_requirements(self, mock_vector_store, mock_llm_service, mock_embedding_service, mock_database_service):
         """Test that multi-query retrieval completes within timeout."""
         import time
 
@@ -133,9 +159,12 @@ Define machine learning concepts"""
             variant_generation_timeout=5.0
         )
         strategy = MultiQueryRAGStrategy(
-            vector_store_service=mock_vector_store,
-            llm_service=mock_llm_service,
-            config=config
+            config=config,
+            dependencies=StrategyDependencies(
+                llm_service=mock_llm_service,
+                embedding_service=mock_embedding_service,
+                database_service=mock_database_service
+            )
         )
 
         start = time.time()
@@ -156,9 +185,11 @@ Define machine learning concepts"""
 
         config = MultiQueryConfig(fallback_to_original=True, final_top_k=3)
         strategy = MultiQueryRAGStrategy(
-            vector_store_service=mock_vector_store,
-            llm_service=llm_service,
-            config=config
+            config=config,
+            dependencies=StrategyDependencies(
+                llm_service=llm_service,
+                vector_store_service=mock_vector_store
+            )
         )
 
         # Should fall back to original query
@@ -167,7 +198,7 @@ Define machine learning concepts"""
         # Should still get results from fallback
         assert len(results) > 0
 
-    def test_ranking_strategy_comparison(self, mock_vector_store, mock_llm_service):
+    def test_ranking_strategy_comparison(self, mock_vector_store, mock_llm_service, mock_embedding_service, mock_database_service):
         """Test different ranking strategies produce different results."""
         query = "What is machine learning?"
 
@@ -205,7 +236,7 @@ Define machine learning concepts"""
         assert results_max[0]["ranking_method"] == "max_score"
         assert results_freq[0]["ranking_method"] == "frequency_boost"
 
-    def test_deduplication_across_variants(self, mock_vector_store, mock_llm_service):
+    def test_deduplication_across_variants(self, mock_vector_store, mock_llm_service, mock_embedding_service, mock_database_service):
         """Test that duplicate results are properly deduplicated."""
         config = MultiQueryConfig(
             num_variants=3,
@@ -213,9 +244,12 @@ Define machine learning concepts"""
             final_top_k=10
         )
         strategy = MultiQueryRAGStrategy(
-            vector_store_service=mock_vector_store,
-            llm_service=mock_llm_service,
-            config=config
+            config=config,
+            dependencies=StrategyDependencies(
+                llm_service=mock_llm_service,
+                embedding_service=mock_embedding_service,
+                database_service=mock_database_service
+            )
         )
 
         results = strategy.retrieve("machine learning")
@@ -229,7 +263,7 @@ Define machine learning concepts"""
             assert "frequency" in result
             assert result["frequency"] >= 1
 
-    def test_strategy_properties(self, mock_vector_store, mock_llm_service):
+    def test_strategy_properties(self, mock_vector_store, mock_llm_service, mock_embedding_service, mock_database_service):
         """Test strategy name and description properties."""
         strategy = MultiQueryRAGStrategy(
             vector_store_service=mock_vector_store,
@@ -241,21 +275,12 @@ Define machine learning concepts"""
 
 
 @pytest.mark.integration
-@pytest.mark.skipif(not os.getenv("ANTHROPIC_API_KEY"), reason="API key not set")
-class TestMultiQueryRealLLM:
-    """Integration tests with real LLM (optional, requires API key)."""
+class TestMultiQueryWithLMStudio:
+    """Integration tests with real LM Studio (uses .env configuration)."""
 
-    def test_with_real_llm(self):
-        """Test with real LLM service (requires API key)."""
-        from rag_factory.services.llm import LLMService
-        from rag_factory.services.llm.config import LLMServiceConfig
-
-        # Setup LLM
-        llm_config = LLMServiceConfig(
-            provider="anthropic",
-            model="claude-3-haiku-20240307"
-        )
-        llm_service = LLMService(llm_config)
+    def test_with_real_llm(self, llm_service_from_env):
+        """Test with real LLM service from environment (LM Studio)."""
+        from unittest.mock import Mock
 
         # Mock vector store
         vector_store = Mock()
@@ -271,9 +296,10 @@ class TestMultiQueryRealLLM:
         # Create strategy
         config = MultiQueryConfig(num_variants=3, final_top_k=5)
         strategy = MultiQueryRAGStrategy(
-            vector_store_service=vector_store,
-            llm_service=llm_service,
-            config=config
+            config=config,
+            dependencies=StrategyDependencies(
+                llm_service=llm_service_from_env
+            )
         )
 
         # Test retrieval

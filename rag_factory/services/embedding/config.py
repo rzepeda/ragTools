@@ -38,7 +38,7 @@ class EmbeddingServiceConfig:
             self.provider_config = self._get_default_provider_config()
 
         # Validate provider
-        valid_providers = ["openai", "cohere", "local"]
+        valid_providers = ["openai", "cohere", "local", "onnx-local"]
         if self.provider not in valid_providers:
             raise ValueError(
                 f"Invalid provider: {self.provider}. "

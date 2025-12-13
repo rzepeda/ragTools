@@ -290,44 +290,37 @@ class ChunkRepository(BaseRepository[Chunk]):
             raise InvalidQueryError("top_k must be at least 1")
 
         try:
-            # Convert embedding to pgvector format
+            # Convert embedding to pgvector format string
             embedding_str = "[" + ",".join(map(str, embedding)) + "]"
 
             # Query with cosine distance
             # <=> is pgvector's cosine distance operator
-            query = text("""
+            # Note: We use string formatting for the vector literal to avoid parameter binding issues
+            query = text(f"""
                 SELECT chunk_id, document_id, chunk_index, text, embedding,
                        metadata, created_at, updated_at,
-                       1 - (embedding <=> :embedding::vector) as similarity
+                       1 - (embedding <=> '{embedding_str}'::vector) as similarity
                 FROM chunks
                 WHERE embedding IS NOT NULL
-                  AND 1 - (embedding <=> :embedding::vector) >= :threshold
-                ORDER BY embedding <=> :embedding::vector
+                  AND 1 - (embedding <=> '{embedding_str}'::vector) >= :threshold
+                ORDER BY embedding <=> '{embedding_str}'::vector
                 LIMIT :top_k
             """)
 
             results = self.session.execute(
                 query,
-                {"embedding": embedding_str, "threshold": threshold, "top_k": top_k}
+                {"threshold": threshold, "top_k": top_k}
             ).fetchall()
 
-            # Convert to Chunk objects with similarity scores
+            # Query chunks by ID to get proper ORM objects
             chunks_with_scores = []
             for row in results:
-                chunk = Chunk(
-                    chunk_id=row[0],
-                    document_id=row[1],
-                    chunk_index=row[2],
-                    text=row[3],
-                    embedding=row[4],
-                    metadata_=row[5],
-                    created_at=row[6],
-                    updated_at=row[7]
-                )
-                # Merge the chunk into the session to track it
-                chunk = self.session.merge(chunk)
+                chunk_id = row[0]
                 similarity = float(row[8])
-                chunks_with_scores.append((chunk, similarity))
+                # Query the chunk properly to avoid merge issues
+                chunk = self.session.query(Chunk).filter(Chunk.chunk_id == chunk_id).first()
+                if chunk:
+                    chunks_with_scores.append((chunk, similarity))
 
             return chunks_with_scores
 
@@ -373,35 +366,29 @@ class ChunkRepository(BaseRepository[Chunk]):
             query = text(f"""
                 SELECT chunk_id, document_id, chunk_index, text, embedding,
                        metadata, created_at, updated_at,
-                       1 - (embedding <=> :embedding::vector) as similarity
+                       1 - (embedding <=> '{embedding_str}'::vector) as similarity
                 FROM chunks
                 WHERE embedding IS NOT NULL
                   AND document_id IN ({doc_ids_str})
-                  AND 1 - (embedding <=> :embedding::vector) >= :threshold
-                ORDER BY embedding <=> :embedding::vector
+                  AND 1 - (embedding <=> '{embedding_str}'::vector) >= :threshold
+                ORDER BY embedding <=> '{embedding_str}'::vector
                 LIMIT :top_k
             """)
 
             results = self.session.execute(
                 query,
-                {"embedding": embedding_str, "threshold": threshold, "top_k": top_k}
+                {"threshold": threshold, "top_k": top_k}
             ).fetchall()
 
+            # Query chunks by ID to get proper ORM objects
             chunks_with_scores = []
             for row in results:
-                chunk = Chunk(
-                    chunk_id=row[0],
-                    document_id=row[1],
-                    chunk_index=row[2],
-                    text=row[3],
-                    embedding=row[4],
-                    metadata_=row[5],
-                    created_at=row[6],
-                    updated_at=row[7]
-                )
-                chunk = self.session.merge(chunk)
+                chunk_id = row[0]
                 similarity = float(row[8])
-                chunks_with_scores.append((chunk, similarity))
+                # Query the chunk properly to avoid merge issues
+                chunk = self.session.query(Chunk).filter(Chunk.chunk_id == chunk_id).first()
+                if chunk:
+                    chunks_with_scores.append((chunk, similarity))
 
             return chunks_with_scores
 
@@ -457,35 +444,29 @@ class ChunkRepository(BaseRepository[Chunk]):
             query = text(f"""
                 SELECT chunk_id, document_id, chunk_index, text, embedding,
                        metadata, created_at, updated_at,
-                       1 - (embedding <=> :embedding::vector) as similarity
+                       1 - (embedding <=> '{embedding_str}'::vector) as similarity
                 FROM chunks
                 WHERE embedding IS NOT NULL
                   AND {where_clause}
-                  AND 1 - (embedding <=> :embedding::vector) >= :threshold
-                ORDER BY embedding <=> :embedding::vector
+                  AND 1 - (embedding <=> '{embedding_str}'::vector) >= :threshold
+                ORDER BY embedding <=> '{embedding_str}'::vector
                 LIMIT :top_k
             """)
 
             results = self.session.execute(
                 query,
-                {"embedding": embedding_str, "threshold": threshold, "top_k": top_k}
+                {"threshold": threshold, "top_k": top_k}
             ).fetchall()
 
+            # Query chunks by ID to get proper ORM objects
             chunks_with_scores = []
             for row in results:
-                chunk = Chunk(
-                    chunk_id=row[0],
-                    document_id=row[1],
-                    chunk_index=row[2],
-                    text=row[3],
-                    embedding=row[4],
-                    metadata_=row[5],
-                    created_at=row[6],
-                    updated_at=row[7]
-                )
-                chunk = self.session.merge(chunk)
+                chunk_id = row[0]
                 similarity = float(row[8])
-                chunks_with_scores.append((chunk, similarity))
+                # Query the chunk properly to avoid merge issues
+                chunk = self.session.query(Chunk).filter(Chunk.chunk_id == chunk_id).first()
+                if chunk:
+                    chunks_with_scores.append((chunk, similarity))
 
             return chunks_with_scores
 

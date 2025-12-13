@@ -76,18 +76,24 @@ async def test_contextual_retrieval_complete_workflow(
     mock_embedding_service
 ):
     """Test complete contextual retrieval workflow."""
+    # Import StrategyDependencies
+    from rag_factory.services.dependencies import StrategyDependencies
+    
     # Setup strategy
     config = ContextualRetrievalConfig(
         enable_contextualization=True,
         batch_size=10
     )
     
-    strategy = ContextualRetrievalStrategy(
-        vector_store_service=mock_vector_store,
+    dependencies = StrategyDependencies(
         database_service=mock_database,
         llm_service=mock_llm_service,
-        embedding_service=mock_embedding_service,
-        config=config
+        embedding_service=mock_embedding_service
+    )
+    
+    strategy = ContextualRetrievalStrategy(
+        config=config.dict(),
+        dependencies=dependencies
     )
     
     # Prepare document chunks
@@ -137,14 +143,19 @@ async def test_cost_tracking_accuracy(
     mock_embedding_service
 ):
     """Test accuracy of cost tracking."""
+    from rag_factory.services.dependencies import StrategyDependencies
+    
     config = ContextualRetrievalConfig(enable_cost_tracking=True)
     
-    strategy = ContextualRetrievalStrategy(
-        vector_store_service=mock_vector_store,
+    dependencies = StrategyDependencies(
         database_service=mock_database,
         llm_service=mock_llm_service,
-        embedding_service=mock_embedding_service,
-        config=config
+        embedding_service=mock_embedding_service
+    )
+    
+    strategy = ContextualRetrievalStrategy(
+        config=config.dict(),
+        dependencies=dependencies
     )
     
     chunks = [
@@ -172,15 +183,23 @@ async def test_retrieval_with_different_formats(
     mock_embedding_service
 ):
     """Test retrieval with different return formats."""
+    from rag_factory.services.dependencies import StrategyDependencies
+    
     # Test with original text
     config_original = ContextualRetrievalConfig(
         return_original_text=True,
         return_context=False
     )
     
+    dependencies = StrategyDependencies(
+        database_service=mock_database,
+        llm_service=mock_llm_service,
+        embedding_service=mock_embedding_service
+    )
+    
     strategy = ContextualRetrievalStrategy(
-        mock_vector_store, mock_database, mock_llm_service,
-        mock_embedding_service, config_original
+        config=config_original.dict(),
+        dependencies=dependencies
     )
     
     chunks = [{"chunk_id": f"c{i}", "text": f"Text {i}", "metadata": {}} for i in range(5)]
@@ -200,6 +219,8 @@ async def test_error_recovery(
     mock_embedding_service
 ):
     """Test error recovery with fallback."""
+    from rag_factory.services.dependencies import StrategyDependencies
+    
     # Make LLM fail for some chunks
     call_count = 0
     
@@ -219,9 +240,15 @@ async def test_error_recovery(
         batch_size=5
     )
     
+    dependencies = StrategyDependencies(
+        database_service=mock_database,
+        llm_service=mock_llm_service,
+        embedding_service=mock_embedding_service
+    )
+    
     strategy = ContextualRetrievalStrategy(
-        mock_vector_store, mock_database, mock_llm_service,
-        mock_embedding_service, config
+        config=config.dict(),
+        dependencies=dependencies
     )
     
     chunks = [{"chunk_id": f"c{i}", "text": f"Text {i}", "metadata": {}} for i in range(10)]
@@ -242,11 +269,19 @@ def test_synchronous_indexing(
     mock_embedding_service
 ):
     """Test synchronous indexing wrapper."""
+    from rag_factory.services.dependencies import StrategyDependencies
+    
     config = ContextualRetrievalConfig(batch_size=5)
     
+    dependencies = StrategyDependencies(
+        database_service=mock_database,
+        llm_service=mock_llm_service,
+        embedding_service=mock_embedding_service
+    )
+    
     strategy = ContextualRetrievalStrategy(
-        mock_vector_store, mock_database, mock_llm_service,
-        mock_embedding_service, config
+        config=config.dict(),
+        dependencies=dependencies
     )
     
     chunks = [{"chunk_id": f"c{i}", "text": f"Text {i}", "metadata": {}} for i in range(5)]
@@ -273,15 +308,23 @@ async def test_large_document_processing(
     mock_embedding_service
 ):
     """Test processing large documents."""
+    from rag_factory.services.dependencies import StrategyDependencies
+    
     config = ContextualRetrievalConfig(
         batch_size=20,
         enable_parallel_batches=True,
         max_concurrent_batches=5
     )
     
+    dependencies = StrategyDependencies(
+        database_service=mock_database,
+        llm_service=mock_llm_service,
+        embedding_service=mock_embedding_service
+    )
+    
     strategy = ContextualRetrievalStrategy(
-        mock_vector_store, mock_database, mock_llm_service,
-        mock_embedding_service, config
+        config=config.dict(),
+        dependencies=dependencies
     )
     
     # Large document with 100 chunks

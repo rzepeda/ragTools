@@ -2,7 +2,7 @@
 Document embedder for late chunking strategy.
 
 This module handles full document embedding with token-level detail extraction
-using ONNX Runtime and tiktoken for lightweight dependencies.
+using ONNX Runtime and transformers tokenizer.
 """
 
 from typing import List, Dict, Any, Optional, Tuple
@@ -16,7 +16,6 @@ from rag_factory.services.utils.onnx_utils import (
     get_model_metadata,
     mean_pooling as onnx_mean_pooling,
 )
-from rag_factory.utils.tokenization import Tokenizer
 
 from .models import DocumentEmbedding, TokenEmbedding, LateChunkingConfig
 
@@ -46,14 +45,35 @@ class DocumentEmbedder:
         
         logger.info(f"Model loaded with embedding dimension: {self.embedding_dim}")
 
-        # Initialize tokenizer with tiktoken
-        self.tokenizer = Tokenizer(encoding_name=config.encoding)
+        # Initialize tokenizer from transformers (matches ONNX model)
+        try:
+            from transformers import AutoTokenizer
+            
+            # Load tokenizer from the same model directory
+            model_dir = self.model_path.parent
+            try:
+                self.tokenizer = AutoTokenizer.from_pretrained(str(model_dir))
+                logger.info(f"Loaded tokenizer from model directory: {model_dir}")
+            except Exception:
+                # Fallback: try loading from HuggingFace
+                self.tokenizer = AutoTokenizer.from_pretrained(config.model_name)
+                logger.info(f"Loaded tokenizer from HuggingFace: {config.model_name}")
+                
+        except ImportError:
+            raise ImportError(
+                "transformers package required for tokenization. "
+                "Install with: pip install transformers"
+            )
         
-        self.max_length = config.max_document_tokens
+        # Get max length from tokenizer or use config
+        if hasattr(self.tokenizer, 'model_max_length') and self.tokenizer.model_max_length < 1000000:
+            self.max_length = min(self.tokenizer.model_max_length, config.max_document_tokens)
+        else:
+            self.max_length = config.max_document_tokens
 
         logger.info(
             f"DocumentEmbedder initialized: model={config.model_name}, "
-            f"max_length={self.max_length}, encoding={config.encoding}"
+            f"max_length={self.max_length}"
         )
 
     def embed_document(
@@ -73,20 +93,24 @@ class DocumentEmbedder:
         """
         logger.info(f"Embedding document: {document_id}")
 
-        # Tokenize with tiktoken
-        token_ids = self.tokenizer.encode(text)
+        # Tokenize with transformers tokenizer
+        encoded = self.tokenizer(
+            text,
+            truncation=True,
+            max_length=self.max_length,
+            return_tensors="np",
+            add_special_tokens=True
+        )
         
-        # Truncate if needed
-        if len(token_ids) > self.max_length:
+        input_ids = encoded["input_ids"].astype(np.int64)
+        attention_mask = encoded["attention_mask"].astype(np.int64)
+        
+        token_ids = input_ids[0].tolist()  # Convert to list for processing
+        
+        if len(token_ids) < len(self.tokenizer.encode(text, add_special_tokens=True)):
             logger.warning(
-                f"Document has {len(token_ids)} tokens, "
-                f"truncating to {self.max_length}"
+                f"Document truncated to {len(token_ids)} tokens (max: {self.max_length})"
             )
-            token_ids = token_ids[:self.max_length]
-
-        # Prepare inputs for ONNX
-        input_ids = np.array([token_ids], dtype=np.int64)
-        attention_mask = np.ones_like(input_ids, dtype=np.int64)
 
         # Run ONNX inference
         outputs = self.session.run(
@@ -114,10 +138,10 @@ class DocumentEmbedder:
         current_pos = 0
         for i, token_id in enumerate(token_ids):
             # Decode individual token
-            token_str = self.tokenizer.decode([token_id])
+            token_str = self.tokenizer.decode([token_id], skip_special_tokens=False)
             
             # Find token in original text (approximate)
-            start_char = text.find(token_str, current_pos)
+            start_char = text.find(token_str, current_pos) if token_str.strip() else current_pos
             if start_char == -1:
                 # Token not found exactly, use approximate position
                 start_char = current_pos

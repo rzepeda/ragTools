@@ -386,6 +386,143 @@ def _clean_all_tables(session: Session) -> None:
 
 
 # =============================================================================
+# LLM Service Fixtures
+# =============================================================================
+
+@pytest.fixture
+def llm_service_from_env():
+    """
+    Create LLM service using .env configuration (LM Studio by default).
+    
+    This fixture uses the LLM configuration from environment variables,
+    which defaults to LM Studio for local development and testing.
+    
+    Returns:
+        LLMService instance configured from environment
+        
+    Example:
+        ```python
+        def test_with_lm_studio(llm_service_from_env):
+            response = llm_service_from_env.complete([
+                Message(role=MessageRole.USER, content="Hello")
+            ])
+            assert response.content
+        ```
+    """
+    from rag_factory.services.llm.service import LLMService
+    from rag_factory.services.llm.config import LLMServiceConfig
+    
+    config = LLMServiceConfig(
+        provider="openai",  # LM Studio uses OpenAI-compatible API
+        model=os.getenv("OPENAI_MODEL", "default-model"),
+        provider_config={
+            "api_key": os.getenv("OPENAI_API_KEY", "lm-studio"),
+            "base_url": os.getenv("OPENAI_API_BASE", "http://localhost:1234/v1")
+        }
+    )
+    return LLMService(config)
+
+
+@pytest.fixture
+def mock_llm_service():
+    """
+    Create fully mocked LLM service for fast unit tests.
+    
+    This fixture provides a mock LLM service that returns predictable
+    responses without making actual API calls. Use for tests that need
+    LLM functionality but don't require real model inference.
+    
+    Returns:
+        Mock LLMService instance
+        
+    Example:
+        ```python
+        def test_with_mock_llm(mock_llm_service):
+            response = mock_llm_service.complete([...])
+            assert response.text == "Mocked LLM response"
+        ```
+    """
+    from unittest.mock import Mock, AsyncMock
+    
+    service = Mock()
+    
+    # Create mock response
+    response = Mock()
+    response.text = "Mocked LLM response"
+    response.content = "Mocked LLM response"
+    response.prompt_tokens = 10
+    response.completion_tokens = 20
+    response.total_tokens = 30
+    response.cost = 0.0
+    response.latency = 0.1
+    
+    # Setup mock methods
+    service.complete = Mock(return_value=response)
+    service.agenerate = AsyncMock(return_value=response)
+    service.count_tokens = Mock(return_value=10)
+    service.get_stats = Mock(return_value={
+        "total_requests": 1,
+        "total_prompt_tokens": 10,
+        "total_completion_tokens": 20,
+        "total_cost": 0.0,
+        "total_latency": 0.1,
+        "average_latency": 0.1,
+        "model": "mock-model",
+        "provider": "mock"
+    })
+    service.estimate_cost = Mock(return_value=0.0)
+    
+    return service
+
+
+@pytest.fixture
+def cloud_llm_service():
+    """
+    Create LLM service using cloud providers (for benchmarking).
+    
+    This fixture uses cloud API keys (OpenAI or Anthropic) and is intended
+    for benchmarking tests that compare performance across providers.
+    Tests using this fixture will be skipped if cloud API keys are not available.
+    
+    Returns:
+        LLMService instance configured for cloud provider
+        
+    Raises:
+        pytest.skip: If no cloud API keys are available
+        
+    Example:
+        ```python
+        @pytest.mark.benchmark
+        @pytest.mark.requires_cloud_api
+        def test_performance(cloud_llm_service):
+            # Benchmarking test using cloud provider
+            pass
+        ```
+    """
+    from rag_factory.services.llm.service import LLMService
+    from rag_factory.services.llm.config import LLMServiceConfig
+    
+    # Try OpenAI first (use different env var to distinguish from LM Studio)
+    if os.getenv("OPENAI_CLOUD_API_KEY"):
+        config = LLMServiceConfig(
+            provider="openai",
+            model=os.getenv("OPENAI_CLOUD_MODEL", "gpt-3.5-turbo"),
+            provider_config={"api_key": os.getenv("OPENAI_CLOUD_API_KEY")}
+        )
+    # Fall back to Anthropic
+    elif os.getenv("ANTHROPIC_API_KEY"):
+        config = LLMServiceConfig(
+            provider="anthropic",
+            model=os.getenv("ANTHROPIC_MODEL", "claude-3-haiku-20240307"),
+            provider_config={"api_key": os.getenv("ANTHROPIC_API_KEY")}
+        )
+    else:
+        pytest.skip("No cloud API keys available for benchmarking")
+    
+    return LLMService(config)
+
+
+# =============================================================================
 # Pytest Configuration
 # =============================================================================
 
@@ -404,23 +541,46 @@ def pytest_configure(config):
         "markers",
         "integration: mark test as integration test"
     )
+    config.addinivalue_line(
+        "markers",
+        "benchmark: mark test as benchmarking test (requires cloud API keys)"
+    )
+    config.addinivalue_line(
+        "markers",
+        "requires_cloud_api: mark test as requiring cloud API keys (OpenAI/Anthropic)"
+    )
+    config.addinivalue_line(
+        "markers",
+        "requires_llm: mark test as requiring LLM service"
+    )
 
 
 def pytest_collection_modifyitems(config, items):
     """
-    Modify test collection to skip database tests if not configured.
+    Modify test collection to skip tests based on environment configuration.
     
     Args:
         config: Pytest configuration
         items: Collected test items
     """
     skip_db = pytest.mark.skip(reason="DB_TEST_DATABASE_URL not set")
+    skip_cloud_api = pytest.mark.skip(reason="Cloud API keys not available for benchmarking")
     
     # Check if database URL is set
-    if not os.getenv("DB_TEST_DATABASE_URL"):
-        for item in items:
-            # Skip tests marked with @pytest.mark.database
-            if "database" in item.keywords:
-                item.add_marker(skip_db)
+    db_url_set = bool(os.getenv("DB_TEST_DATABASE_URL"))
+    
+    # Check if cloud API keys are set
+    cloud_api_available = bool(
+        os.getenv("OPENAI_CLOUD_API_KEY") or os.getenv("ANTHROPIC_API_KEY")
+    )
+    
+    for item in items:
+        # Skip database tests if not configured
+        if not db_url_set and "database" in item.keywords:
+            item.add_marker(skip_db)
+        
+        # Skip benchmarking/cloud API tests if not configured
+        if not cloud_api_available and "requires_cloud_api" in item.keywords:
+            item.add_marker(skip_cloud_api)
 
 

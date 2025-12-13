@@ -70,7 +70,6 @@ class LateChunkingConfig(BaseModel):
     max_document_tokens: int = 16384
     model_name: str = "sentence-transformers/all-MiniLM-L6-v2"
     model_path: Optional[str] = None  # Path to local ONNX model
-    encoding: str = "cl100k_base"  # Tiktoken encoding name
 
     # Chunking
     chunking_method: EmbeddingChunkingMethod = EmbeddingChunkingMethod.SEMANTIC_BOUNDARY
