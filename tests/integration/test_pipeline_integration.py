@@ -28,6 +28,11 @@ class TestStrategy(IRAGStrategy):
         self.delay = delay
         self.config: Any = None
 
+    def requires_services(self):
+        """Declare required services."""
+        from rag_factory.services.dependencies import ServiceDependency
+        return set()
+
     def initialize(self, config: Any) -> None:
         """Initialize the strategy."""
         self.config = config
@@ -139,6 +144,11 @@ def test_pipeline_continues_after_non_critical_failure() -> None:
     class OptionalStrategy(IRAGStrategy):
         """Strategy that always fails."""
 
+        def requires_services(self):
+            """Declare required services."""
+            from rag_factory.services.dependencies import ServiceDependency
+            return set()
+
         def initialize(self, config: Any) -> None:
             """Initialize."""
             pass
@@ -190,6 +200,11 @@ def test_load_pipeline_from_yaml(tmp_path: Path) -> None:
     class StrategyA(IRAGStrategy):
         """Factory-compatible strategy A."""
 
+        def requires_services(self):
+            """Declare required services."""
+            from rag_factory.services.dependencies import ServiceDependency
+            return set()
+
         def initialize(self, config: Any) -> None:
             """Initialize."""
             self.config = config
@@ -212,6 +227,11 @@ def test_load_pipeline_from_yaml(tmp_path: Path) -> None:
 
     class StrategyB(IRAGStrategy):
         """Factory-compatible strategy B."""
+
+        def requires_services(self):
+            """Declare required services."""
+            from rag_factory.services.dependencies import ServiceDependency
+            return set()
 
         def initialize(self, config: Any) -> None:
             """Initialize."""
@@ -304,6 +324,11 @@ async def test_async_fallback_execution() -> None:
     class FailingAsyncStrategy(IRAGStrategy):
         """Strategy that always fails in async mode."""
 
+        def requires_services(self):
+            """Declare required services."""
+            from rag_factory.services.dependencies import ServiceDependency
+            return set()
+
         def initialize(self, config: Any) -> None:
             """Initialize."""
             pass
@@ -344,6 +369,11 @@ async def test_parallel_execution_with_failures() -> None:
     """Test parallel execution handles mixed success and failure."""
     class FailingParallelStrategy(IRAGStrategy):
         """Strategy that fails in parallel execution."""
+
+        def requires_services(self):
+            """Declare required services."""
+            from rag_factory.services.dependencies import ServiceDependency
+            return set()
 
         def initialize(self, config: Any) -> None:
             """Initialize."""

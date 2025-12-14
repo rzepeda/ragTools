@@ -38,8 +38,29 @@ def mock_session():
 def mock_tokenizer():
     """Mock tokenizer."""
     tokenizer = Mock()
-    tokenizer.encode.return_value = [1, 2, 3, 4, 5]
-    tokenizer.decode.side_effect = lambda ids: " ".join([f"token_{i}" for i in ids])
+    
+    # Default token IDs
+    default_token_ids = [1, 2, 3, 4, 5]
+    tokenizer.encode = Mock(return_value=default_token_ids)
+    
+    # Mock the __call__ method to return encoded dict based on encode() call
+    def mock_call(*args, **kwargs):
+        # Call encode to get token IDs (supports both return_value and side_effect)
+        token_ids = tokenizer.encode(*args, **kwargs)
+        
+        # Handle truncation if specified
+        if kwargs.get('truncation', False) and 'max_length' in kwargs:
+            max_length = kwargs['max_length']
+            token_ids = token_ids[:max_length]
+        
+        num_tokens = len(token_ids)
+        return {
+            "input_ids": np.array([token_ids], dtype=np.int64),
+            "attention_mask": np.array([[1] * num_tokens], dtype=np.int64)
+        }
+    tokenizer.side_effect = mock_call
+    tokenizer.decode.side_effect = lambda ids, **kwargs: " ".join([f"token_{i}" for i in ids])
+    tokenizer.model_max_length = 512  # Add model_max_length attribute
     return tokenizer
 
 
@@ -49,8 +70,9 @@ def document_embedder(embedder_config, mock_session, mock_tokenizer):
     with patch("rag_factory.strategies.late_chunking.document_embedder.download_onnx_model") as mock_download:
         with patch("rag_factory.strategies.late_chunking.document_embedder.create_onnx_session") as mock_create:
             with patch("rag_factory.strategies.late_chunking.document_embedder.get_model_metadata") as mock_metadata:
-                with patch("rag_factory.strategies.late_chunking.document_embedder.Tokenizer") as mock_tok_class:
-                    mock_download.return_value = "/fake/path/model.onnx"
+                with patch("transformers.AutoTokenizer.from_pretrained") as mock_tok_class:
+                    from pathlib import Path
+                    mock_download.return_value = Path("/fake/path/model.onnx")
                     mock_create.return_value = mock_session
                     mock_metadata.return_value = {"embedding_dim": 384}
                     mock_tok_class.return_value = mock_tokenizer
@@ -179,7 +201,13 @@ def test_embedding_dimensions_consistent(document_embedder, mock_session, mock_t
     mock_embeddings1 = np.random.randn(1, 3, 384).astype(np.float32)
     mock_embeddings2 = np.random.randn(1, 7, 384).astype(np.float32)
     
-    mock_tokenizer.encode.side_effect = [[1, 2, 3], [1, 2, 3, 4, 5, 6, 7]]
+    # encode() is called twice per document: once from tokenizer() and once for truncation check
+    mock_tokenizer.encode.side_effect = [
+        [1, 2, 3],  # First call for doc1 (from tokenizer)
+        [1, 2, 3],  # Second call for doc1 (truncation check)
+        [1, 2, 3, 4, 5, 6, 7],  # First call for doc2 (from tokenizer)
+        [1, 2, 3, 4, 5, 6, 7]   # Second call for doc2 (truncation check)
+    ]
     mock_session.run.side_effect = [[mock_embeddings1], [mock_embeddings2]]
     
     text1 = "Short text"

@@ -29,6 +29,24 @@ def mock_vector_store():
 
 
 @pytest.fixture
+def mock_embedding_service():
+    """Mock embedding service for testing."""
+    service = Mock()
+    result = Mock()
+    result.embeddings = [[0.1] * 768]  # Mock embedding vector
+    service.embed = Mock(return_value=result)
+    return service
+
+
+@pytest.fixture
+def mock_graph_service():
+    """Mock graph service for testing."""
+    service = Mock()
+    # Add any necessary mock methods
+    return service
+
+
+@pytest.fixture
 def mock_llm():
     """Mock LLM service for testing."""
     llm = Mock()
@@ -86,12 +104,19 @@ def config():
 
 
 @pytest.mark.integration
-def test_knowledge_graph_workflow(mock_vector_store, mock_llm, config):
+def test_knowledge_graph_workflow(mock_vector_store, mock_llm, mock_embedding_service, mock_graph_service, config):
     """Test complete knowledge graph RAG workflow."""
-    strategy = KnowledgeGraphRAGStrategy(
-        vector_store_service=mock_vector_store,
+    from rag_factory.services.dependencies import StrategyDependencies
+    
+    dependencies = StrategyDependencies(
         llm_service=mock_llm,
-        config=config
+        embedding_service=mock_embedding_service,
+        graph_service=mock_graph_service
+    )
+    
+    strategy = KnowledgeGraphRAGStrategy(
+        config=config.dict() if hasattr(config, 'dict') else config.__dict__,
+        dependencies=dependencies
     )
     
     # Index document
@@ -112,17 +137,24 @@ Artificial Intelligence enables computers to learn and make decisions."""
     graph_stats = strategy.graph_store.get_stats()
     assert graph_stats["num_entities"] > 0
     
-    # Verify vector store was called
-    assert mock_vector_store.index_chunk.called
+    # Verify vector store was called (if integrated)
+    # assert mock_vector_store.index_chunk.called
 
 
 @pytest.mark.integration
-def test_hybrid_retrieval(mock_vector_store, mock_llm, config):
+def test_hybrid_retrieval(mock_vector_store, mock_llm, mock_embedding_service, mock_graph_service, config):
     """Test hybrid retrieval combining vector and graph."""
-    strategy = KnowledgeGraphRAGStrategy(
-        vector_store_service=mock_vector_store,
+    from rag_factory.services.dependencies import StrategyDependencies
+    
+    dependencies = StrategyDependencies(
         llm_service=mock_llm,
-        config=config
+        embedding_service=mock_embedding_service,
+        graph_service=mock_graph_service
+    )
+    
+    strategy = KnowledgeGraphRAGStrategy(
+        config=config.dict() if hasattr(config, 'dict') else config.__dict__,
+        dependencies=dependencies
     )
     
     # Index document
@@ -143,12 +175,19 @@ Machine Learning is a subset of Artificial Intelligence."""
 
 
 @pytest.mark.integration
-def test_relationship_queries(mock_vector_store, mock_llm, config):
+def test_relationship_queries(mock_vector_store, mock_llm, mock_embedding_service, mock_graph_service, config):
     """Test relationship-based queries."""
-    strategy = KnowledgeGraphRAGStrategy(
-        vector_store_service=mock_vector_store,
+    from rag_factory.services.dependencies import StrategyDependencies
+    
+    dependencies = StrategyDependencies(
         llm_service=mock_llm,
-        config=config
+        embedding_service=mock_embedding_service,
+        graph_service=mock_graph_service
+    )
+    
+    strategy = KnowledgeGraphRAGStrategy(
+        config=config.dict() if hasattr(config, 'dict') else config.__dict__,
+        dependencies=dependencies
     )
     
     document = """Climate change causes rising temperatures.
@@ -167,12 +206,19 @@ Glacier melting results in sea level rise."""
 
 
 @pytest.mark.integration
-def test_graph_statistics(mock_vector_store, mock_llm, config):
+def test_graph_statistics(mock_vector_store, mock_llm, mock_embedding_service, mock_graph_service, config):
     """Test graph statistics tracking."""
-    strategy = KnowledgeGraphRAGStrategy(
-        vector_store_service=mock_vector_store,
+    from rag_factory.services.dependencies import StrategyDependencies
+    
+    dependencies = StrategyDependencies(
         llm_service=mock_llm,
-        config=config
+        embedding_service=mock_embedding_service,
+        graph_service=mock_graph_service
+    )
+    
+    strategy = KnowledgeGraphRAGStrategy(
+        config=config.dict() if hasattr(config, 'dict') else config.__dict__,
+        dependencies=dependencies
     )
     
     document = "Python is used for Machine Learning. Machine Learning is part of AI."

@@ -74,6 +74,15 @@ class HierarchicalRAGStrategy(IRAGStrategy):
             strategy_name="hierarchical"
         )
     
+    def requires_services(self):
+        """Declare required services.
+        
+        Returns:
+            Set of required service dependencies
+        """
+        from ...services.dependencies import ServiceDependency
+        return {ServiceDependency.DATABASE}
+    
     def initialize(self, config: StrategyConfig) -> None:
         """Initialize the strategy with configuration.
         

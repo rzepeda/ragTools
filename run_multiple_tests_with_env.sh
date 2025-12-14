@@ -4,7 +4,7 @@
 set -e  # Exit on error
 
 # Output file
-OUTPUT_FILE="test_result.txt"
+OUTPUT_FILE="test_results.txt"
 
 # Activate virtual environment
 if [ -f "venv/bin/activate" ]; then

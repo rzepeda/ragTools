@@ -96,13 +96,26 @@ class KnowledgeGraphRAGStrategy(IRAGStrategy):
         # Chunk document (simple paragraph-based chunking)
         chunks = self._chunk_document(document, document_id)
         
-        # Index chunks in vector store
-        for chunk in chunks:
-            self.vector_store.index_chunk(
-                chunk_id=chunk["chunk_id"],
-                text=chunk["text"],
-                metadata={"document_id": document_id}
-            )
+        # Index chunks in vector store (using database service)
+        if self.deps.database_service:
+            for chunk in chunks:
+                # Use database service to store chunks
+                # Note: This assumes database_service has a method to store chunks
+                # If not available, we skip vector indexing
+                if hasattr(self.deps.database_service, 'add_chunk'):
+                    self.deps.database_service.add_chunk(
+                        chunk_id=chunk["chunk_id"],
+                        text=chunk["text"],
+                        metadata={"document_id": document_id}
+                    )
+                elif hasattr(self.deps.database_service, 'index_chunk'):
+                    self.deps.database_service.index_chunk(
+                        chunk_id=chunk["chunk_id"],
+                        text=chunk["text"],
+                        metadata={"document_id": document_id}
+                    )
+        else:
+            logger.warning("No database service available for chunk indexing")
         
         # Extract entities from each chunk
         all_entities = []

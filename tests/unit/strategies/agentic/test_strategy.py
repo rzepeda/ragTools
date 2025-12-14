@@ -5,6 +5,7 @@ from unittest.mock import Mock, patch
 
 from rag_factory.strategies.agentic.strategy import AgenticRAGStrategy
 from rag_factory.strategies.agentic.config import AgenticStrategyConfig
+from rag_factory.services.dependencies import StrategyDependencies
 
 
 # Fixtures
@@ -43,6 +44,15 @@ def mock_chunk_repository():
 def mock_document_repository():
     """Mock document repository."""
     return Mock()
+
+
+@pytest.fixture
+def mock_database_service(mock_chunk_repository, mock_document_repository):
+    """Mock database service that wraps repositories."""
+    service = Mock()
+    service.chunk_repository = mock_chunk_repository
+    service.document_repository = mock_document_repository
+    return service
 
 
 # Test AgenticStrategyConfig
@@ -85,15 +95,16 @@ def test_config_validation():
 def test_strategy_initialization(
     mock_llm_service,
     mock_embedding_service,
-    mock_chunk_repository,
-    mock_document_repository
+    mock_database_service
 ):
     """Test strategy initialization."""
     strategy = AgenticRAGStrategy(
-        mock_llm_service,
-        mock_embedding_service,
-        mock_chunk_repository,
-        mock_document_repository
+        config={},
+        dependencies=StrategyDependencies(
+            llm_service=mock_llm_service,
+            embedding_service=mock_embedding_service,
+            database_service=mock_database_service
+        )
     )
     
     assert strategy.name == "agentic"
@@ -104,8 +115,7 @@ def test_strategy_initialization(
 def test_strategy_initialization_with_config(
     mock_llm_service,
     mock_embedding_service,
-    mock_chunk_repository,
-    mock_document_repository
+    mock_database_service
 ):
     """Test strategy initialization with config."""
     config = {
@@ -115,11 +125,12 @@ def test_strategy_initialization_with_config(
     }
     
     strategy = AgenticRAGStrategy(
-        mock_llm_service,
-        mock_embedding_service,
-        mock_chunk_repository,
-        mock_document_repository,
-        config=config
+        config=config,
+        dependencies=StrategyDependencies(
+            llm_service=mock_llm_service,
+            embedding_service=mock_embedding_service,
+            database_service=mock_database_service
+        )
     )
     
     assert strategy.config.max_iterations == 5
@@ -129,15 +140,16 @@ def test_strategy_initialization_with_config(
 def test_strategy_retrieve(
     mock_llm_service,
     mock_embedding_service,
-    mock_chunk_repository,
-    mock_document_repository
+    mock_database_service
 ):
     """Test strategy retrieve method."""
     strategy = AgenticRAGStrategy(
-        mock_llm_service,
-        mock_embedding_service,
-        mock_chunk_repository,
-        mock_document_repository
+        config={},
+        dependencies=StrategyDependencies(
+            llm_service=mock_llm_service,
+            embedding_service=mock_embedding_service,
+            database_service=mock_database_service
+        )
     )
     
     # Mock agent run
@@ -165,17 +177,17 @@ def test_strategy_retrieve(
 def test_strategy_retrieve_with_query_analysis(
     mock_llm_service,
     mock_embedding_service,
-    mock_chunk_repository,
-    mock_document_repository
+    mock_database_service
 ):
     """Test strategy retrieve with query analysis."""
     config = {"enable_query_analysis": True}
     strategy = AgenticRAGStrategy(
-        mock_llm_service,
-        mock_embedding_service,
-        mock_chunk_repository,
-        mock_document_repository,
-        config=config
+        config=config,
+        dependencies=StrategyDependencies(
+            llm_service=mock_llm_service,
+            embedding_service=mock_embedding_service,
+            database_service=mock_database_service
+        )
     )
     
     assert strategy.query_analyzer is not None
@@ -194,17 +206,17 @@ def test_strategy_retrieve_with_query_analysis(
 def test_strategy_fallback_on_error(
     mock_llm_service,
     mock_embedding_service,
-    mock_chunk_repository,
-    mock_document_repository
+    mock_database_service
 ):
     """Test strategy falls back to semantic search on error."""
     config = {"fallback_to_semantic": True}
     strategy = AgenticRAGStrategy(
-        mock_llm_service,
-        mock_embedding_service,
-        mock_chunk_repository,
-        mock_document_repository,
-        config=config
+        config=config,
+        dependencies=StrategyDependencies(
+            llm_service=mock_llm_service,
+            embedding_service=mock_embedding_service,
+            database_service=mock_database_service
+        )
     )
     
     # Mock agent to raise error
@@ -218,17 +230,17 @@ def test_strategy_fallback_on_error(
 def test_strategy_no_fallback_raises_error(
     mock_llm_service,
     mock_embedding_service,
-    mock_chunk_repository,
-    mock_document_repository
+    mock_database_service
 ):
     """Test strategy raises error when fallback disabled."""
     config = {"fallback_to_semantic": False}
     strategy = AgenticRAGStrategy(
-        mock_llm_service,
-        mock_embedding_service,
-        mock_chunk_repository,
-        mock_document_repository,
-        config=config
+        config=config,
+        dependencies=StrategyDependencies(
+            llm_service=mock_llm_service,
+            embedding_service=mock_embedding_service,
+            database_service=mock_database_service
+        )
     )
     
     # Mock agent to raise error
@@ -240,15 +252,16 @@ def test_strategy_no_fallback_raises_error(
 def test_strategy_get_stats(
     mock_llm_service,
     mock_embedding_service,
-    mock_chunk_repository,
-    mock_document_repository
+    mock_database_service
 ):
     """Test strategy get_stats method."""
     strategy = AgenticRAGStrategy(
-        mock_llm_service,
-        mock_embedding_service,
-        mock_chunk_repository,
-        mock_document_repository
+        config={},
+        dependencies=StrategyDependencies(
+            llm_service=mock_llm_service,
+            embedding_service=mock_embedding_service,
+            database_service=mock_database_service
+        )
     )
     
     stats = strategy.get_stats()
@@ -263,15 +276,16 @@ def test_strategy_get_stats(
 def test_strategy_top_k_limit(
     mock_llm_service,
     mock_embedding_service,
-    mock_chunk_repository,
-    mock_document_repository
+    mock_database_service
 ):
     """Test strategy respects top_k limit."""
     strategy = AgenticRAGStrategy(
-        mock_llm_service,
-        mock_embedding_service,
-        mock_chunk_repository,
-        mock_document_repository
+        config={},
+        dependencies=StrategyDependencies(
+            llm_service=mock_llm_service,
+            embedding_service=mock_embedding_service,
+            database_service=mock_database_service
+        )
     )
     
     # Mock agent to return many results

@@ -71,6 +71,8 @@ Define machine learning concepts"""
         service = Mock()
         service.store_chunk = Mock()
         service.get_chunks = Mock(return_value=[])
+        # Add async search method for fallback retrieval
+        service.asearch_similar = AsyncMock(return_value=[])
         return service
 
     def test_multi_query_complete_workflow(self, mock_vector_store, mock_llm_service, mock_embedding_service, mock_database_service):
@@ -177,7 +179,7 @@ Define machine learning concepts"""
         assert len(results) > 0
 
     @pytest.mark.asyncio
-    async def test_fallback_on_failure(self, mock_vector_store):
+    async def test_fallback_on_failure(self, mock_vector_store, mock_embedding_service, mock_database_service):
         """Test fallback to original query on variant generation failure."""
         # Mock LLM that fails
         llm_service = Mock()
@@ -185,10 +187,11 @@ Define machine learning concepts"""
 
         config = MultiQueryConfig(fallback_to_original=True, final_top_k=3)
         strategy = MultiQueryRAGStrategy(
-            config=config,
+            config=config.dict() if hasattr(config, 'dict') else config.__dict__,
             dependencies=StrategyDependencies(
                 llm_service=llm_service,
-                vector_store_service=mock_vector_store
+                embedding_service=mock_embedding_service,
+                database_service=mock_database_service
             )
         )
 
@@ -209,9 +212,12 @@ Define machine learning concepts"""
             final_top_k=5
         )
         strategy_max = MultiQueryRAGStrategy(
-            vector_store_service=mock_vector_store,
-            llm_service=mock_llm_service,
-            config=config_max
+            config=config_max.dict() if hasattr(config_max, 'dict') else config_max.__dict__,
+            dependencies=StrategyDependencies(
+                llm_service=mock_llm_service,
+                embedding_service=mock_embedding_service,
+                database_service=mock_database_service
+            )
         )
         results_max = strategy_max.retrieve(query)
 
@@ -222,9 +228,12 @@ Define machine learning concepts"""
             final_top_k=5
         )
         strategy_freq = MultiQueryRAGStrategy(
-            vector_store_service=mock_vector_store,
-            llm_service=mock_llm_service,
-            config=config_freq
+            config=config_freq.dict() if hasattr(config_freq, 'dict') else config_freq.__dict__,
+            dependencies=StrategyDependencies(
+                llm_service=mock_llm_service,
+                embedding_service=mock_embedding_service,
+                database_service=mock_database_service
+            )
         )
         results_freq = strategy_freq.retrieve(query)
 
@@ -266,8 +275,12 @@ Define machine learning concepts"""
     def test_strategy_properties(self, mock_vector_store, mock_llm_service, mock_embedding_service, mock_database_service):
         """Test strategy name and description properties."""
         strategy = MultiQueryRAGStrategy(
-            vector_store_service=mock_vector_store,
-            llm_service=mock_llm_service
+            config={},
+            dependencies=StrategyDependencies(
+                llm_service=mock_llm_service,
+                embedding_service=mock_embedding_service,
+                database_service=mock_database_service
+            )
         )
 
         assert strategy.name == "multi_query"

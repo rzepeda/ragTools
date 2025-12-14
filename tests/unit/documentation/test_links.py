@@ -23,7 +23,7 @@ class TestDocumentationLinks:
         if not md_file.exists():
             return []
         
-        with open(md_file, encoding='utf-8') as f:
+        with open(md_file, encoding='utf-8', errors='replace') as f:
             content = f.read()
 
         # Find [text](link) patterns
@@ -68,7 +68,7 @@ class TestDocumentationLinks:
             if not md_file.exists():
                 continue
             
-            with open(md_file, encoding='utf-8') as f:
+            with open(md_file, encoding='utf-8', errors='replace') as f:
                 content = f.read()
 
             # Find mermaid diagrams

@@ -1,0 +1,497 @@
+========================================
+Test Results - 2025-12-14 13:14:35
+========================================
+Environment Configuration:
+  EMBEDDING_MODEL_NAME: Xenova/all-mpnet-base-v2
+  EMBEDDING_MODEL_PATH: models/embedding
+  LM_STUDIO_BASE_URL: http://192.168.56.1:1234/v1
+  LM_STUDIO_MODEL: phi-4-mini-instruct
+
+Command: pytest tests/unit/documentation/test_links.py tests/unit/documentation/test_code_examples.py tests/unit/strategies/agentic/test_strategy.py --tb=short
+========================================
+
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.1, pluggy-1.6.0 -- /mnt/MCPProyects/ragTools/venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /mnt/MCPProyects/ragTools
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: anyio-4.12.0, cov-7.0.0, asyncio-1.3.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 20 items
+
+tests/unit/documentation/test_links.py::TestDocumentationLinks::test_no_broken_internal_links FAILED [  5%]
+tests/unit/documentation/test_links.py::TestDocumentationLinks::test_all_diagrams_valid PASSED [ 10%]
+tests/unit/documentation/test_links.py::TestDocumentationLinks::test_no_todo_links PASSED [ 15%]
+tests/unit/documentation/test_links.py::TestDocumentationLinks::test_external_links_valid SKIPPED [ 20%]
+tests/unit/documentation/test_code_examples.py::TestCodeExamples::test_all_code_examples_have_valid_syntax FAILED [ 25%]
+tests/unit/documentation/test_code_examples.py::TestCodeExamples::test_strategy_examples_have_imports PASSED [ 30%]
+tests/unit/documentation/test_code_examples.py::TestCodeExamples::test_configuration_examples_valid SKIPPED [ 35%]
+tests/unit/documentation/test_code_examples.py::TestCodeExamples::test_quick_start_example_complete PASSED [ 40%]
+tests/unit/documentation/test_code_examples.py::TestCodeExamples::test_no_placeholder_code FAILED [ 45%]
+tests/unit/strategies/agentic/test_strategy.py::test_config_defaults PASSED [ 50%]
+tests/unit/strategies/agentic/test_strategy.py::test_config_custom_values PASSED [ 55%]
+tests/unit/strategies/agentic/test_strategy.py::test_config_validation PASSED [ 60%]
+tests/unit/strategies/agentic/test_strategy.py::test_strategy_initialization FAILED [ 65%]
+tests/unit/strategies/agentic/test_strategy.py::test_strategy_initialization_with_config FAILED [ 70%]
+tests/unit/strategies/agentic/test_strategy.py::test_strategy_retrieve PASSED [ 75%]
+tests/unit/strategies/agentic/test_strategy.py::test_strategy_retrieve_with_query_analysis PASSED [ 80%]
+tests/unit/strategies/agentic/test_strategy.py::test_strategy_fallback_on_error PASSED [ 85%]
+tests/unit/strategies/agentic/test_strategy.py::test_strategy_no_fallback_raises_error PASSED [ 90%]
+tests/unit/strategies/agentic/test_strategy.py::test_strategy_get_stats PASSED [ 95%]
+tests/unit/strategies/agentic/test_strategy.py::test_strategy_top_k_limit PASSED [100%]
+
+=================================== FAILURES ===================================
+_____________ TestDocumentationLinks.test_no_broken_internal_links _____________
+tests/unit/documentation/test_links.py:60: in test_no_broken_internal_links
+    assert len(broken_links) == 0, \
+E   AssertionError: Broken internal links:
+E     index.md -> guides/configuration-reference.md
+E     index.md -> tutorials/pipeline-setup.md
+E     index.md -> guides/performance-tuning.md
+E     index.md -> guides/best-practices.md
+E     CLI-USER-GUIDE.md -> ./API.md
+E     CLI-USER-GUIDE.md -> ./STRATEGIES.md
+E     strategy-selection.md -> ../tutorials/pipeline-setup.md
+E     strategy-selection.md -> performance-tuning.md
+E     strategy-selection.md -> configuration-reference.md
+E     strategy-selection.md -> best-practices.md
+E     strategy-selection.md -> ../tutorials/performance-optimization.md
+E     faq.md -> ../tutorials/pipeline-setup.md
+E     faq.md -> ../guides/performance-tuning.md
+E     faq.md -> ../tutorials/production-deployment.md
+E     faq.md -> ../contributing/adding-strategies.md
+E     faq.md -> ../contributing/testing.md
+E     faq.md -> ../contributing/documentation.md
+E     design-patterns.md -> data-flow.md
+E     design-patterns.md -> components.md
+E     design-patterns.md -> ../contributing/adding-strategies.md
+E     design-patterns.md -> ../guides/best-practices.md
+E     design-patterns.md -> ../api-reference/index.md
+E     overview.md -> data-flow.md
+E     overview.md -> components.md
+E     overview.md -> ../guides/configuration-reference.md
+E     overview.md -> ../guides/best-practices.md
+E     index.md -> development-setup.md
+E     index.md -> development-setup.md
+E     index.md -> code-style.md
+E     index.md -> testing.md
+E     index.md -> documentation.md
+E     index.md -> adding-strategies.md
+E     index.md -> release-process.md
+E     overview.md -> agentic.md
+E     overview.md -> chunking.md
+E     overview.md -> hierarchical.md
+E     overview.md -> knowledge-graph.md
+E     overview.md -> late-chunking.md
+E     overview.md -> multi-query.md
+E     overview.md -> query-expansion.md
+E     overview.md -> reranking.md
+E     overview.md -> self-reflective.md
+E     overview.md -> agentic.md
+E     overview.md -> ../tutorials/pipeline-setup.md
+E     overview.md -> ../guides/configuration-reference.md
+E     overview.md -> ../guides/performance-tuning.md
+E     contextual.md -> ../tutorials/pipeline-setup.md
+E     contextual.md -> ../guides/configuration-reference.md
+E     contextual.md -> hierarchical.md
+E     contextual.md -> multi-query.md
+E     contextual.md -> reranking.md
+E     configuration.md -> ../guides/configuration-reference.md
+E     configuration.md -> ../guides/performance-tuning.md
+E     configuration.md -> ../guides/configuration-reference.md#environment-variables
+E     configuration.md -> ../guides/best-practices.md
+E     configuration.md -> ../troubleshooting/common-errors.md
+E     quick-start.md -> ../tutorials/pipeline-setup.md
+E     quick-start.md -> ../tutorials/production-deployment.md
+E     quick-start.md -> ../troubleshooting/common-errors.md
+E     installation.md -> ../troubleshooting/common-errors.md
+E     first-query.md -> ../tutorials/pipeline-setup.md
+E     first-query.md -> ../tutorials/performance-optimization.md
+E     first-query.md -> ../troubleshooting/performance-issues.md
+E     story-16.6-update-database-documentation.md -> ENVIRONMENT_VARIABLES.md
+E     story-16.6-update-database-documentation.md -> ../../tests/README.md
+E     story-16.6-update-database-documentation.md -> ../epics/epic-16-database-consolidation.md
+E     story-16.6-update-database-documentation.md -> ENVIRONMENT_VARIABLES.md
+E     story-16.6-update-database-documentation.md -> ../../tests/README.md
+E     story-16.6-update-database-documentation.md -> ../getting-started/installation.md
+E     story-16.6-update-database-documentation.md -> ../epics/epic-02-database-storage.md
+E     story-16.6-update-database-documentation.md -> ../epics/epic-11-dependency-injection.md
+E     story-16.6-update-database-documentation.md -> ../epics/epic-15-test-coverage-improvements/
+E     story-16.5-remove-migration-manager.md -> ../epics/epic-16-database-consolidation.md
+E     story-9.1-developer-documentation.md -> link
+E     README.md -> ../../epics/epic-10-lightweight-dependencies.md
+E     README.md -> ../../guides/onnx-conversion.md
+E     README.md -> ../../guides/lightweight-deployment.md
+E     README.md -> ../../epics/epic-07-experimental-strategies.md
+E     story-4.3-INTEGRATION-GUIDE.md -> ../../rag_factory/strategies/query_expansion/README.md
+E     story-4.3-INTEGRATION-GUIDE.md -> ../../examples/query_expansion_example.py
+E     story-4.3-INTEGRATION-GUIDE.md -> ../../tests/unit/strategies/query_expansion/
+E   assert 81 == 0
+E    +  where 81 = len(['index.md -> guides/configuration-reference.md', 'index.md -> tutorials/pipeline-setup.md', 'index.md -> guides/performance-tuning.md', 'index.md -> guides/best-practices.md', 'CLI-USER-GUIDE.md -> ./API.md', 'CLI-USER-GUIDE.md -> ./STRATEGIES.md', ...])
+__________ TestCodeExamples.test_all_code_examples_have_valid_syntax ___________
+tests/unit/documentation/test_code_examples.py:49: in test_all_code_examples_have_valid_syntax
+    assert len(errors) == 0, \
+E   AssertionError: Syntax errors in code examples:
+E     TEST-MIGRATION-ONNX.md:example_1: invalid syntax (TEST-MIGRATION-ONNX.md:example_1, line 1)
+E     TEST-MIGRATION-ONNX.md:example_3: invalid syntax (TEST-MIGRATION-ONNX.md:example_3, line 1)
+E     rag-factory-project-plan.md:example_1: unexpected indent (rag-factory-project-plan.md:example_1, line 1)
+E     rag-factory-project-plan.md:example_2: unexpected indent (rag-factory-project-plan.md:example_2, line 1)
+E     ONNX-PROVIDER-SUMMARY.md:example_0: invalid syntax. Perhaps you forgot a comma? (ONNX-PROVIDER-SUMMARY.md:example_0, line 6)
+E     ONNX-PROVIDER-SUMMARY.md:example_5: unexpected indent (ONNX-PROVIDER-SUMMARY.md:example_5, line 1)
+E     ONNX-PROVIDER-SUMMARY.md:example_6: unexpected indent (ONNX-PROVIDER-SUMMARY.md:example_6, line 1)
+E     ONNX-PROVIDER-SUMMARY.md:example_7: unexpected indent (ONNX-PROVIDER-SUMMARY.md:example_7, line 1)
+E     ONNX_EMBEDDING_SETUP.md:example_0: invalid syntax (ONNX_EMBEDDING_SETUP.md:example_0, line 1)
+E     ONNX_EMBEDDING_SETUP.md:example_5: invalid syntax (ONNX_EMBEDDING_SETUP.md:example_5, line 5)
+E     ONNX_EMBEDDING_SETUP.md:example_7: unexpected indent (ONNX_EMBEDDING_SETUP.md:example_7, line 1)
+E     epic-09-documentation.md:example_0: unexpected indent (epic-09-documentation.md:example_0, line 1)
+E     epic-09-documentation.md:example_1: unexpected indent (epic-09-documentation.md:example_1, line 1)
+E     epic-12-pipeline-separation.md:example_6: 'await' outside function (epic-12-pipeline-separation.md:example_6, line 13)
+E     epic-12-pipeline-separation.md:example_8: 'await' outside function (epic-12-pipeline-separation.md:example_8, line 12)
+E     epic-12-pipeline-separation.md:example_10: 'await' outside function (epic-12-pipeline-separation.md:example_10, line 22)
+E     rag-factory-project-plan.md:example_1: unexpected indent (rag-factory-project-plan.md:example_1, line 1)
+E     rag-factory-project-plan.md:example_2: unexpected indent (rag-factory-project-plan.md:example_2, line 1)
+E     epic-13-indexing-strategies.md:example_5: 'await' outside async function (epic-13-indexing-strategies.md:example_5, line 6)
+E     CONSOLIDATION_PLAN.md:example_4: 'await' outside function (CONSOLIDATION_PLAN.md:example_4, line 3)
+E     CONSOLIDATION_PLAN.md:example_5: 'await' outside function (CONSOLIDATION_PLAN.md:example_5, line 3)
+E     README.md:example_6: unexpected indent (README.md:example_6, line 1)
+E     README.md:example_10: unexpected indent (README.md:example_10, line 1)
+E     MIGRATION_MANAGER_REMOVAL.md:example_0: 'await' outside function (MIGRATION_MANAGER_REMOVAL.md:example_0, line 4)
+E     IMPLEMENTATION_CONTEXT.md:example_3: 'await' outside function (IMPLEMENTATION_CONTEXT.md:example_3, line 4)
+E     story-16.3-create-database-fixtures.md:example_0: unterminated triple-quoted string literal (detected at line 95) (story-16.3-create-database-fixtures.md:example_0, line 82)
+E     story-16.3-create-database-fixtures.md:example_1: unexpected indent (story-16.3-create-database-fixtures.md:example_1, line 1)
+E     story-16.3-create-database-fixtures.md:example_2: unexpected indent (story-16.3-create-database-fixtures.md:example_2, line 1)
+E     story-16.3-create-database-fixtures.md:example_3: unexpected indent (story-16.3-create-database-fixtures.md:example_3, line 1)
+E     story-16.4-migrate-tests-to-alembic.md:example_3: 'await' outside async function (story-16.4-migrate-tests-to-alembic.md:example_3, line 5)
+E     story-16.5-remove-migration-manager.md:example_0: 'await' outside function (story-16.5-remove-migration-manager.md:example_0, line 3)
+E     story-16.5-remove-migration-manager.md:example_2: 'await' outside function (story-16.5-remove-migration-manager.md:example_2, line 4)
+E     story-5.1-agentic-rag-strategy.md:example_0: invalid syntax (story-5.1-agentic-rag-strategy.md:example_0, line 2)
+E     story-13.5-in-memory-indexing.md:example_1: 'await' outside async function (story-13.5-in-memory-indexing.md:example_1, line 6)
+E     story-9.1-developer-documentation.md:example_0: invalid syntax (story-9.1-developer-documentation.md:example_0, line 2)
+E     story-9.1-developer-documentation.md:example_2: invalid syntax (story-9.1-developer-documentation.md:example_2, line 5)
+E     story-9.1-developer-documentation.md:example_3: unterminated triple-quoted string literal (detected at line 16) (story-9.1-developer-documentation.md:example_3, line 6)
+E     story-9.1-developer-documentation.md:example_8: unterminated string literal (detected at line 81) (story-9.1-developer-documentation.md:example_8, line 81)
+E     README.md:example_1: unexpected indent (README.md:example_1, line 4)
+E     story-2.1-vector-database-setup.md:example_0: invalid syntax (story-2.1-vector-database-setup.md:example_0, line 2)
+E     story-10.2-replace-tokenization-with-tiktoken.md:example_0: invalid syntax (story-10.2-replace-tokenization-with-tiktoken.md:example_0, line 2)
+E     story-10.1-migrate-embedding-services-to-onnx.md:example_0: invalid syntax (story-10.1-migrate-embedding-services-to-onnx.md:example_0, line 2)
+E     story-10.4-migrate-reranking-to-lightweight-alternatives.md:example_0: invalid syntax (story-10.4-migrate-reranking-to-lightweight-alternatives.md:example_0, line 3)
+E     story-7.3-fine-tuned-embeddings-strategy.md:example_0: invalid syntax (story-7.3-fine-tuned-embeddings-strategy.md:example_0, line 2)
+E     story-7.2-late-chunking-strategy.md:example_0: invalid syntax (story-7.2-late-chunking-strategy.md:example_0, line 2)
+E     story-7.1-knowledge-graph-strategy.md:example_0: invalid syntax (story-7.1-knowledge-graph-strategy.md:example_0, line 2)
+E     VERIFICATION.md:example_0: unexpected indent (VERIFICATION.md:example_0, line 1)
+E     VERIFICATION.md:example_1: unexpected indent (VERIFICATION.md:example_1, line 1)
+E     VERIFICATION.md:example_2: unexpected indent (VERIFICATION.md:example_2, line 1)
+E     VERIFICATION.md:example_3: unexpected indent (VERIFICATION.md:example_3, line 2)
+E     story-4.3-query-expansion.md:example_0: invalid syntax (story-4.3-query-expansion.md:example_0, line 3)
+E     story-4.1-COMPLETION-SUMMARY.md:example_0: invalid syntax (story-4.1-COMPLETION-SUMMARY.md:example_0, line 2)
+E     story-4.1-context-aware-chunking.md:example_0: invalid syntax (story-4.1-context-aware-chunking.md:example_0, line 2)
+E     story-4.1-context-aware-chunking.md:example_1: unterminated string literal (detected at line 118) (story-4.1-context-aware-chunking.md:example_1, line 118)
+E     story-4.1-context-aware-chunking.md:example_5: unterminated triple-quoted string literal (detected at line 150) (story-4.1-context-aware-chunking.md:example_5, line 147)
+E     story-4.2-reranking-strategy.md:example_0: invalid syntax (story-4.2-reranking-strategy.md:example_0, line 2)
+E     story-3.2-COMPLETION-SUMMARY.md:example_0: invalid syntax (story-3.2-COMPLETION-SUMMARY.md:example_0, line 2)
+E     story-3.2-llm-service-adapter.md:example_0: invalid syntax (story-3.2-llm-service-adapter.md:example_0, line 2)
+E     story-3.2-llm-service-adapter.md:example_10: invalid syntax (story-3.2-llm-service-adapter.md:example_10, line 2)
+E     story-3.1-embedding-service.md:example_0: invalid syntax (story-3.1-embedding-service.md:example_0, line 2)
+E     story-3.1-embedding-service.md:example_12: invalid syntax (story-3.1-embedding-service.md:example_12, line 2)
+E     story-6.2-contextual-retrieval-strategy.md:example_2: unterminated string literal (detected at line 102) (story-6.2-contextual-retrieval-strategy.md:example_2, line 102)
+E     story-6.2-contextual-retrieval-strategy.md:example_7: unterminated string literal (detected at line 81) (story-6.2-contextual-retrieval-strategy.md:example_7, line 81)
+E     VERIFICATION.md:example_0: 'await' outside function (VERIFICATION.md:example_0, line 7)
+E     VERIFICATION.md:example_1: 'await' outside function (VERIFICATION.md:example_1, line 8)
+E     VERIFICATION.md:example_4: 'await' outside function (VERIFICATION.md:example_4, line 22)
+E     VERIFICATION.md:example_5: 'await' outside function (VERIFICATION.md:example_5, line 21)
+E     VERIFICATION.md:example_6: 'await' outside function (VERIFICATION.md:example_6, line 12)
+E     VERIFICATION.md:example_9: 'await' outside function (VERIFICATION.md:example_9, line 24)
+E     VERIFICATION.md:example_10: 'await' outside function (VERIFICATION.md:example_10, line 3)
+E     VERIFICATION.md:example_11: 'await' outside function (VERIFICATION.md:example_11, line 6)
+E     VERIFICATION.md:example_12: 'await' outside function (VERIFICATION.md:example_12, line 10)
+E     VERIFICATION.md:example_13: 'await' outside function (VERIFICATION.md:example_13, line 10)
+E     VERIFICATION.md:example_14: 'await' outside function (VERIFICATION.md:example_14, line 5)
+E     VERIFICATION.md:example_15: 'await' outside function (VERIFICATION.md:example_15, line 2)
+E     VERIFICATION.md:example_16: 'await' outside function (VERIFICATION.md:example_16, line 17)
+E     VERIFICATION.md:example_17: 'await' outside function (VERIFICATION.md:example_17, line 5)
+E     story-6.1-multi-query-rag-strategy.md:example_0: invalid syntax (story-6.1-multi-query-rag-strategy.md:example_0, line 2)
+E     README.md:example_0: 'await' outside function (README.md:example_0, line 2)
+E     README.md:example_1: 'return' outside function (README.md:example_1, line 3)
+E     README.md:example_5: 'await' outside function (README.md:example_5, line 7)
+E     VERIFICATION.md:example_0: unexpected indent (VERIFICATION.md:example_0, line 1)
+E     VERIFICATION.md:example_1: unexpected indent (VERIFICATION.md:example_1, line 1)
+E     VERIFICATION.md:example_2: unexpected indent (VERIFICATION.md:example_2, line 1)
+E     VERIFICATION.md:example_3: unexpected indent (VERIFICATION.md:example_3, line 1)
+E     VERIFICATION.md:example_4: unexpected indent (VERIFICATION.md:example_4, line 1)
+E     VERIFICATION.md:example_5: unexpected indent (VERIFICATION.md:example_5, line 1)
+E     VERIFICATION.md:example_6: unexpected indent (VERIFICATION.md:example_6, line 1)
+E     VERIFICATION.md:example_7: unexpected indent (VERIFICATION.md:example_7, line 2)
+E     VERIFICATION.md:example_8: unexpected indent (VERIFICATION.md:example_8, line 1)
+E     story-8.1-monitoring-logging-system.md:example_0: invalid syntax (story-8.1-monitoring-logging-system.md:example_0, line 2)
+E     story-8.2-evaluation-framework.md:example_0: invalid syntax (story-8.2-evaluation-framework.md:example_0, line 2)
+E     story-8.1-COMPLETION-SUMMARY.md:example_3: invalid syntax (story-8.1-COMPLETION-SUMMARY.md:example_3, line 2)
+E   assert 93 == 0
+E    +  where 93 = len(['TEST-MIGRATION-ONNX.md:example_1: invalid syntax (TEST-MIGRATION-ONNX.md:example_1, line 1)', 'TEST-MIGRATION-ONNX.md:example_3: invalid syntax (TEST-MIGRATION-ONNX.md:example_3, line 1)', 'rag-factory-project-plan.md:example_1: unexpected indent (rag-factory-project-plan.md:example_1, line 1)', 'rag-factory-project-plan.md:example_2: unexpected indent (rag-factory-project-plan.md:example_2, line 1)', 'ONNX-PROVIDER-SUMMARY.md:example_0: invalid syntax. Perhaps you forgot a comma? (ONNX-PROVIDER-SUMMARY.md:example_0, line 6)', 'ONNX-PROVIDER-SUMMARY.md:example_5: unexpected indent (ONNX-PROVIDER-SUMMARY.md:example_5, line 1)', ...])
+__________________ TestCodeExamples.test_no_placeholder_code ___________________
+tests/unit/documentation/test_code_examples.py:134: in test_no_placeholder_code
+    assert len(files_with_placeholders) < 3, \
+E   AssertionError: Files with placeholder code: ['epic-11-dependency-injection.md', 'epic-13-indexing-strategies.md', 'epic-13-indexing-strategies.md', 'design-patterns.md', 'story-1.1-rag-strategy-interface.md', 'story-1.4-configuration-management.md', 'story-1.2-rag-factory.md', 'story-13.4-hierarchical-indexing.md', 'story-13.1-context-aware-chunking.md', 'story-7.2-late-chunking-strategy.md', 'story-7.1-knowledge-graph-strategy.md', 'story-8.2-evaluation-framework.md']
+E   assert 12 < 3
+E    +  where 12 = len(['epic-11-dependency-injection.md', 'epic-13-indexing-strategies.md', 'epic-13-indexing-strategies.md', 'design-patterns.md', 'story-1.1-rag-strategy-interface.md', 'story-1.4-configuration-management.md', ...])
+_________________________ test_strategy_initialization _________________________
+tests/unit/strategies/agentic/test_strategy.py:111: in test_strategy_initialization
+    assert len(strategy.tools) == 4  # All tools enabled by default
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   assert 0 == 4
+E    +  where 0 = len([])
+E    +    where [] = <rag_factory.strategies.agentic.strategy.AgenticRAGStrategy object at 0x7a346e901820>.tools
+___________________ test_strategy_initialization_with_config ___________________
+tests/unit/strategies/agentic/test_strategy.py:136: in test_strategy_initialization_with_config
+    assert strategy.config.max_iterations == 5
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'dict' object has no attribute 'max_iterations'
+=============================== warnings summary ===============================
+rag_factory/services/llm/config.py:8
+  /mnt/MCPProyects/ragTools/rag_factory/services/llm/config.py:8: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class LLMServiceConfig(BaseModel):
+
+rag_factory/database/config.py:12
+  /mnt/MCPProyects/ragTools/rag_factory/database/config.py:12: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class DatabaseConfig(BaseSettings):
+
+rag_factory/strategies/agentic/config.py:9
+  /mnt/MCPProyects/ragTools/rag_factory/strategies/agentic/config.py:9: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class AgenticStrategyConfig(BaseModel):
+
+tests/unit/strategies/agentic/test_strategy.py::test_strategy_get_stats
+  /mnt/MCPProyects/ragTools/rag_factory/strategies/agentic/strategy.py:252: PydanticDeprecatedSince20: The `dict` method is deprecated; use `model_dump` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    "config": self.strategy_config.dict()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.12.3-final-0 ________________
+
+Name                                                               Stmts   Miss  Cover   Missing
+------------------------------------------------------------------------------------------------
+rag_factory/__init__.py                                               37      9    76%   100-101, 107-109, 121-122, 130-131
+rag_factory/__version__.py                                             1      0   100%
+rag_factory/cli/__init__.py                                            2      0   100%
+rag_factory/cli/commands/__init__.py                                   1      0   100%
+rag_factory/cli/commands/benchmark.py                                 96     81    16%   40-53, 64-84, 148-263
+rag_factory/cli/commands/check_consistency.py                         38     28    26%   64-113
+rag_factory/cli/commands/config.py                                    78     68    13%   26-64, 102-188
+rag_factory/cli/commands/index.py                                     65     52    20%   29-39, 93-185
+rag_factory/cli/commands/query.py                                     47     36    23%   73-149
+rag_factory/cli/commands/repl.py                                     153    132    14%   28-56, 63-108, 112-120, 124-133, 137-155, 159-172, 176-187, 191-208, 212-221, 254-261
+rag_factory/cli/commands/strategies.py                                45     36    20%   48-120
+rag_factory/cli/commands/validate_pipeline.py                         70     57    19%   57-156
+rag_factory/cli/formatters/__init__.py                                 4      0   100%
+rag_factory/cli/formatters/consistency.py                             61     55    10%   21-69, 79-103, 108-138
+rag_factory/cli/formatters/output.py                                  20      9    55%   23-24, 43-44, 63-64, 74, 79, 84
+rag_factory/cli/formatters/results.py                                 71     62    13%   28-55, 72-99, 116-144, 157-181
+rag_factory/cli/formatters/validation.py                              63     53    16%   25-43, 48-56, 65-77, 86-98, 103-129, 134-137
+rag_factory/cli/main.py                                               30     10    67%   25-28, 48-49, 74-76, 80
+rag_factory/cli/utils/__init__.py                                      3      0   100%
+rag_factory/cli/utils/progress.py                                     14      8    43%   34-47, 73-76
+rag_factory/cli/utils/validation.py                                   53     42    21%   30-41, 57-77, 93-118, 135
+rag_factory/config.py                                                155     99    36%   134-139, 189-191, 216-232, 247-266, 275, 301-310, 327-335, 357-369, 388-395, 416-440, 449-452, 464-469, 479, 496-498, 506-508, 521-526, 536-542
+rag_factory/core/__init__.py                                           4      4     0%   7-23
+rag_factory/core/capabilities.py                                      61     16    74%   129, 155, 173-174, 239-253
+rag_factory/core/indexing_interface.py                                54     35    35%   55-57, 118-123, 144, 164, 208, 260, 272, 292-313, 341-364
+rag_factory/core/pipeline.py                                          49     35    29%   22-24, 33-40, 55-77, 95-96, 105-108, 117-120, 137-146
+rag_factory/core/retrieval_interface.py                               38     20    47%   56-58, 112-117, 138, 158, 196, 247, 259, 285-309
+rag_factory/database/__init__.py                                       4      0   100%
+rag_factory/database/config.py                                        17      0   100%
+rag_factory/database/connection.py                                    80     54    32%   40-48, 61-86, 96, 107, 126-137, 150-157, 165-170, 178-183, 196-197, 209-214, 218, 222
+rag_factory/database/env_validator.py                                 38     38     0%   7-139
+rag_factory/database/models.py                                        85     32    62%   31-34, 37-45, 48-54, 66-69, 72-77, 80-85, 181, 323-325
+rag_factory/database/vector_indexing.py                               38     38     0%   7-114
+rag_factory/evaluation/__init__.py                                     4      4     0%   29-41
+rag_factory/evaluation/analysis/__init__.py                            3      3     0%   8-11
+rag_factory/evaluation/analysis/comparison.py                        135    135     0%   8-323
+rag_factory/evaluation/analysis/statistics.py                         81     81     0%   8-320
+rag_factory/evaluation/benchmarks/__init__.py                          3      3     0%   8-14
+rag_factory/evaluation/benchmarks/config.py                           25     25     0%   7-64
+rag_factory/evaluation/benchmarks/runner.py                          155    155     0%   8-423
+rag_factory/evaluation/datasets/__init__.py                            3      3     0%   8-14
+rag_factory/evaluation/datasets/loader.py                             88     88     0%   8-281
+rag_factory/evaluation/datasets/schema.py                             52     52     0%   8-160
+rag_factory/evaluation/datasets/statistics.py                         65     65     0%   8-226
+rag_factory/evaluation/exporters/__init__.py                           4      4     0%   8-12
+rag_factory/evaluation/exporters/csv_exporter.py                      52     52     0%   3-124
+rag_factory/evaluation/exporters/html_exporter.py                     47     47     0%   3-293
+rag_factory/evaluation/exporters/json_exporter.py                     19     19     0%   3-68
+rag_factory/evaluation/metrics/__init__.py                             3      3     0%   12-25
+rag_factory/evaluation/metrics/base.py                                31     31     0%   8-115
+rag_factory/evaluation/metrics/cost.py                                65     65     0%   8-313
+rag_factory/evaluation/metrics/performance.py                         42     42     0%   8-202
+rag_factory/evaluation/metrics/quality.py                             84     84     0%   8-377
+rag_factory/evaluation/metrics/retrieval.py                           77     77     0%   9-401
+rag_factory/exceptions.py                                             13      0   100%
+rag_factory/factory.py                                               187    141    25%   109-116, 144, 165-170, 202-230, 256-270, 300-324, 347-348, 365, 384, 401, 418, 435, 451-460, 480-502, 528-545, 568-611, 644-699, 703-715, 744-749
+rag_factory/models/__init__.py                                         6      6     0%   3-14
+rag_factory/models/embedding/__init__.py                               4      4     0%   3-12
+rag_factory/models/embedding/loader.py                               179    179     0%   3-367
+rag_factory/models/embedding/models.py                                47     47     0%   3-106
+rag_factory/models/embedding/registry.py                             128    128     0%   3-282
+rag_factory/models/evaluation/__init__.py                              3      3     0%   3-6
+rag_factory/models/evaluation/ab_testing.py                           97     97     0%   3-279
+rag_factory/models/evaluation/models.py                               29     29     0%   3-74
+rag_factory/observability/__init__.py                                  3      0   100%
+rag_factory/observability/integrations/__init__.py                     1      1     0%   3
+rag_factory/observability/integrations/prometheus.py                  47     47     0%   3-229
+rag_factory/observability/logging/__init__.py                          2      0   100%
+rag_factory/observability/logging/config.py                           16     16     0%   3-37
+rag_factory/observability/logging/filters.py                          41     41     0%   3-103
+rag_factory/observability/logging/logger.py                           86     46    47%   49, 99-103, 108-115, 140-162, 190-229, 250, 270, 290-291, 306, 315, 324, 333, 344-373, 394-396
+rag_factory/observability/metrics/__init__.py                          2      0   100%
+rag_factory/observability/metrics/collector.py                       143     96    33%   66-68, 77-79, 88-90, 99, 108, 117, 128-143, 193-198, 221-266, 284-290, 304, 335-340, 352-364, 372-404, 442-443, 457-459
+rag_factory/observability/metrics/cost.py                             39     39     0%   3-221
+rag_factory/observability/metrics/performance.py                      64     64     0%   3-196
+rag_factory/observability/monitoring/__init__.py                       1      1     0%   3
+rag_factory/observability/monitoring/api.py                          101    101     0%   3-328
+rag_factory/pipeline.py                                              156    118    24%   131-134, 160-167, 184-188, 205-209, 222-254, 277-312, 335-377, 402-406, 422-430, 444-450, 489-507
+rag_factory/repositories/__init__.py                                   5      0   100%
+rag_factory/repositories/base.py                                      42     21    50%   38, 53, 70, 87, 103, 114-118, 125, 136-139, 159-164
+rag_factory/repositories/chunk.py                                    206    180    13%   40-45, 68-76, 90-95, 120-133, 155-171, 187-202, 221-231, 250-261, 287-328, 355-396, 422-474, 489-499, 513-521, 537-543, 557-563, 577-587, 604-626, 639-670
+rag_factory/repositories/document.py                                  93     74    20%   41-46, 63-68, 98-118, 140-156, 172-187, 206, 223-233, 247-255, 272-279, 290-293, 307-312
+rag_factory/repositories/exceptions.py                                18      7    61%   34-36, 56-59
+rag_factory/services/__init__.py                                       8      0   100%
+rag_factory/services/api/__init__.py                                   4      0   100%
+rag_factory/services/api/anthropic.py                                 27     18    33%   46-52, 76-94, 118-141
+rag_factory/services/api/cohere.py                                    30     19    37%   14-15, 49-59, 82-113
+rag_factory/services/api/openai.py                                    46     31    33%   45-51, 75-93, 117-140, 168-174, 189-199, 216-227, 235
+rag_factory/services/consistency.py                                   32     24    25%   80-113, 144-170
+rag_factory/services/database/__init__.py                              3      0   100%
+rag_factory/services/database/neo4j.py                                54     36    33%   14, 60-71, 79-84, 103-114, 134-150, 172-181, 188-191, 195, 199
+rag_factory/services/database/postgres.py                             91     71    22%   17-18, 72-87, 97-111, 115-139, 152-185, 209-242, 256-271, 286-301, 333-351, 358-361, 365, 369
+rag_factory/services/dependencies.py                                  41     14    66%   99, 101, 103, 105, 107, 134-140, 176-180
+rag_factory/services/embedding/__init__.py                             4      0   100%
+rag_factory/services/embedding/base.py                                31      6    81%   44, 59, 68, 77, 86, 98
+rag_factory/services/embedding/cache.py                               43     33    23%   26-32, 43-58, 67-76, 80-82, 90-94
+rag_factory/services/embedding/config.py                              29     13    55%   37-43, 50-68, 80
+rag_factory/services/embedding/providers/__init__.py                   5      0   100%
+rag_factory/services/embedding/providers/cohere.py                    53     36    32%   10-20, 55-75, 90-117, 125, 133, 141, 152-153
+rag_factory/services/embedding/providers/local.py                     43     27    37%   8-9, 46-67, 83-109, 117, 125, 133, 146
+rag_factory/services/embedding/providers/onnx_local.py               116     92    21%   18-19, 24-25, 89-184, 200-250, 261-308, 319, 327, 335, 348
+rag_factory/services/embedding/providers/openai.py                    51     34    33%   10-20, 53-72, 87-108, 116, 124, 132, 143-144
+rag_factory/services/embedding/rate_limiter.py                        20     14    30%   27-37, 45-53
+rag_factory/services/embedding/service.py                            100     83    17%   50-62, 79-93, 117-198, 220-222, 233-239, 248-266, 273-275
+rag_factory/services/interfaces.py                                    35      0   100%
+rag_factory/services/llm/__init__.py                                   5      0   100%
+rag_factory/services/llm/base.py                                      43      0   100%
+rag_factory/services/llm/config.py                                    23     11    52%   42-57
+rag_factory/services/llm/prompt_template.py                           43     24    44%   47-82, 97-100, 111-115
+rag_factory/services/llm/providers/__init__.py                        12     10    17%   10-22
+rag_factory/services/llm/providers/anthropic.py                       57     42    26%   44-50, 64-97, 120-147, 171-172, 184-189, 197, 205
+rag_factory/services/llm/providers/ollama.py                          55     55     0%   3-196
+rag_factory/services/llm/providers/openai.py                          57     41    28%   50-62, 76-110, 133-158, 173, 186-194, 202, 210
+rag_factory/services/llm/service.py                                   66     51    23%   32-39, 56-70, 93-129, 154-175, 186, 194-198, 215-216
+rag_factory/services/llm/token_counter.py                             27     17    37%   22-41, 56-57, 71-72
+rag_factory/services/local/__init__.py                                 2      0   100%
+rag_factory/services/local/reranker.py                                32     22    31%   13-14, 45-52, 78-116
+rag_factory/services/onnx/__init__.py                                  2      0   100%
+rag_factory/services/onnx/embedding.py                                29     19    34%   54-68, 83-93, 110-121, 129
+rag_factory/services/utils/__init__.py                                 2      0   100%
+rag_factory/services/utils/model_converter.py                        104    104     0%   8-291
+rag_factory/services/utils/onnx_utils.py                             171    150    12%   22-23, 28-29, 40-48, 81-193, 213-234, 260-306, 328-362, 379-400, 420-435, 448-466, 480-492
+rag_factory/services/utils/reranker_selector.py                       68     68     0%   8-249
+rag_factory/strategies/__init__.py                                     2      0   100%
+rag_factory/strategies/agentic/__init__.py                             7      0   100%
+rag_factory/strategies/agentic/agent.py                              151    127    16%   31-36, 45, 57, 66-90, 123-161, 190-214, 230-265, 276-293, 310-331, 339-346, 357-368, 381-420
+rag_factory/strategies/agentic/config.py                              12      0   100%
+rag_factory/strategies/agentic/frameworks/__init__.py                  1      1     0%   9
+rag_factory/strategies/agentic/query_analyzer.py                      89     13    85%   119, 168, 172, 176, 199, 201, 203, 211-212, 233, 241, 249, 257
+rag_factory/strategies/agentic/strategy.py                            76     14    82%   107, 119, 132, 208-221
+rag_factory/strategies/agentic/tool_implementations.py               135     91    33%   36-37, 41, 45, 52, 86-129, 148-149, 153, 157, 164, 182-247, 266-267, 271, 275, 282, 329-373, 392-393, 397, 401, 407, 446-511
+rag_factory/strategies/agentic/tools.py                               40      9    78%   66, 79, 89, 101, 112, 139-142
+rag_factory/strategies/base.py                                        55      8    85%   80-85, 177-178
+rag_factory/strategies/chunking/__init__.py                           15      4    73%   45-48
+rag_factory/strategies/chunking/base.py                               91     35    62%   115-128, 146, 159, 171, 182-196, 207-217, 228-256
+rag_factory/strategies/chunking/docling_chunker.py                    45     26    42%   18, 61-73, 89-101, 112, 131-136, 147-152, 163-168, 186-188
+rag_factory/strategies/chunking/fixed_size_chunker.py                 74     61    18%   8-9, 33-46, 58-111, 122, 145-159, 171-185, 196-204
+rag_factory/strategies/chunking/hybrid_chunker.py                     70     58    17%   36-48, 63-132, 143, 157-160, 173-192
+rag_factory/strategies/chunking/semantic_chunker.py                  195    171    12%   9-10, 14-15, 45-71, 83-128, 139, 155-156, 172-177, 193-206, 218-227, 245-277, 293-328, 340-386, 397-423, 434-441, 459-473, 485-534
+rag_factory/strategies/chunking/structural_chunker.py                147    128    13%   9-10, 37-50, 62-69, 80, 95, 107-144, 155-201, 222-288, 299-305, 317-366, 377-385, 399-425
+rag_factory/strategies/chunking/utils.py                              89     89     0%   3-264
+rag_factory/strategies/contextual/__init__.py                          7      7     0%   8-19
+rag_factory/strategies/contextual/batch_processor.py                  86     86     0%   8-257
+rag_factory/strategies/contextual/config.py                           46     46     0%   8-195
+rag_factory/strategies/contextual/context_generator.py                84     84     0%   8-234
+rag_factory/strategies/contextual/cost_tracker.py                     32     32     0%   8-126
+rag_factory/strategies/contextual/prompts.py                          25     25     0%   8-119
+rag_factory/strategies/contextual/storage.py                          44     44     0%   8-118
+rag_factory/strategies/contextual/strategy.py                         65     65     0%   8-278
+rag_factory/strategies/fine_tuned/__init__.py                          4      4     0%   1-5
+rag_factory/strategies/fine_tuned/ab_testing.py                       78     78     0%   1-134
+rag_factory/strategies/fine_tuned/config.py                           11     11     0%   1-30
+rag_factory/strategies/fine_tuned/custom_loader.py                    40     40     0%   1-88
+rag_factory/strategies/fine_tuned/model_registry.py                  126    126     0%   1-303
+rag_factory/strategies/hierarchical/__init__.py                        5      5     0%   8-21
+rag_factory/strategies/hierarchical/hierarchy_builder.py              79     79     0%   8-335
+rag_factory/strategies/hierarchical/models.py                         58     58     0%   8-137
+rag_factory/strategies/hierarchical/parent_retriever.py               89     89     0%   8-278
+rag_factory/strategies/hierarchical/strategy.py                       66     66     0%   9-284
+rag_factory/strategies/indexing/__init__.py                            5      0   100%
+rag_factory/strategies/indexing/context_aware.py                      97     79    19%   29, 40, 60-120, 141-142, 146-156, 168-174, 178-184, 194-223, 227-228
+rag_factory/strategies/indexing/hierarchical.py                       83     68    18%   48, 60, 84-121, 143-172, 188-223, 240-265, 279-280
+rag_factory/strategies/indexing/in_memory.py                          41     25    39%   54, 65, 93-121, 143, 160, 173, 194-200
+rag_factory/strategies/indexing/keyword_indexing.py                   40     40     0%   8-155
+rag_factory/strategies/indexing/vector_embedding.py                   29     21    28%   21, 30, 53-91
+rag_factory/strategies/knowledge_graph/__init__.py                     4      4     0%   8-19
+rag_factory/strategies/knowledge_graph/config.py                      21     21     0%   8-129
+rag_factory/strategies/knowledge_graph/entity_extractor.py            70     70     0%   7-205
+rag_factory/strategies/knowledge_graph/graph_store.py                 31     31     0%   8-124
+rag_factory/strategies/knowledge_graph/hybrid_retriever.py            56     56     0%   8-164
+rag_factory/strategies/knowledge_graph/memory_graph_store.py          97     97     0%   8-196
+rag_factory/strategies/knowledge_graph/models.py                      53     53     0%   8-122
+rag_factory/strategies/knowledge_graph/relationship_extractor.py      62     62     0%   8-189
+rag_factory/strategies/knowledge_graph/strategy.py                    78     78     0%   8-255
+rag_factory/strategies/late_chunking/__init__.py                       6      6     0%   8-21
+rag_factory/strategies/late_chunking/coherence_analyzer.py            27     27     0%   7-96
+rag_factory/strategies/late_chunking/document_embedder.py             99     99     0%   8-311
+rag_factory/strategies/late_chunking/embedding_chunker.py            112    112     0%   7-286
+rag_factory/strategies/late_chunking/models.py                        62     62     0%   8-100
+rag_factory/strategies/late_chunking/strategy.py                      49     49     0%   8-143
+rag_factory/strategies/multi_query/__init__.py                         7      7     0%   8-19
+rag_factory/strategies/multi_query/config.py                          36     36     0%   3-138
+rag_factory/strategies/multi_query/deduplicator.py                    87     87     0%   3-197
+rag_factory/strategies/multi_query/parallel_executor.py               52     52     0%   3-163
+rag_factory/strategies/multi_query/prompts.py                         10     10     0%   3-84
+rag_factory/strategies/multi_query/ranker.py                          80     80     0%   3-201
+rag_factory/strategies/multi_query/strategy.py                        66     66     0%   3-182
+rag_factory/strategies/multi_query/variant_generator.py               62     62     0%   3-187
+rag_factory/strategies/query_expansion/__init__.py                     8      0   100%
+rag_factory/strategies/query_expansion/base.py                        66     10    85%   90, 103, 114-118, 130-133
+rag_factory/strategies/query_expansion/cache.py                       52     40    23%   20-22, 38-55, 64-66, 70-73, 81-97, 105-112
+rag_factory/strategies/query_expansion/expander_service.py            91     70    23%   36-40, 55-58, 75-141, 152-173, 197-208, 226-227, 235-239, 247, 258-266, 276-277
+rag_factory/strategies/query_expansion/hyde_expander.py               19     12    37%   25-27, 41-65
+rag_factory/strategies/query_expansion/llm_expander.py                25     16    36%   23-25, 39-71, 99
+rag_factory/strategies/query_expansion/metrics.py                     66     30    55%   44-45, 53-57, 76-109, 130, 134, 146-152, 160
+rag_factory/strategies/query_expansion/prompts.py                     13      7    46%   16, 28-56, 68-107
+rag_factory/strategies/reranking/__init__.py                           7      0   100%
+rag_factory/strategies/reranking/base.py                              68     16    76%   81, 101, 106, 110-119, 123-130
+rag_factory/strategies/reranking/bge_reranker.py                      51     37    27%   14, 53-81, 103-147, 151
+rag_factory/strategies/reranking/cache.py                             48     34    29%   32-34, 51-66, 76-77, 81, 90-101, 110-113, 121, 136-138
+rag_factory/strategies/reranking/cohere_reranker.py                   34     20    41%   15-16, 55-71, 94-115, 119
+rag_factory/strategies/reranking/cosine_reranker.py                   62     47    24%   54-72, 97-139, 158-171, 188, 209-215, 227-230, 242-245, 249
+rag_factory/strategies/reranking/cross_encoder_reranker.py            40     27    32%   13-14, 53-76, 98-120, 124
+rag_factory/strategies/reranking/metrics.py                           67     67     0%   8-264
+rag_factory/strategies/reranking/reranker_service.py                 115     88    23%   56-67, 71-96, 113-225, 235-255, 269, 282-283, 287-292, 296-300, 308-310
+rag_factory/strategies/self_reflective/__init__.py                     6      6     0%   3-16
+rag_factory/strategies/self_reflective/config.py                      20     20     0%   3-42
+rag_factory/strategies/self_reflective/grader.py                      80     80     0%   3-266
+rag_factory/strategies/self_reflective/models.py                      48     48     0%   3-109
+rag_factory/strategies/self_reflective/refiner.py                     69     69     0%   3-228
+rag_factory/strategies/self_reflective/strategy.py                    89     89     0%   3-264
+rag_factory/utils/__init__.py                                          3      0   100%
+rag_factory/utils/token_counter.py                                    45     30    33%   36-40, 52-62, 74-82, 86, 90, 105-106, 124-135, 153-158
+rag_factory/utils/tokenization.py                                     95     73    23%   36-40, 53-64, 87-114, 126-129, 141-144, 156, 175-190, 209-228, 241-243, 251-252, 270-271, 292-293, 314-315
+------------------------------------------------------------------------------------------------
+TOTAL                                                              11084   8974    19%
+=========================== short test summary info ============================
+FAILED tests/unit/documentation/test_links.py::TestDocumentationLinks::test_no_broken_internal_links
+FAILED tests/unit/documentation/test_code_examples.py::TestCodeExamples::test_all_code_examples_have_valid_syntax
+FAILED tests/unit/documentation/test_code_examples.py::TestCodeExamples::test_no_placeholder_code
+FAILED tests/unit/strategies/agentic/test_strategy.py::test_strategy_initialization
+FAILED tests/unit/strategies/agentic/test_strategy.py::test_strategy_initialization_with_config
+============= 5 failed, 13 passed, 2 skipped, 4 warnings in 12.21s =============
+
+========================================
+Test run completed at 2025-12-14 13:15:35
+========================================

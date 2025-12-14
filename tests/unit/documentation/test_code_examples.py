@@ -24,7 +24,7 @@ class TestCodeExamples:
         if not md_file.exists():
             return []
         
-        with open(md_file, encoding='utf-8') as f:
+        with open(md_file, encoding='utf-8', errors='replace') as f:
             content = f.read()
 
         # Find all ```python code blocks

@@ -15,10 +15,16 @@ from rag_factory.strategies.base import (
 @pytest.mark.integration
 def test_strategy_full_lifecycle():
     """Test complete lifecycle: initialize -> prepare -> retrieve."""
+    from rag_factory.services.dependencies import StrategyDependencies, ServiceDependency
+    from typing import Set
+    
     class DummyStrategy(IRAGStrategy):
-        def initialize(self, config: StrategyConfig):
-            self.config = config
-            self.data_prepared = False
+        def requires_services(self) -> Set[ServiceDependency]:
+            return set()  # No services required for this dummy
+        
+        def __init__(self, config: Dict[str, Any], dependencies: StrategyDependencies):
+            super().__init__(config, dependencies)
+            self.data_prepared = False # Still track for this specific test's logic
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> PreparedData:
             self.data_prepared = True
@@ -58,10 +64,10 @@ def test_strategy_full_lifecycle():
         def process_query(self, query: str, context: List[Chunk]) -> str:
             return f"Processed: {query}"
 
-    # Initialize
-    strategy = DummyStrategy()
-    config = StrategyConfig(top_k=3)
-    strategy.initialize(config)
+    # Initialize with new pattern
+    config = {"top_k": 3}
+    dependencies = StrategyDependencies()
+    strategy = DummyStrategy(config=config, dependencies=dependencies)
 
     # Prepare data
     result = strategy.prepare_data([{"text": "doc1"}])
@@ -78,9 +84,12 @@ def test_strategy_full_lifecycle():
 @pytest.mark.integration
 def test_multiple_strategies_implement_interface():
     """Test that multiple different strategies can implement the interface."""
+    from rag_factory.services.dependencies import StrategyDependencies, ServiceDependency
+    from typing import Set
+    
     class StrategyA(IRAGStrategy):
-        def initialize(self, config: StrategyConfig) -> None:
-            self.config = config
+        def requires_services(self) -> Set[ServiceDependency]:
+            return set()
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> PreparedData:
             return PreparedData(chunks=[], embeddings=[], index_metadata={"type": "A"})
@@ -95,8 +104,8 @@ def test_multiple_strategies_implement_interface():
             return "Strategy A"
 
     class StrategyB(IRAGStrategy):
-        def initialize(self, config: StrategyConfig) -> None:
-            self.config = config
+        def requires_services(self) -> Set[ServiceDependency]:
+            return set()
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> PreparedData:
             return PreparedData(chunks=[], embeddings=[], index_metadata={"type": "B"})
@@ -110,15 +119,12 @@ def test_multiple_strategies_implement_interface():
         def process_query(self, query: str, context: List[Chunk]) -> str:
             return "Strategy B"
 
-    strategies = [StrategyA(), StrategyB()]
+    dependencies = StrategyDependencies()
+    strategies = [StrategyA(config={}, dependencies=dependencies), StrategyB(config={}, dependencies=dependencies)]
     for strategy in strategies:
         assert isinstance(strategy, IRAGStrategy)
 
     # Test they work differently
-    config = StrategyConfig()
-    strategies[0].initialize(config)
-    strategies[1].initialize(config)
-
     result_a = strategies[0].prepare_data([])
     result_b = strategies[1].prepare_data([])
 
@@ -131,9 +137,12 @@ def test_multiple_strategies_implement_interface():
 @pytest.mark.asyncio
 async def test_async_retrieve_works():
     """Test async retrieve method works correctly."""
+    from rag_factory.services.dependencies import StrategyDependencies, ServiceDependency
+    from typing import Set
+    
     class AsyncStrategy(IRAGStrategy):
-        def initialize(self, config: StrategyConfig):
-            self.config = config
+        def requires_services(self) -> Set[ServiceDependency]:
+            return set()
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> PreparedData:
             return PreparedData(chunks=[], embeddings=[], index_metadata={})
@@ -151,8 +160,8 @@ async def test_async_retrieve_works():
         def process_query(self, query: str, context: List[Chunk]) -> str:
             return ""
 
-    strategy = AsyncStrategy()
-    strategy.initialize(StrategyConfig())
+    dependencies = StrategyDependencies()
+    strategy = AsyncStrategy(config={}, dependencies=dependencies)
     results = await strategy.aretrieve("query", 5)
     assert len(results) == 1
     assert isinstance(results[0], Chunk)
@@ -162,10 +171,12 @@ async def test_async_retrieve_works():
 @pytest.mark.integration
 def test_strategy_error_handling():
     """Test that strategies properly handle errors."""
+    from rag_factory.services.dependencies import StrategyDependencies, ServiceDependency
+    from typing import Set
+    
     class ErrorStrategy(IRAGStrategy):
-        def initialize(self, config: StrategyConfig):
-            self.config = config
-            self.initialized = True
+        def requires_services(self) -> Set[ServiceDependency]:
+            return set()
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> PreparedData:
             if not documents:
@@ -183,8 +194,8 @@ def test_strategy_error_handling():
         def process_query(self, query: str, context: List[Chunk]) -> str:
             return ""
 
-    strategy = ErrorStrategy()
-    strategy.initialize(StrategyConfig())
+    dependencies = StrategyDependencies()
+    strategy = ErrorStrategy(config={}, dependencies=dependencies)
 
     # Test error handling
     with pytest.raises(ValueError, match="No documents provided"):
@@ -198,9 +209,12 @@ def test_strategy_error_handling():
 @pytest.mark.integration
 def test_strategy_configuration_override():
     """Test that strategies can override configuration at runtime."""
+    from rag_factory.services.dependencies import StrategyDependencies, ServiceDependency
+    from typing import Set
+    
     class ConfigurableStrategy(IRAGStrategy):
-        def initialize(self, config: StrategyConfig):
-            self.config = config
+        def requires_services(self) -> Set[ServiceDependency]:
+            return set()
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> PreparedData:
             return PreparedData(chunks=[], embeddings=[], index_metadata={})
@@ -218,9 +232,9 @@ def test_strategy_configuration_override():
         def process_query(self, query: str, context: List[Chunk]) -> str:
             return ""
 
-    strategy = ConfigurableStrategy()
-    config = StrategyConfig(top_k=3)
-    strategy.initialize(config)
+    dependencies = StrategyDependencies()
+    config = {"top_k": 3}
+    strategy = ConfigurableStrategy(config=config, dependencies=dependencies)
 
     # Override top_k at retrieval time
     results = strategy.retrieve("query", top_k=10)

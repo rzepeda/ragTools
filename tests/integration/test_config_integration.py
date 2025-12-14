@@ -34,6 +34,10 @@ def reset_config_manager():
 class TestIntegrationStrategy(IRAGStrategy):
     """Test strategy for integration tests."""
 
+    def requires_services(self):
+        """Declare required services."""
+        return set()
+
     def initialize(self, config: Any) -> None:
         """Initialize strategy with config."""
         self.config = config

@@ -26,6 +26,11 @@ from rag_factory.strategies.base import (
 class DummyStrategy(IRAGStrategy):
     """Complete dummy strategy for integration testing."""
 
+    def requires_services(self):
+        """Declare required services."""
+        from rag_factory.services.dependencies import ServiceDependency
+        return set()  # No services required for dummy
+
     def initialize(self, config: StrategyConfig) -> None:
         """Initialize the strategy with config."""
         self.config = config
@@ -78,6 +83,11 @@ class StrategyA(IRAGStrategy):
 
     strategy_type = "A"
 
+    def requires_services(self):
+        """Declare required services."""
+        from rag_factory.services.dependencies import ServiceDependency
+        return set()
+
     def initialize(self, config: StrategyConfig) -> None:
         """Initialize."""
         self.config = config
@@ -103,6 +113,11 @@ class StrategyB(IRAGStrategy):
     """Strategy B implementation."""
 
     strategy_type = "B"
+
+    def requires_services(self):
+        """Declare required services."""
+        from rag_factory.services.dependencies import ServiceDependency
+        return set()
 
     def initialize(self, config: StrategyConfig) -> None:
         """Initialize."""
@@ -156,6 +171,11 @@ class StrategyWithDeps(IRAGStrategy):
 class WorkingStrategy(IRAGStrategy):
     """Strategy that works correctly."""
 
+    def requires_services(self):
+        """Declare required services."""
+        from rag_factory.services.dependencies import ServiceDependency
+        return set()
+
     def initialize(self, config: StrategyConfig) -> None:
         """Initialize."""
         self.config = config
@@ -179,6 +199,11 @@ class WorkingStrategy(IRAGStrategy):
 
 class BrokenStrategy(IRAGStrategy):
     """Strategy that fails during initialization."""
+
+    def requires_services(self):
+        """Declare required services."""
+        from rag_factory.services.dependencies import ServiceDependency
+        return set()
 
     def initialize(self, config: StrategyConfig) -> None:
         """Initialize and raise error."""
@@ -425,6 +450,11 @@ def test_decorator_integration(factory: RAGFactory) -> None:
     @register_rag_strategy("decorated_strategy")
     class DecoratedStrategy(IRAGStrategy):
         """Strategy registered via decorator."""
+
+        def requires_services(self):
+            """Declare required services."""
+            from rag_factory.services.dependencies import ServiceDependency
+            return set()
 
         def initialize(self, config: StrategyConfig) -> None:
             """Initialize."""

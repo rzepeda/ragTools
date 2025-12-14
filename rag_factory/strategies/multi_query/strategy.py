@@ -148,21 +148,28 @@ class MultiQueryRAGStrategy(IRAGStrategy):
         Returns:
             List of search results
         """
-        if hasattr(self.vector_store, 'asearch'):
-            return await self.vector_store.asearch(
-                query=query,
-                top_k=self.config.final_top_k
-            )
-        else:
-            loop = asyncio.get_event_loop()
-            return await loop.run_in_executor(
-                None,
-                lambda: None  # TODO: vector_store from dependencies
-                # lambda: self.vector_store.search(
-                #     query=query,
-                #     top_k=self.strategy_config.final_top_k
-                # )
-            )
+        # Use database_service for vector search
+        if self.deps.database_service:
+            # Check if database service has async search
+            if hasattr(self.deps.database_service, 'asearch_similar'):
+                return await self.deps.database_service.asearch_similar(
+                    query=query,
+                    top_k=self.strategy_config.final_top_k
+                )
+            elif hasattr(self.deps.database_service, 'search_similar'):
+                # Fallback to sync search
+                loop = asyncio.get_event_loop()
+                return await loop.run_in_executor(
+                    None,
+                    lambda: self.deps.database_service.search_similar(
+                        query=query,
+                        top_k=self.strategy_config.final_top_k
+                    )
+                )
+        
+        # If no database service, return empty results
+        logger.warning("No database service available for fallback retrieval")
+        return []
 
     @property
     def name(self) -> str:

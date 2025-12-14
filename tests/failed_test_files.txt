@@ -3,10 +3,8 @@ tests/integration/models/test_fine_tuned_embeddings_integration.py
 tests/integration/services/test_onnx_embeddings_integration.py
 tests/integration/services/test_service_implementations.py
 tests/integration/services/test_service_integration.py
-tests/integration/strategies/test_base_integration.py
 tests/integration/strategies/test_contextual_integration.py
 tests/integration/strategies/test_hierarchical_integration.py
-tests/integration/strategies/test_keyword_indexing.py
 tests/integration/strategies/test_knowledge_graph_integration.py
 tests/integration/strategies/test_late_chunking_integration.py
 tests/integration/strategies/test_multi_query_integration.py
@@ -28,5 +26,4 @@ tests/unit/services/test_database_service.py
 tests/unit/services/test_interfaces.py
 tests/unit/strategies/agentic/test_strategy.py
 tests/unit/strategies/late_chunking/test_document_embedder.py
-tests/unit/strategies/test_base.py
 tests/unit/test_pipeline.py

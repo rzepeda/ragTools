@@ -152,7 +152,13 @@ def test_query_result_creation():
 # TC1.6: Concrete Implementation Tests
 def test_minimal_concrete_implementation():
     """Test a minimal concrete implementation works."""
+    from rag_factory.services.dependencies import StrategyDependencies
+    
     class MinimalStrategy(IRAGStrategy):
+        def requires_services(self):
+            from rag_factory.services.dependencies import ServiceDependency
+            return set()
+
         def initialize(self, config: StrategyConfig) -> None:
             self.config = config
 
@@ -168,13 +174,22 @@ def test_minimal_concrete_implementation():
         def process_query(self, query: str, context: List[Chunk]) -> str:
             return ""
 
-    strategy = MinimalStrategy()
+    # Instantiate with required arguments
+    config = {}
+    dependencies = StrategyDependencies()
+    strategy = MinimalStrategy(config, dependencies)
     assert isinstance(strategy, IRAGStrategy)
 
 
 def test_concrete_implementation_initialize():
     """Test concrete implementation can be initialized."""
+    from rag_factory.services.dependencies import StrategyDependencies
+    
     class TestStrategy(IRAGStrategy):
+        def requires_services(self):
+            from rag_factory.services.dependencies import ServiceDependency
+            return set()
+
         def initialize(self, config: StrategyConfig):
             self.config = config
 
@@ -190,7 +205,12 @@ def test_concrete_implementation_initialize():
         def process_query(self, query: str, context: List[Chunk]) -> str:
             return ""
 
-    strategy = TestStrategy()
+    # Instantiate with required arguments
+    config_dict = {}
+    dependencies = StrategyDependencies()
+    strategy = TestStrategy(config_dict, dependencies)
+    
+    # Test initialize method
     config = StrategyConfig(strategy_name="test")
     strategy.initialize(config)
     assert strategy.config.strategy_name == "test"
@@ -208,12 +228,14 @@ def test_async_method_signature():
     assert inspect.iscoroutinefunction(IRAGStrategy.aretrieve)
 
 
-def test_initialize_type_hints():
-    """Test initialize method has proper type hints."""
-    sig = inspect.signature(IRAGStrategy.initialize)
-    params = sig.parameters
-    assert "config" in params
-    assert params["config"].annotation == StrategyConfig
+
+def test_requires_services_type_hints():
+    """Test requires_services method has proper type hints."""
+    from rag_factory.services.dependencies import ServiceDependency
+    from typing import Set
+    sig = inspect.signature(IRAGStrategy.requires_services)
+    # Should return a Set of ServiceDependency
+    assert sig.return_annotation == Set[ServiceDependency]
 
 
 def test_prepare_data_type_hints():
