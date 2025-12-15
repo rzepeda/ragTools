@@ -254,4 +254,4 @@ brew install postgresql
 
 Solution: Ensure pgvector is properly installed and the extension is created in your database.
 
-For more troubleshooting help, see the [Troubleshooting Guide](../troubleshooting/common-errors.md).
+For more troubleshooting help, see the <!-- BROKEN LINK: Troubleshooting Guide <!-- (broken link to: ../troubleshooting/common-errors.md) --> --> Troubleshooting Guide.

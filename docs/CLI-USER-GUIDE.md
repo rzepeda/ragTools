@@ -601,7 +601,7 @@ rag-factory --help
 
 ## Next Steps
 
-- Read the [API Documentation](./API.md) for programmatic usage
-- Explore [Strategy Development Guide](./STRATEGIES.md) to create custom strategies
+- Read the <!-- BROKEN LINK: API Documentation <!-- (broken link to: ./API.md) --> --> API Documentation for programmatic usage
+- Explore <!-- BROKEN LINK: Strategy Development Guide <!-- (broken link to: ./STRATEGIES.md) --> --> Strategy Development Guide to create custom strategies
 - See [Examples](../examples/) for more use cases
 - Report issues on [GitHub Issues](https://github.com/yourusername/rag-factory/issues)

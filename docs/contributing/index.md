@@ -37,18 +37,18 @@ We are committed to providing a welcoming and inclusive environment. Please be r
 
 ## Development Workflow
 
-See the [Development Setup Guide](development-setup.md) for detailed instructions on setting up your environment.
+See the <!-- BROKEN LINK: Development Setup Guide <!-- (broken link to: development-setup.md) --> --> Development Setup Guide for detailed instructions on setting up your environment.
 
 ---
 
 ## Quick Links
 
-- [Development Setup](development-setup.md)
-- [Code Style Guide](code-style.md)
-- [Testing Guide](testing.md)
-- [Documentation Guide](documentation.md)
-- [Adding Strategies](adding-strategies.md)
-- [Release Process](release-process.md)
+- <!-- BROKEN LINK: Development Setup <!-- (broken link to: development-setup.md) --> --> Development Setup
+- <!-- BROKEN LINK: Code Style Guide <!-- (broken link to: code-style.md) --> --> Code Style Guide
+- <!-- BROKEN LINK: Testing Guide <!-- (broken link to: testing.md) --> --> Testing Guide
+- <!-- BROKEN LINK: Documentation Guide <!-- (broken link to: documentation.md) --> --> Documentation Guide
+- <!-- BROKEN LINK: Adding Strategies <!-- (broken link to: adding-strategies.md) --> --> Adding Strategies
+- <!-- BROKEN LINK: Release Process <!-- (broken link to: release-process.md) --> --> Release Process
 
 ---
 

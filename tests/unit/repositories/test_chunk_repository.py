@@ -380,13 +380,24 @@ class TestChunkRepositoryVectorSearch:
     def test_search_similar_with_filter_success(self, chunk_repo, mock_session, sample_embedding):
         """Test vector search filtered by document IDs."""
         doc_id = uuid4()
+        chunk_id = uuid4()
         mock_rows = [
-            (uuid4(), doc_id, 0, "Chunk 1", sample_embedding, {}, None, None, 0.95),
+            (chunk_id, doc_id, 0, "Chunk 1", sample_embedding, {}, None, None, 0.95),
         ]
         mock_result = Mock()
         mock_result.fetchall.return_value = mock_rows
         mock_session.execute.return_value = mock_result
-        mock_session.merge.side_effect = lambda x: x
+        
+        # Mock the query() call that retrieves the chunk by ID
+        mock_chunk = Mock()
+        mock_chunk.chunk_id = chunk_id
+        mock_chunk.document_id = doc_id
+        mock_chunk.text = "Chunk 1"
+        mock_chunk.embedding = sample_embedding
+        
+        mock_query = Mock()
+        mock_query.filter.return_value.first.return_value = mock_chunk
+        mock_session.query.return_value = mock_query
 
         results = chunk_repo.search_similar_with_filter(
             sample_embedding,
@@ -396,18 +407,32 @@ class TestChunkRepositoryVectorSearch:
 
         assert len(results) == 1
         assert results[0][0].document_id == doc_id
+        assert results[0][1] == 0.95  # Check similarity score
 
     def test_search_similar_with_metadata_success(self, chunk_repo, mock_session, sample_embedding):
         """Test vector search filtered by metadata."""
         metadata_filter = {"source": "page 1"}
+        chunk_id = uuid4()
+        doc_id = uuid4()
         mock_rows = [
-            (uuid4(), uuid4(), 0, "Chunk 1", sample_embedding,
+            (chunk_id, doc_id, 0, "Chunk 1", sample_embedding,
              {"source": "page 1"}, None, None, 0.95),
         ]
         mock_result = Mock()
         mock_result.fetchall.return_value = mock_rows
         mock_session.execute.return_value = mock_result
-        mock_session.merge.side_effect = lambda x: x
+        
+        # Mock the query() call that retrieves the chunk by ID
+        mock_chunk = Mock()
+        mock_chunk.chunk_id = chunk_id
+        mock_chunk.document_id = doc_id
+        mock_chunk.text = "Chunk 1"
+        mock_chunk.embedding = sample_embedding
+        mock_chunk.metadata_ = {"source": "page 1"}
+        
+        mock_query = Mock()
+        mock_query.filter.return_value.first.return_value = mock_chunk
+        mock_session.query.return_value = mock_query
 
         results = chunk_repo.search_similar_with_metadata(
             sample_embedding,
@@ -416,8 +441,11 @@ class TestChunkRepositoryVectorSearch:
         )
 
         assert len(results) == 1
+        assert results[0][0].metadata_ == {"source": "page 1"}
+        assert results[0][1] == 0.95  # Check similarity score
         # Verify metadata filter was included in query
         mock_session.execute.assert_called_once()
+
 
     def test_search_similar_with_metadata_validation(self, chunk_repo):
         """Test search with metadata filter validates parameters."""

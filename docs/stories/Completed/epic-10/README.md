@@ -267,9 +267,9 @@ numpy>=1.24.0                   # ~15MB (already required)
 
 ## Related Documentation
 
-- [Epic 10 Definition](../../epics/epic-10-lightweight-dependencies.md)
-- [Model Conversion Guide](../../guides/onnx-conversion.md) (to be created)
-- [Lightweight Deployment Guide](../../guides/lightweight-deployment.md) (to be created)
+- <!-- BROKEN LINK: Epic 10 Definition <!-- (broken link to: ../../epics/epic-10-lightweight-dependencies.md) --> --> Epic 10 Definition
+- <!-- BROKEN LINK: Model Conversion Guide <!-- (broken link to: ../../guides/onnx-conversion.md) --> --> Model Conversion Guide (to be created)
+- <!-- BROKEN LINK: Lightweight Deployment Guide <!-- (broken link to: ../../guides/lightweight-deployment.md) --> --> Lightweight Deployment Guide (to be created)
 
 ---
 

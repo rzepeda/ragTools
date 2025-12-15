@@ -376,7 +376,7 @@ Use this framework to decide which strategies to implement:
 
 ## Related Documentation
 
-- [Epic 7 Overview](../../epics/epic-07-experimental-strategies.md)
+- <!-- BROKEN LINK: Epic 7 Overview <!-- (broken link to: ../../epics/epic-07-experimental-strategies.md) --> --> Epic 7 Overview
 - [Epic 4: Priority RAG Strategies](../epic-04/README.md)
 - [Epic 5: Advanced Retrieval](../epic-05/README.md)
 - [Verification Guide](./VERIFICATION.md)

@@ -318,13 +318,13 @@ class CustomLLMService(LLMService):
 ## Next Steps
 
 - **[Design Patterns](design-patterns.md)** - Deep dive into design patterns
-- **[Data Flow](data-flow.md)** - Detailed data flow diagrams
-- **[Components](components.md)** - Component-level documentation
+- **<!-- BROKEN LINK: Data Flow <!-- (broken link to: data-flow.md) --> --> Data Flow** - Detailed data flow diagrams
+- **<!-- BROKEN LINK: Components <!-- (broken link to: components.md) --> --> Components** - Component-level documentation
 
 ---
 
 ## See Also
 
 - [Strategy Selection Guide](../guides/strategy-selection.md)
-- [Configuration Reference](../guides/configuration-reference.md)
-- [Best Practices](../guides/best-practices.md)
+- <!-- BROKEN LINK: Configuration Reference <!-- (broken link to: ../guides/configuration-reference.md) --> --> Configuration Reference
+- <!-- BROKEN LINK: Best Practices <!-- (broken link to: ../guides/best-practices.md) --> --> Best Practices

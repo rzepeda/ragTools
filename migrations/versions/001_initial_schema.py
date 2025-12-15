@@ -121,9 +121,9 @@ def downgrade() -> None:
     op.execute("DROP INDEX IF EXISTS idx_chunks_created_at")
     op.execute("DROP INDEX IF EXISTS idx_chunks_document_id_index")
 
-    # Drop tables
-    op.drop_table("chunks")
-    op.drop_table("documents")
+    # Drop tables (with IF EXISTS to handle cases where they don't exist)
+    op.execute("DROP TABLE IF EXISTS chunks CASCADE")
+    op.execute("DROP TABLE IF EXISTS documents CASCADE")
 
     # Drop extension
     op.execute("DROP EXTENSION IF EXISTS vector")

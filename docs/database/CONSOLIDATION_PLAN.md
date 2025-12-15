@@ -168,16 +168,18 @@ def db_connection():
 
 **Example**:
 ```python
-# OLD
-manager = MigrationManager(db_service)
-version = await manager.get_current_version()
+async def example():
+    # OLD
+    manager = MigrationManager(db_service)
+    version = await manager.get_current_version()
 
-# NEW
-from alembic import command
-from alembic.config import Config
+    # NEW
+    from alembic import command
+    from alembic.config import Config
 
-alembic_cfg = Config("alembic.ini")
-# Use alembic.command.current() or alembic.script.ScriptDirectory
+    alembic_cfg = Config("alembic.ini")
+    # Use alembic.command.current() or alembic.script.ScriptDirectory
+
 ```
 
 #### 2. `tests/integration/database/test_migration_integration.py`
@@ -275,9 +277,11 @@ DB_TEST_DATABASE_URL=...
 
 **Before**:
 ```python
-from rag_factory.database.migrations import MigrationManager
-manager = MigrationManager(db_service)
-await manager.run_migrations()
+async def example():
+    from rag_factory.database.migrations import MigrationManager
+    manager = MigrationManager(db_service)
+    await manager.run_migrations()
+
 ```
 
 **After**:

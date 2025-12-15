@@ -198,14 +198,14 @@ config = {
 
 ## Next Steps
 
-- **[Complete Configuration Reference](../guides/configuration-reference.md)** - All configuration options
+- **<!-- BROKEN LINK: Complete Configuration Reference <!-- (broken link to: ../guides/configuration-reference.md) --> --> Complete Configuration Reference** - All configuration options
 - **[Strategy-Specific Configuration](../strategies/overview.md)** - Per-strategy settings
-- **[Performance Tuning](../guides/performance-tuning.md)** - Optimize your configuration
+- **<!-- BROKEN LINK: Performance Tuning <!-- (broken link to: ../guides/performance-tuning.md) --> --> Performance Tuning** - Optimize your configuration
 
 ---
 
 ## See Also
 
-- [Environment Variables Reference](../guides/configuration-reference.md#environment-variables)
-- [Best Practices](../guides/best-practices.md)
-- [Troubleshooting Configuration Issues](../troubleshooting/common-errors.md)
+- <!-- BROKEN LINK: Environment Variables Reference <!-- (broken link to: ../guides/configuration-reference.md#environment-variables) --> --> Environment Variables Reference
+- <!-- BROKEN LINK: Best Practices <!-- (broken link to: ../guides/best-practices.md) --> --> Best Practices
+- <!-- BROKEN LINK: Troubleshooting Configuration Issues <!-- (broken link to: ../troubleshooting/common-errors.md) --> --> Troubleshooting Configuration Issues

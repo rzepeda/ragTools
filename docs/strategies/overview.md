@@ -8,16 +8,16 @@ RAG Factory provides 10 production-ready RAG strategies, each designed for speci
 
 | Strategy | Complexity | Speed | Accuracy | Best For |
 |----------|------------|-------|----------|----------|
-| [Agentic RAG](agentic.md) | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ | Complex multi-step queries |
-| [Context-Aware Chunking](chunking.md) | ⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | Basic document splitting |
+| <!-- BROKEN LINK: Agentic RAG <!-- (broken link to: agentic.md) --> --> Agentic RAG | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ | Complex multi-step queries |
+| <!-- BROKEN LINK: Context-Aware Chunking <!-- (broken link to: chunking.md) --> --> Context-Aware Chunking | ⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | Basic document splitting |
 | [Contextual Retrieval](contextual.md) | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | General-purpose retrieval |
-| [Hierarchical RAG](hierarchical.md) | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | Structured documents |
-| [Knowledge Graph](knowledge-graph.md) | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ | Entity relationships |
-| [Late Chunking](late-chunking.md) | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐ | Full context preservation |
-| [Multi-Query](multi-query.md) | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | Ambiguous queries |
-| [Query Expansion](query-expansion.md) | ⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | Improving recall |
-| [Reranking](reranking.md) | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ | Improving precision |
-| [Self-Reflective](self-reflective.md) | ⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐ | Iterative refinement |
+| <!-- BROKEN LINK: Hierarchical RAG <!-- (broken link to: hierarchical.md) --> --> Hierarchical RAG | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | Structured documents |
+| <!-- BROKEN LINK: Knowledge Graph <!-- (broken link to: knowledge-graph.md) --> --> Knowledge Graph | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ | Entity relationships |
+| <!-- BROKEN LINK: Late Chunking <!-- (broken link to: late-chunking.md) --> --> Late Chunking | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐ | Full context preservation |
+| <!-- BROKEN LINK: Multi-Query <!-- (broken link to: multi-query.md) --> --> Multi-Query | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | Ambiguous queries |
+| <!-- BROKEN LINK: Query Expansion <!-- (broken link to: query-expansion.md) --> --> Query Expansion | ⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | Improving recall |
+| <!-- BROKEN LINK: Reranking <!-- (broken link to: reranking.md) --> --> Reranking | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ | Improving precision |
+| <!-- BROKEN LINK: Self-Reflective <!-- (broken link to: self-reflective.md) --> --> Self-Reflective | ⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐ | Iterative refinement |
 
 ---
 
@@ -88,13 +88,13 @@ pipeline = StrategyPipeline([
 ## Next Steps
 
 - [Strategy Selection Guide](../guides/strategy-selection.md) - Detailed selection criteria
-- [Individual Strategy Documentation](agentic.md) - Detailed docs for each strategy
-- [Pipeline Tutorial](../tutorials/pipeline-setup.md) - Build strategy pipelines
+- <!-- BROKEN LINK: Individual Strategy Documentation <!-- (broken link to: agentic.md) --> --> Individual Strategy Documentation - Detailed docs for each strategy
+- <!-- BROKEN LINK: Pipeline Tutorial <!-- (broken link to: ../tutorials/pipeline-setup.md) --> --> Pipeline Tutorial - Build strategy pipelines
 
 ---
 
 ## See Also
 
 - [Architecture Overview](../architecture/overview.md)
-- [Configuration Reference](../guides/configuration-reference.md)
-- [Performance Tuning](../guides/performance-tuning.md)
+- <!-- BROKEN LINK: Configuration Reference <!-- (broken link to: ../guides/configuration-reference.md) --> --> Configuration Reference
+- <!-- BROKEN LINK: Performance Tuning <!-- (broken link to: ../guides/performance-tuning.md) --> --> Performance Tuning

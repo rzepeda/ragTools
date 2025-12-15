@@ -76,19 +76,21 @@ pytest tests/unit/strategies/multi_query/test_variant_generator.py -v
 
 **Manual Verification:**
 ```python
-from rag_factory.strategies.multi_query import QueryVariantGenerator, MultiQueryConfig
+async def example():
+    from rag_factory.strategies.multi_query import QueryVariantGenerator, MultiQueryConfig
 
-config = MultiQueryConfig(num_variants=5, include_original=True)
-generator = QueryVariantGenerator(llm_service, config)
+    config = MultiQueryConfig(num_variants=5, include_original=True)
+    generator = QueryVariantGenerator(llm_service, config)
 
-query = "What is machine learning?"
-variants = await generator.generate_variants(query)
+    query = "What is machine learning?"
+    variants = await generator.generate_variants(query)
 
-# Verify
-assert len(variants) == 5
-assert query in variants
-assert len(set(variants)) == len(variants)  # No duplicates
-print("Generated variants:", variants)
+    # Verify
+    assert len(variants) == 5
+    assert query in variants
+    assert len(set(variants)) == len(variants)  # No duplicates
+    print("Generated variants:", variants)
+
 ```
 
 #### V6.1.2: Parallel Executor Tests
@@ -107,20 +109,22 @@ pytest tests/unit/strategies/multi_query/test_parallel_executor.py -v
 
 **Manual Verification:**
 ```python
-from rag_factory.strategies.multi_query import ParallelQueryExecutor
-import time
+async def example():
+    from rag_factory.strategies.multi_query import ParallelQueryExecutor
+    import time
 
-executor = ParallelQueryExecutor(vector_store, config)
-variants = ["query 1", "query 2", "query 3", "query 4", "query 5"]
+    executor = ParallelQueryExecutor(vector_store, config)
+    variants = ["query 1", "query 2", "query 3", "query 4", "query 5"]
 
-start = time.time()
-results = await executor.execute_queries(variants)
-duration = time.time() - start
+    start = time.time()
+    results = await executor.execute_queries(variants)
+    duration = time.time() - start
 
-# Verify parallel execution (should be close to max, not sum)
-print(f"Executed {len(variants)} queries in {duration:.2f}s")
-assert duration < 1.0  # Should be much less than sequential
-assert len([r for r in results if r["success"]]) >= config.min_successful_queries
+    # Verify parallel execution (should be close to max, not sum)
+    print(f"Executed {len(variants)} queries in {duration:.2f}s")
+    assert duration < 1.0  # Should be much less than sequential
+    assert len([r for r in results if r["success"]]) >= config.min_successful_queries
+
 ```
 
 #### V6.1.3: Deduplicator Tests
@@ -224,40 +228,42 @@ pytest tests/integration/strategies/test_multi_query_integration.py -v
 
 **Manual Verification:**
 ```python
-from rag_factory.strategies.multi_query import MultiQueryRAGStrategy, MultiQueryConfig
-import asyncio
-import time
+async def example():
+    from rag_factory.strategies.multi_query import MultiQueryRAGStrategy, MultiQueryConfig
+    import asyncio
+    import time
 
-config = MultiQueryConfig(
-    num_variants=5,
-    ranking_strategy=RankingStrategy.RECIPROCAL_RANK_FUSION,
-    final_top_k=10
-)
+    config = MultiQueryConfig(
+        num_variants=5,
+        ranking_strategy=RankingStrategy.RECIPROCAL_RANK_FUSION,
+        final_top_k=10
+    )
 
-strategy = MultiQueryRAGStrategy(
-    vector_store_service=vector_store,
-    llm_service=llm,
-    embedding_service=embedding_service,
-    config=config
-)
+    strategy = MultiQueryRAGStrategy(
+        vector_store_service=vector_store,
+        llm_service=llm,
+        embedding_service=embedding_service,
+        config=config
+    )
 
-# Test retrieval
-query = "What are the benefits of machine learning?"
+    # Test retrieval
+    query = "What are the benefits of machine learning?"
 
-start = time.time()
-results = await strategy.aretrieve(query)
-duration = time.time() - start
+    start = time.time()
+    results = await strategy.aretrieve(query)
+    duration = time.time() - start
 
-# Verify
-assert len(results) <= 10
-assert duration < 3.0  # Performance requirement
-assert all("final_score" in r for r in results)
-assert all("frequency" in r for r in results)
+    # Verify
+    assert len(results) <= 10
+    assert duration < 3.0  # Performance requirement
+    assert all("final_score" in r for r in results)
+    assert all("frequency" in r for r in results)
 
-print(f"\nMulti-query retrieval completed in {duration:.2f}s")
-print(f"Results: {len(results)}")
-for i, r in enumerate(results[:3], 1):
-    print(f"{i}. Score: {r['final_score']:.3f}, Frequency: {r['frequency']}")
+    print(f"\nMulti-query retrieval completed in {duration:.2f}s")
+    print(f"Results: {len(results)}")
+    for i, r in enumerate(results[:3], 1):
+        print(f"{i}. Score: {r['final_score']:.3f}, Frequency: {r['frequency']}")
+
 ```
 
 ### Acceptance Criteria Verification
@@ -315,32 +321,34 @@ pytest tests/unit/strategies/contextual/test_context_generator.py -v
 
 **Manual Verification:**
 ```python
-from rag_factory.strategies.contextual import ContextGenerator, ContextualRetrievalConfig
+async def example():
+    from rag_factory.strategies.contextual import ContextGenerator, ContextualRetrievalConfig
 
-config = ContextualRetrievalConfig(
-    context_length_min=50,
-    context_length_max=200,
-    skip_code_blocks=True
-)
-generator = ContextGenerator(llm_service, config)
+    config = ContextualRetrievalConfig(
+        context_length_min=50,
+        context_length_max=200,
+        skip_code_blocks=True
+    )
+    generator = ContextGenerator(llm_service, config)
 
-chunk = {
-    "chunk_id": "chunk_1",
-    "text": "Machine learning algorithms learn patterns from data to make predictions.",
-    "metadata": {
-        "document_id": "ml_guide",
-        "section_hierarchy": ["Chapter 1", "Introduction"]
+    chunk = {
+        "chunk_id": "chunk_1",
+        "text": "Machine learning algorithms learn patterns from data to make predictions.",
+        "metadata": {
+            "document_id": "ml_guide",
+            "section_hierarchy": ["Chapter 1", "Introduction"]
+        }
     }
-}
 
-document_context = {"title": "ML Guide for Beginners"}
+    document_context = {"title": "ML Guide for Beginners"}
 
-context = await generator.generate_context(chunk, document_context)
+    context = await generator.generate_context(chunk, document_context)
 
-# Verify
-assert context is not None
-assert 50 <= len(context.split()) <= 250  # Rough token count
-print("Generated context:", context)
+    # Verify
+    assert context is not None
+    assert 50 <= len(context.split()) <= 250  # Rough token count
+    print("Generated context:", context)
+
 ```
 
 #### V6.2.2: Batch Processor Tests
@@ -359,26 +367,28 @@ pytest tests/unit/strategies/contextual/test_batch_processor.py -v
 
 **Manual Verification:**
 ```python
-from rag_factory.strategies.contextual import BatchProcessor, CostTracker
-import time
+async def example():
+    from rag_factory.strategies.contextual import BatchProcessor, CostTracker
+    import time
 
-processor = BatchProcessor(context_generator, cost_tracker, config)
+    processor = BatchProcessor(context_generator, cost_tracker, config)
 
-chunks = [
-    {"chunk_id": f"chunk_{i}", "text": f"Content {i} " * 30, "metadata": {}}
-    for i in range(50)
-]
+    chunks = [
+        {"chunk_id": f"chunk_{i}", "text": f"Content {i} " * 30, "metadata": {}}
+        for i in range(50)
+    ]
 
-start = time.time()
-processed = await processor.process_chunks(chunks)
-duration = time.time() - start
+    start = time.time()
+    processed = await processor.process_chunks(chunks)
+    duration = time.time() - start
 
-chunks_per_minute = (len(processed) / duration) * 60
+    chunks_per_minute = (len(processed) / duration) * 60
 
-# Verify
-assert len(processed) == 50
-assert chunks_per_minute >= 100  # Performance requirement
-print(f"Processed {len(processed)} chunks in {duration:.2f}s ({chunks_per_minute:.0f} chunks/min)")
+    # Verify
+    assert len(processed) == 50
+    assert chunks_per_minute >= 100  # Performance requirement
+    print(f"Processed {len(processed)} chunks in {duration:.2f}s ({chunks_per_minute:.0f} chunks/min)")
+
 ```
 
 #### V6.2.3: Cost Tracker Tests
@@ -482,55 +492,57 @@ pytest tests/integration/strategies/test_contextual_integration.py -v
 
 **Manual Verification:**
 ```python
-from rag_factory.strategies.contextual import ContextualRetrievalStrategy
-import asyncio
+async def example():
+    from rag_factory.strategies.contextual import ContextualRetrievalStrategy
+    import asyncio
 
-strategy = ContextualRetrievalStrategy(
-    vector_store_service=vector_store,
-    database_service=database,
-    llm_service=llm,
-    embedding_service=embedding_service,
-    config=config
-)
+    strategy = ContextualRetrievalStrategy(
+        vector_store_service=vector_store,
+        database_service=database,
+        llm_service=llm,
+        embedding_service=embedding_service,
+        config=config
+    )
 
-# Prepare chunks
-chunks = [
-    {
-        "chunk_id": f"chunk_{i}",
-        "document_id": "doc_1",
-        "text": f"Machine learning content about topic {i}...",
-        "metadata": {"section_hierarchy": [f"Section {i}"]}
-    }
-    for i in range(20)
-]
+    # Prepare chunks
+    chunks = [
+        {
+            "chunk_id": f"chunk_{i}",
+            "document_id": "doc_1",
+            "text": f"Machine learning content about topic {i}...",
+            "metadata": {"section_hierarchy": [f"Section {i}"]}
+        }
+        for i in range(20)
+    ]
 
-# Index with contextualization
-result = await strategy.aindex_document(
-    document="Full document text",
-    document_id="doc_1",
-    chunks=chunks,
-    document_metadata={"title": "ML Tutorial"}
-)
+    # Index with contextualization
+    result = await strategy.aindex_document(
+        document="Full document text",
+        document_id="doc_1",
+        chunks=chunks,
+        document_metadata={"title": "ML Tutorial"}
+    )
 
-# Verify indexing
-assert result["total_chunks"] == 20
-assert result["contextualized_chunks"] > 0
-assert result["total_cost"] > 0
+    # Verify indexing
+    assert result["total_chunks"] == 20
+    assert result["contextualized_chunks"] > 0
+    assert result["total_cost"] > 0
 
-print(f"Indexed {result['total_chunks']} chunks")
-print(f"Contextualized: {result['contextualized_chunks']}")
-print(f"Cost: ${result['total_cost']:.4f}")
+    print(f"Indexed {result['total_chunks']} chunks")
+    print(f"Contextualized: {result['contextualized_chunks']}")
+    print(f"Cost: ${result['total_cost']:.4f}")
 
-# Retrieve
-results = strategy.retrieve("machine learning concepts", top_k=5)
+    # Retrieve
+    results = strategy.retrieve("machine learning concepts", top_k=5)
 
-# Verify retrieval
-assert len(results) <= 5
-assert all("text" in r for r in results)
+    # Verify retrieval
+    assert len(results) <= 5
+    assert all("text" in r for r in results)
 
-print(f"\nRetrieved {len(results)} results")
-for i, r in enumerate(results, 1):
-    print(f"{i}. {r['chunk_id']}: {r['text'][:100]}...")
+    print(f"\nRetrieved {len(results)} results")
+    for i, r in enumerate(results, 1):
+        print(f"{i}. {r['chunk_id']}: {r['text'][:100]}...")
+
 ```
 
 ### Acceptance Criteria Verification
@@ -572,17 +584,19 @@ for i, r in enumerate(results, 1):
 Verify that both strategies can work together:
 
 ```python
-# Use contextual retrieval for indexing
-contextual_strategy = ContextualRetrievalStrategy(...)
-await contextual_strategy.aindex_document(document, doc_id, chunks)
+async def example():
+    # Use contextual retrieval for indexing
+    contextual_strategy = ContextualRetrievalStrategy(...)
+    await contextual_strategy.aindex_document(document, doc_id, chunks)
 
-# Use multi-query for retrieval
-multi_query_strategy = MultiQueryRAGStrategy(...)
-results = await multi_query_strategy.aretrieve(query)
+    # Use multi-query for retrieval
+    multi_query_strategy = MultiQueryRAGStrategy(...)
+    results = await multi_query_strategy.aretrieve(query)
 
-# Verify
-assert len(results) > 0
-print("Combined strategies working:", len(results), "results")
+    # Verify
+    assert len(results) > 0
+    print("Combined strategies working:", len(results), "results")
+
 ```
 
 ### V6.4: Switching Between Strategies
@@ -590,20 +604,22 @@ print("Combined strategies working:", len(results), "results")
 Verify easy switching:
 
 ```python
-# Create both strategies with same services
-contextual = ContextualRetrievalStrategy(vector_store, db, llm, embedding, contextual_config)
-multi_query = MultiQueryRAGStrategy(vector_store, llm, embedding, multi_query_config)
+async def example():
+    # Create both strategies with same services
+    contextual = ContextualRetrievalStrategy(vector_store, db, llm, embedding, contextual_config)
+    multi_query = MultiQueryRAGStrategy(vector_store, llm, embedding, multi_query_config)
 
-# Use contextual for indexing
-await contextual.aindex_document(doc, doc_id, chunks)
+    # Use contextual for indexing
+    await contextual.aindex_document(doc, doc_id, chunks)
 
-# Use either for retrieval
-results_mq = await multi_query.aretrieve(query)
-results_ctx = contextual.retrieve(query)
+    # Use either for retrieval
+    results_mq = await multi_query.aretrieve(query)
+    results_ctx = contextual.retrieve(query)
 
-# Verify both work
-assert len(results_mq) > 0
-assert len(results_ctx) > 0
+    # Verify both work
+    assert len(results_mq) > 0
+    assert len(results_ctx) > 0
+
 ```
 
 ---
@@ -625,30 +641,32 @@ pytest tests/benchmarks/test_multi_query_performance.py -v
 
 **Manual Benchmark:**
 ```python
-import time
-import statistics
+async def example():
+    import time
+    import statistics
 
-latencies = []
+    latencies = []
 
-for i in range(20):
-    query = f"Test query {i}"
+    for i in range(20):
+        query = f"Test query {i}"
 
-    start = time.time()
-    results = await strategy.aretrieve(query)
-    duration = time.time() - start
+        start = time.time()
+        results = await strategy.aretrieve(query)
+        duration = time.time() - start
 
-    latencies.append(duration)
+        latencies.append(duration)
 
-avg_latency = statistics.mean(latencies)
-p95_latency = statistics.quantiles(latencies, n=20)[18]  # 95th percentile
-qps = 20 / sum(latencies)
+    avg_latency = statistics.mean(latencies)
+    p95_latency = statistics.quantiles(latencies, n=20)[18]  # 95th percentile
+    qps = 20 / sum(latencies)
 
-print(f"Average latency: {avg_latency:.2f}s")
-print(f"P95 latency: {p95_latency:.2f}s")
-print(f"Throughput: {qps:.2f} queries/second")
+    print(f"Average latency: {avg_latency:.2f}s")
+    print(f"P95 latency: {p95_latency:.2f}s")
+    print(f"Throughput: {qps:.2f} queries/second")
 
-assert avg_latency < 3.0
-assert qps >= 3.0
+    assert avg_latency < 3.0
+    assert qps >= 3.0
+
 ```
 
 ### P6.2: Contextual Performance Benchmarks
@@ -665,27 +683,29 @@ pytest tests/benchmarks/test_contextual_performance.py -v
 
 **Manual Benchmark:**
 ```python
-import time
+async def example():
+    import time
 
-# Generate large chunk set
-chunks = [
-    {"chunk_id": f"chunk_{i}", "text": f"Content {i} " * 50, "metadata": {}}
-    for i in range(500)
-]
+    # Generate large chunk set
+    chunks = [
+        {"chunk_id": f"chunk_{i}", "text": f"Content {i} " * 50, "metadata": {}}
+        for i in range(500)
+    ]
 
-start = time.time()
-result = await strategy.aindex_document("doc", "large_doc", chunks)
-duration = time.time() - start
+    start = time.time()
+    result = await strategy.aindex_document("doc", "large_doc", chunks)
+    duration = time.time() - start
 
-chunks_per_minute = (len(chunks) / duration) * 60
-time_per_1000 = (duration / len(chunks)) * 1000
+    chunks_per_minute = (len(chunks) / duration) * 60
+    time_per_1000 = (duration / len(chunks)) * 1000
 
-print(f"Processed {len(chunks)} chunks in {duration:.2f}s")
-print(f"Throughput: {chunks_per_minute:.0f} chunks/minute")
-print(f"Estimated time for 1000 chunks: {time_per_1000:.2f}s")
+    print(f"Processed {len(chunks)} chunks in {duration:.2f}s")
+    print(f"Throughput: {chunks_per_minute:.0f} chunks/minute")
+    print(f"Estimated time for 1000 chunks: {time_per_1000:.2f}s")
 
-assert chunks_per_minute >= 100
-assert time_per_1000 < 300  # 5 minutes
+    assert chunks_per_minute >= 100
+    assert time_per_1000 < 300  # 5 minutes
+
 ```
 
 ---
@@ -697,50 +717,54 @@ assert time_per_1000 < 300  # 5 minutes
 **Verify Recall Improvement:**
 
 ```python
-# Baseline: Single query
-baseline_results = vector_store.search(query, top_k=20)
+async def example():
+    # Baseline: Single query
+    baseline_results = vector_store.search(query, top_k=20)
 
-# Multi-query
-multi_query_results = await multi_query_strategy.aretrieve(query)
+    # Multi-query
+    multi_query_results = await multi_query_strategy.aretrieve(query)
 
-# Calculate recall improvement
-baseline_ids = {r["chunk_id"] for r in baseline_results}
-multi_query_ids = {r["chunk_id"] for r in multi_query_results}
+    # Calculate recall improvement
+    baseline_ids = {r["chunk_id"] for r in baseline_results}
+    multi_query_ids = {r["chunk_id"] for r in multi_query_results}
 
-additional_relevant = multi_query_ids - baseline_ids
-recall_improvement = len(additional_relevant) / len(baseline_ids)
+    additional_relevant = multi_query_ids - baseline_ids
+    recall_improvement = len(additional_relevant) / len(baseline_ids)
 
-print(f"Recall improvement: {recall_improvement * 100:.1f}%")
-assert recall_improvement >= 0.10  # 10% improvement target
+    print(f"Recall improvement: {recall_improvement * 100:.1f}%")
+    assert recall_improvement >= 0.10  # 10% improvement target
+
 ```
 
 **Verify Variant Diversity:**
 
 ```python
-# Generate variants
-variants = await variant_generator.generate_variants(query)
+async def example():
+    # Generate variants
+    variants = await variant_generator.generate_variants(query)
 
-# Calculate diversity using embeddings
-if len(variants) > 1:
-    embed_result = embedding_service.embed(variants)
-    embeddings = embed_result.embeddings
+    # Calculate diversity using embeddings
+    if len(variants) > 1:
+        embed_result = embedding_service.embed(variants)
+        embeddings = embed_result.embeddings
 
-    # Calculate pairwise cosine distances
-    import numpy as np
-    distances = []
+        # Calculate pairwise cosine distances
+        import numpy as np
+        distances = []
 
-    for i in range(len(embeddings)):
-        for j in range(i + 1, len(embeddings)):
-            sim = np.dot(embeddings[i], embeddings[j]) / (
-                np.linalg.norm(embeddings[i]) * np.linalg.norm(embeddings[j])
-            )
-            distance = 1 - sim
-            distances.append(distance)
+        for i in range(len(embeddings)):
+            for j in range(i + 1, len(embeddings)):
+                sim = np.dot(embeddings[i], embeddings[j]) / (
+                    np.linalg.norm(embeddings[i]) * np.linalg.norm(embeddings[j])
+                )
+                distance = 1 - sim
+                distances.append(distance)
 
-    avg_distance = np.mean(distances)
+        avg_distance = np.mean(distances)
 
-    print(f"Average variant distance: {avg_distance:.3f}")
-    assert avg_distance >= 0.1  # Variants should be diverse
+        print(f"Average variant distance: {avg_distance:.3f}")
+        assert avg_distance >= 0.1  # Variants should be diverse
+
 ```
 
 ### Q6.2: Contextual Quality Metrics
@@ -748,77 +772,81 @@ if len(variants) > 1:
 **Verify Retrieval Accuracy Improvement:**
 
 ```python
-# Test with and without contextualization
-test_queries = [
-    "What is machine learning?",
-    "How do neural networks work?",
-    "Explain supervised learning"
-]
+async def example():
+    # Test with and without contextualization
+    test_queries = [
+        "What is machine learning?",
+        "How do neural networks work?",
+        "Explain supervised learning"
+    ]
 
-# Without contextualization
-config_without = ContextualRetrievalConfig(enable_contextualization=False)
-strategy_without = ContextualRetrievalStrategy(..., config=config_without)
+    # Without contextualization
+    config_without = ContextualRetrievalConfig(enable_contextualization=False)
+    strategy_without = ContextualRetrievalStrategy(..., config=config_without)
 
-# With contextualization
-config_with = ContextualRetrievalConfig(enable_contextualization=True)
-strategy_with = ContextualRetrievalStrategy(..., config=config_with)
+    # With contextualization
+    config_with = ContextualRetrievalConfig(enable_contextualization=True)
+    strategy_with = ContextualRetrievalStrategy(..., config=config_with)
 
-# Index and retrieve
-await strategy_without.aindex_document(doc, "doc_wo", chunks)
-await strategy_with.aindex_document(doc, "doc_w", chunks)
+    # Index and retrieve
+    await strategy_without.aindex_document(doc, "doc_wo", chunks)
+    await strategy_with.aindex_document(doc, "doc_w", chunks)
 
-accuracy_improvements = []
+    accuracy_improvements = []
 
-for query in test_queries:
-    results_without = strategy_without.retrieve(query, top_k=10)
-    results_with = strategy_with.retrieve(query, top_k=10)
+    for query in test_queries:
+        results_without = strategy_without.retrieve(query, top_k=10)
+        results_with = strategy_with.retrieve(query, top_k=10)
 
-    # Compare top result scores (proxy for relevance)
-    if results_without and results_with:
-        score_without = results_without[0]["score"]
-        score_with = results_with[0]["score"]
-        improvement = (score_with - score_without) / score_without
-        accuracy_improvements.append(improvement)
+        # Compare top result scores (proxy for relevance)
+        if results_without and results_with:
+            score_without = results_without[0]["score"]
+            score_with = results_with[0]["score"]
+            improvement = (score_with - score_without) / score_without
+            accuracy_improvements.append(improvement)
 
-avg_improvement = np.mean(accuracy_improvements)
-print(f"Average accuracy improvement: {avg_improvement * 100:.1f}%")
-assert avg_improvement >= 0.05  # 5% improvement target
+    avg_improvement = np.mean(accuracy_improvements)
+    print(f"Average accuracy improvement: {avg_improvement * 100:.1f}%")
+    assert avg_improvement >= 0.05  # 5% improvement target
+
 ```
 
 **Verify Context Quality:**
 
 ```python
-# Generate contexts for sample chunks
-sample_chunks = chunks[:10]
+async def example():
+    # Generate contexts for sample chunks
+    sample_chunks = chunks[:10]
 
-for chunk in sample_chunks:
-    context = await context_generator.generate_context(chunk)
+    for chunk in sample_chunks:
+        context = await context_generator.generate_context(chunk)
 
-    if context:
-        # Check context properties
-        token_count = context_generator._count_tokens(context)
+        if context:
+            # Check context properties
+            token_count = context_generator._count_tokens(context)
 
-        # Verify length
-        assert 50 <= token_count <= 200
+            # Verify length
+            assert 50 <= token_count <= 200
 
-        # Verify relevance (simple check - context should mention key terms)
-        chunk_text = chunk["text"].lower()
-        context_lower = context.lower()
+            # Verify relevance (simple check - context should mention key terms)
+            chunk_text = chunk["text"].lower()
+            context_lower = context.lower()
 
-        # Extract key nouns from chunk (simplified)
-        chunk_words = set(chunk_text.split())
-        context_words = set(context_lower.split())
+            # Extract key nouns from chunk (simplified)
+            chunk_words = set(chunk_text.split())
+            context_words = set(context_lower.split())
 
-        overlap = len(chunk_words & context_words) / len(chunk_words)
+            overlap = len(chunk_words & context_words) / len(chunk_words)
 
-        print(f"Chunk: {chunk['chunk_id']}")
-        print(f"Context length: {token_count} tokens")
-        print(f"Word overlap: {overlap * 100:.1f}%")
-        print(f"Context: {context}")
-        print()
+            print(f"Chunk: {chunk['chunk_id']}")
+            print(f"Context length: {token_count} tokens")
+            print(f"Word overlap: {overlap * 100:.1f}%")
+            print(f"Context: {context}")
+            print()
 
-        # Context should have some overlap with chunk content
-        assert overlap > 0.1
+            # Context should have some overlap with chunk content
+            assert overlap > 0.1
+
 ```
 
 ---

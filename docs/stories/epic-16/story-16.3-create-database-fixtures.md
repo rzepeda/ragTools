@@ -277,16 +277,17 @@ async def db_service(test_db_url: str) -> AsyncGenerator[PostgresqlDatabaseServi
         
     Example:
         ```python
-        @pytest.mark.asyncio
-        async def test_store_chunks(db_service):
-            chunks = [
-                {"id": "1", "text": "test", "embedding": [0.1, 0.2]}
-            ]
-            await db_service.store_chunks(chunks)
+@pytest.mark.asyncio
+async def test_store_chunks(db_service):
+    chunks = [
+        {"id": "1", "text": "test", "embedding": [0.1, 0.2]}
+    ]
+    await db_service.store_chunks(chunks)
             
-            results = await db_service.search_chunks([0.1, 0.2], top_k=1)
-            assert len(results) == 1
-        ```
+    results = await db_service.search_chunks([0.1, 0.2], top_k=1)
+    assert len(results) == 1
+        
+```
     """
     # Parse URL for connection parameters
     parsed = urlparse(test_db_url)
@@ -322,9 +323,10 @@ def db_config(test_db_url: str):
         
     Example:
         ```python
-        def test_database_config(db_config):
-            assert db_config.database_url.startswith("postgresql://")
-        ```
+def test_database_config(db_config):
+    assert db_config.database_url.startswith("postgresql://")
+        
+```
     """
     from rag_factory.database.config import DatabaseConfig
     
@@ -351,11 +353,12 @@ def clean_database(db_connection):
         
     Example:
         ```python
-        def test_with_clean_db(clean_database):
-            # Database is guaranteed to be empty
-            count = clean_database.query(Document).count()
-            assert count == 0
-        ```
+def test_with_clean_db(clean_database):
+    # Database is guaranteed to be empty
+    count = clean_database.query(Document).count()
+    assert count == 0
+        
+```
     """
     # Clean before test
     _clean_all_tables(db_connection)

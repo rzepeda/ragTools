@@ -343,13 +343,13 @@ doc_id = strategy.index_document(
 ## Next Steps
 
 - [Strategy Selection Guide](../guides/strategy-selection.md) - Compare with other strategies
-- [Pipeline Setup](../tutorials/pipeline-setup.md) - Combine with other strategies
-- [Configuration Reference](../guides/configuration-reference.md) - All configuration options
+- <!-- BROKEN LINK: Pipeline Setup <!-- (broken link to: ../tutorials/pipeline-setup.md) --> --> Pipeline Setup - Combine with other strategies
+- <!-- BROKEN LINK: Configuration Reference <!-- (broken link to: ../guides/configuration-reference.md) --> --> Configuration Reference - All configuration options
 
 ---
 
 ## See Also
 
-- [Hierarchical RAG](hierarchical.md) - Alternative for structured documents
-- [Multi-Query](multi-query.md) - Combine for better coverage
-- [Reranking](reranking.md) - Add for precision boost
+- <!-- BROKEN LINK: Hierarchical RAG <!-- (broken link to: hierarchical.md) --> --> Hierarchical RAG - Alternative for structured documents
+- <!-- BROKEN LINK: Multi-Query <!-- (broken link to: multi-query.md) --> --> Multi-Query - Combine for better coverage
+- <!-- BROKEN LINK: Reranking <!-- (broken link to: reranking.md) --> --> Reranking - Add for precision boost

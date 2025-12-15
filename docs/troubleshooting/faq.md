@@ -50,7 +50,7 @@ It depends on your use case. See the [Strategy Selection Guide](../guides/strate
 
 ### Can I combine multiple strategies?
 
-Yes! Use the `StrategyPipeline` to combine multiple strategies. See the [Pipeline Tutorial](../tutorials/pipeline-setup.md).
+Yes! Use the `StrategyPipeline` to combine multiple strategies. See the <!-- BROKEN LINK: Pipeline Tutorial <!-- (broken link to: ../tutorials/pipeline-setup.md) --> --> Pipeline Tutorial.
 
 ### What's the difference between Contextual and Hierarchical RAG?
 
@@ -71,7 +71,7 @@ Both improve context, but Hierarchical RAG is better for structured documents.
 - Use metadata filtering
 - Enable batch processing
 
-See the [Performance Tuning Guide](../guides/performance-tuning.md).
+See the <!-- BROKEN LINK: Performance Tuning Guide <!-- (broken link to: ../guides/performance-tuning.md) --> --> Performance Tuning Guide.
 
 ### Why are my queries slow?
 
@@ -124,7 +124,7 @@ Yes! RAG Factory supports any Sentence-Transformers model or custom embedding se
 
 ### How do I deploy to production?
 
-See the [Production Deployment Guide](../tutorials/production-deployment.md) for best practices.
+See the <!-- BROKEN LINK: Production Deployment Guide <!-- (broken link to: ../tutorials/production-deployment.md) --> --> Production Deployment Guide for best practices.
 
 ### Does RAG Factory support horizontal scaling?
 
@@ -173,7 +173,7 @@ Verify:
 
 ### How do I add a custom strategy?
 
-See the [Adding Strategies Guide](../contributing/adding-strategies.md) for step-by-step instructions.
+See the <!-- BROKEN LINK: Adding Strategies Guide <!-- (broken link to: ../contributing/adding-strategies.md) --> --> Adding Strategies Guide for step-by-step instructions.
 
 ### How do I run tests?
 
@@ -181,7 +181,7 @@ See the [Adding Strategies Guide](../contributing/adding-strategies.md) for step
 pytest
 ```
 
-See the [Testing Guide](../contributing/testing.md).
+See the <!-- BROKEN LINK: Testing Guide <!-- (broken link to: ../contributing/testing.md) --> --> Testing Guide.
 
 ### How do I build documentation?
 
@@ -189,7 +189,7 @@ See the [Testing Guide](../contributing/testing.md).
 mkdocs serve
 ```
 
-See the [Documentation Guide](../contributing/documentation.md).
+See the <!-- BROKEN LINK: Documentation Guide <!-- (broken link to: ../contributing/documentation.md) --> --> Documentation Guide.
 
 ---
 

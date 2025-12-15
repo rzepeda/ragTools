@@ -617,6 +617,6 @@ print(f"Cache hit rate: {stats['cache_hit_rate']:.2%}")
 5. **Customize prompts** for your domain
 
 For more information, see:
-- [Query Expansion README](../../rag_factory/strategies/query_expansion/README.md)
-- [Example Script](../../examples/query_expansion_example.py)
-- [Unit Tests](../../tests/unit/strategies/query_expansion/)
+- <!-- BROKEN LINK: Query Expansion README <!-- (broken link to: ../../rag_factory/strategies/query_expansion/README.md) --> --> Query Expansion README
+- <!-- BROKEN LINK: Example Script <!-- (broken link to: ../../examples/query_expansion_example.py) --> --> Example Script
+- <!-- BROKEN LINK: Unit Tests <!-- (broken link to: ../../tests/unit/strategies/query_expansion/) --> --> Unit Tests

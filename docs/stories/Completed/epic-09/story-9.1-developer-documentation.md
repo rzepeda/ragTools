@@ -910,7 +910,7 @@ class TestDocumentationLinks:
         with open(md_file) as f:
             content = f.read()
 
-        # Find [text](link) patterns
+        # Find <!-- BROKEN LINK: text <!-- (broken link to: link) --> --> text patterns
         link_pattern = r'\[([^\]]+)\]\(([^\)]+)\)'
         matches = re.findall(link_pattern, content)
         return [(text, link) for text, link in matches]

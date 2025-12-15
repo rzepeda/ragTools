@@ -417,10 +417,11 @@ alembic revision -m "add custom index"
    - Use `op.execute()` for raw SQL
    - For non-transactional operations (e.g., CREATE INDEX CONCURRENTLY), use:
      ```python
-     def upgrade():
-         op.execute("COMMIT")  # End transaction
-         op.execute("CREATE INDEX CONCURRENTLY ...")
-     ```
+def upgrade():
+    op.execute("COMMIT")  # End transaction
+    op.execute("CREATE INDEX CONCURRENTLY ...")
+     
+```
 
 4. **Handle Data Migrations**
    - Separate schema and data migrations when possible

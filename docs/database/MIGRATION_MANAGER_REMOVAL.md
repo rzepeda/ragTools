@@ -10,11 +10,13 @@ The custom `MigrationManager` class has been removed. The project now uses **Ale
 
 **Before:**
 ```python
-from rag_factory.database.migrations import MigrationManager
+async def example():
+    from rag_factory.database.migrations import MigrationManager
 
-manager = MigrationManager(db_service, migrations_dir="migrations")
-executed = await manager.run_migrations()
-version = await manager.get_current_version()
+    manager = MigrationManager(db_service, migrations_dir="migrations")
+    executed = await manager.run_migrations()
+    version = await manager.get_current_version()
+
 ```
 
 **After:**

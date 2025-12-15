@@ -45,7 +45,7 @@ results = strategy.retrieve("What is machine learning?")
 
     Configure strategies via Python dictionaries, YAML files, or environment variables.
 
-    [:octicons-arrow-right-24: Configuration Guide](guides/configuration-reference.md)
+    <!-- BROKEN LINK: :octicons-arrow-right-24: Configuration Guide <!-- (broken link to: guides/configuration-reference.md) --> --> :octicons-arrow-right-24: Configuration Guide
 
 -   :material-pipe:{ .lg .middle } __Strategy Pipelines__
 
@@ -53,7 +53,7 @@ results = strategy.retrieve("What is machine learning?")
 
     Combine multiple strategies into powerful pipelines for enhanced retrieval performance.
 
-    [:octicons-arrow-right-24: Pipeline Tutorial](tutorials/pipeline-setup.md)
+    <!-- BROKEN LINK: :octicons-arrow-right-24: Pipeline Tutorial <!-- (broken link to: tutorials/pipeline-setup.md) --> --> :octicons-arrow-right-24: Pipeline Tutorial
 
 -   :material-speedometer:{ .lg .middle } __Performance Optimized__
 
@@ -61,7 +61,7 @@ results = strategy.retrieve("What is machine learning?")
 
     Built-in caching, batch processing, and performance monitoring for production workloads.
 
-    [:octicons-arrow-right-24: Performance Tuning](guides/performance-tuning.md)
+    <!-- BROKEN LINK: :octicons-arrow-right-24: Performance Tuning <!-- (broken link to: guides/performance-tuning.md) --> --> :octicons-arrow-right-24: Performance Tuning
 
 -   :material-database:{ .lg .middle } __PostgreSQL + pgvector__
 
@@ -77,7 +77,7 @@ results = strategy.retrieve("What is machine learning?")
 
     Comprehensive logging, metrics, and cost tracking for monitoring and optimization.
 
-    [:octicons-arrow-right-24: Best Practices](guides/best-practices.md)
+    <!-- BROKEN LINK: :octicons-arrow-right-24: Best Practices <!-- (broken link to: guides/best-practices.md) --> --> :octicons-arrow-right-24: Best Practices
 
 </div>
 

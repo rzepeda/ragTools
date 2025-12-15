@@ -532,21 +532,23 @@ class IndexingPipeline:
 **Usage Example:**
 
 ```python
-# Create strategies
-chunking = ContextAwareChunking(config={}, dependencies=deps)
-embedding = VectorEmbeddingIndexing(config={}, dependencies=deps)
-keywords = KeywordIndexing(config={}, dependencies=deps)
+async def example():
+    # Create strategies
+    chunking = ContextAwareChunking(config={}, dependencies=deps)
+    embedding = VectorEmbeddingIndexing(config={}, dependencies=deps)
+    keywords = KeywordIndexing(config={}, dependencies=deps)
 
-# Create pipeline
-pipeline = IndexingPipeline(
-    strategies=[chunking, embedding, keywords],
-    context=IndexingContext(database_service=db)
-)
+    # Create pipeline
+    pipeline = IndexingPipeline(
+        strategies=[chunking, embedding, keywords],
+        context=IndexingContext(database_service=db)
+    )
 
-# Index documents
-result = await pipeline.index(documents)
-print(result)
-# Output: IndexingResult(capabilities={CHUNKS, VECTORS, KEYWORDS, DATABASE}, docs=100, chunks=450)
+    # Index documents
+    result = await pipeline.index(documents)
+    print(result)
+    # Output: IndexingResult(capabilities={CHUNKS, VECTORS, KEYWORDS, DATABASE}, docs=100, chunks=450)
+
 ```
 
 **Story Points:** 13
@@ -641,18 +643,20 @@ class RetrievalPipeline:
 **Usage Example:**
 
 ```python
-# Create strategies
-expansion = QueryExpansionRetrieval(config={}, dependencies=deps)
-reranking = RerankingRetrieval(config={}, dependencies=deps)
+async def example():
+    # Create strategies
+    expansion = QueryExpansionRetrieval(config={}, dependencies=deps)
+    reranking = RerankingRetrieval(config={}, dependencies=deps)
 
-# Create pipeline
-pipeline = RetrievalPipeline(
-    strategies=[expansion, reranking],
-    context=RetrievalContext(database_service=db)
-)
+    # Create pipeline
+    pipeline = RetrievalPipeline(
+        strategies=[expansion, reranking],
+        context=RetrievalContext(database_service=db)
+    )
 
-# Retrieve
-results = await pipeline.retrieve("What are the action items?", top_k=5)
+    # Retrieve
+    results = await pipeline.retrieve("What are the action items?", top_k=5)
+
 ```
 
 **Story Points:** 8
@@ -865,29 +869,31 @@ class RAGFactory:
 **Validation with Consistency Checking Example:**
 
 ```python
-# Create pipelines
-indexing = factory.create_indexing_pipeline(
-    ["context_aware_chunking", "vector_embedding"],
-    [{}, {}]
-)
+async def example():
+    # Create pipelines
+    indexing = factory.create_indexing_pipeline(
+        ["context_aware_chunking", "vector_embedding"],
+        [{}, {}]
+    )
 
-retrieval = factory.create_retrieval_pipeline(
-    ["reranking"],
-    [{}]
-)
+    retrieval = factory.create_retrieval_pipeline(
+        ["reranking"],
+        [{}]
+    )
 
-# Validate (includes consistency checks)
-validation = factory.validate_pipeline(indexing, retrieval)
+    # Validate (includes consistency checks)
+    validation = factory.validate_pipeline(indexing, retrieval)
 
-# Console output might show:
-# ⚠️  SomeStrategy: Produces VECTORS but doesn't require EMBEDDING service.
-#     This is unusual unless loading pre-computed embeddings.
-# ✅ Pipeline fully valid (capabilities and services)
+    # Console output might show:
+    # ⚠️  SomeStrategy: Produces VECTORS but doesn't require EMBEDDING service.
+    #     This is unusual unless loading pre-computed embeddings.
+    # ✅ Pipeline fully valid (capabilities and services)
 
-if validation.is_valid:
-    # Use pipelines
-    result = await indexing.index(documents)
-    chunks = await retrieval.retrieve(query)
+    if validation.is_valid:
+        # Use pipelines
+        result = await indexing.index(documents)
+        chunks = await retrieval.retrieve(query)
+
 ```
 
 **CLI Integration (extends Story 8.5.1):**

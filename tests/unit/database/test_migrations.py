@@ -35,6 +35,9 @@ class TestAlembicMigrations:
 
     def test_migration_upgrade_to_head(self, alembic_config: Config, test_db_url: str) -> None:
         """Test upgrading migrations to head."""
+        # Start from clean state
+        command.downgrade(alembic_config, "base")
+        
         # Upgrade to head
         command.upgrade(alembic_config, "head")
 
@@ -53,6 +56,9 @@ class TestAlembicMigrations:
 
     def test_migration_downgrade(self, alembic_config: Config, test_db_url: str) -> None:
         """Test downgrading migrations."""
+        # Start from clean state
+        command.downgrade(alembic_config, "base")
+        
         # Upgrade to head first
         command.upgrade(alembic_config, "head")
 
@@ -92,6 +98,9 @@ class TestAlembicMigrations:
 
     def test_migration_idempotency(self, alembic_config: Config, test_db_url: str) -> None:
         """Test that running migrations twice doesn't cause errors."""
+        # Start from clean state
+        command.downgrade(alembic_config, "base")
+        
         # Upgrade to head
         command.upgrade(alembic_config, "head")
 
@@ -116,6 +125,9 @@ class TestAlembicMigrations:
 
     def test_get_current_version(self, alembic_config: Config, test_db_url: str) -> None:
         """Test retrieving current schema version."""
+        # Start from clean state
+        command.downgrade(alembic_config, "base")
+        
         # Upgrade to head
         command.upgrade(alembic_config, "head")
 
@@ -131,6 +143,9 @@ class TestAlembicMigrations:
 
     def test_migration_creates_tables(self, alembic_config: Config, test_db_url: str) -> None:
         """Test that migrations create expected tables."""
+        # Start from clean state
+        command.downgrade(alembic_config, "base")
+        
         # Upgrade to head
         command.upgrade(alembic_config, "head")
 
@@ -148,6 +163,9 @@ class TestAlembicMigrations:
 
     def test_migration_creates_indexes(self, alembic_config: Config, test_db_url: str) -> None:
         """Test that migrations create expected indexes."""
+        # Start from clean state
+        command.downgrade(alembic_config, "base")
+        
         # Upgrade to head
         command.upgrade(alembic_config, "head")
 

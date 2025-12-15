@@ -268,13 +268,13 @@ Congratulations! You've created your first RAG retrieval system. Here's what to 
 
 - **[Learn About Configuration](configuration.md)** - Customize your setup
 - **[Explore Strategies](../strategies/overview.md)** - Discover all 10 RAG strategies
-- **[Build Pipelines](../tutorials/pipeline-setup.md)** - Combine multiple strategies
-- **[Production Deployment](../tutorials/production-deployment.md)** - Deploy to production
+- **<!-- BROKEN LINK: Build Pipelines <!-- (broken link to: ../tutorials/pipeline-setup.md) --> --> Build Pipelines** - Combine multiple strategies
+- **<!-- BROKEN LINK: Production Deployment <!-- (broken link to: ../tutorials/production-deployment.md) --> --> Production Deployment** - Deploy to production
 
 ---
 
 ## Need Help?
 
 - Check the [FAQ](../troubleshooting/faq.md) for common questions
-- See [Troubleshooting](../troubleshooting/common-errors.md) for common issues
+- See <!-- BROKEN LINK: Troubleshooting <!-- (broken link to: ../troubleshooting/common-errors.md) --> --> Troubleshooting for common issues
 - Open an issue on [GitHub](https://github.com/yourusername/rag-factory/issues)

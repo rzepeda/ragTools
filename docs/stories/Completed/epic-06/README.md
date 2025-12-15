@@ -246,19 +246,23 @@ End-to-end tests with real services:
 ### Async Programming
 Both strategies use async/await for performance:
 ```python
-# Always use async methods for best performance
-results = await strategy.aretrieve(query)
+async def example():
+    # Always use async methods for best performance
+    results = await strategy.aretrieve(query)
 
-# Use asyncio.gather for parallel operations
-results = await asyncio.gather(*tasks)
+    # Use asyncio.gather for parallel operations
+    results = await asyncio.gather(*tasks)
+
 ```
 
 ### Error Handling
 Both strategies implement comprehensive error handling:
 ```python
-# Fallback on failures
-if self.config.fallback_to_original:
-    return await self._fallback_retrieve(query)
+async def example():
+    # Fallback on failures
+    if self.config.fallback_to_original:
+        return await self._fallback_retrieve(query)
+
 ```
 
 ### Cost Management
@@ -333,18 +337,20 @@ results = strategy.retrieve(query, top_k=5)
 
 ### Adding Contextualization to Existing Chunks
 ```python
-# Reprocess existing chunks with contextualization
-strategy = ContextualRetrievalStrategy(...)
+async def example():
+    # Reprocess existing chunks with contextualization
+    strategy = ContextualRetrievalStrategy(...)
 
-# Batch reprocess
-for document in existing_documents:
-    chunks = get_chunks_for_document(document.id)
-    await strategy.aindex_document(
-        document.text,
-        document.id,
-        chunks,
-        document.metadata
-    )
+    # Batch reprocess
+    for document in existing_documents:
+        chunks = get_chunks_for_document(document.id)
+        await strategy.aindex_document(
+            document.text,
+            document.id,
+            chunks,
+            document.metadata
+        )
+
 ```
 
 ---

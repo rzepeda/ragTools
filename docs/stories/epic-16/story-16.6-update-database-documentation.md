@@ -185,7 +185,7 @@ TEST_DATABASE_URL=postgresql://user:pass@ep-xxx.neon.tech/test_db?sslmode=requir
 | `TEST_DATABASE_URL` | Test database connection | For tests | `postgresql://localhost/test_db` |
 | `HOST_IP` | VM host machine IP | VM only | `192.168.56.1` |
 
-See [Environment Variables Guide](ENVIRONMENT_VARIABLES.md) for complete reference.
+See <!-- BROKEN LINK: Environment Variables Guide <!-- (broken link to: ENVIRONMENT_VARIABLES.md) --> --> Environment Variables Guide for complete reference.
 ```
 
 #### 2. Migrations Section (UPDATE)
@@ -391,7 +391,7 @@ def test_with_clean_db(clean_database):
     assert count == 0
 ```
 
-See [tests/README.md](../../tests/README.md) for complete fixture documentation.
+See <!-- BROKEN LINK: tests/README.md <!-- (broken link to: ../../tests/README.md) --> --> tests/README.md for complete fixture documentation.
 
 ### Integration Tests
 
@@ -469,10 +469,10 @@ Add at the end:
 ## References
 
 ### Project Documentation
-- [Epic 16: Database Migration System Consolidation](../epics/epic-16-database-consolidation.md)
-- [Environment Variables Guide](ENVIRONMENT_VARIABLES.md)
-- [Test Documentation](../../tests/README.md)
-- [Getting Started Guide](../getting-started/installation.md)
+- <!-- BROKEN LINK: Epic 16: Database Migration System Consolidation <!-- (broken link to: ../epics/epic-16-database-consolidation.md) --> --> Epic 16: Database Migration System Consolidation
+- <!-- BROKEN LINK: Environment Variables Guide <!-- (broken link to: ENVIRONMENT_VARIABLES.md) --> --> Environment Variables Guide
+- <!-- BROKEN LINK: Test Documentation <!-- (broken link to: ../../tests/README.md) --> --> Test Documentation
+- <!-- BROKEN LINK: Getting Started Guide <!-- (broken link to: ../getting-started/installation.md) --> --> Getting Started Guide
 
 ### External Documentation
 - [Alembic Documentation](https://alembic.sqlalchemy.org/)
@@ -481,9 +481,9 @@ Add at the end:
 - [PostgreSQL Documentation](https://www.postgresql.org/docs/)
 
 ### Related Epics
-- [Epic 2: Database & Storage Infrastructure](../epics/epic-02-database-storage.md)
-- [Epic 11: Dependency Injection](../epics/epic-11-dependency-injection.md)
-- [Epic 15: Test Coverage Improvements](../epics/epic-15-test-coverage-improvements/)
+- <!-- BROKEN LINK: Epic 2: Database & Storage Infrastructure <!-- (broken link to: ../epics/epic-02-database-storage.md) --> --> Epic 2: Database & Storage Infrastructure
+- <!-- BROKEN LINK: Epic 11: Dependency Injection <!-- (broken link to: ../epics/epic-11-dependency-injection.md) --> --> Epic 11: Dependency Injection
+- <!-- BROKEN LINK: Epic 15: Test Coverage Improvements <!-- (broken link to: ../epics/epic-15-test-coverage-improvements/) --> --> Epic 15: Test Coverage Improvements
 ```
 
 ### Content to Remove

@@ -288,8 +288,8 @@ results = strategy.retrieve(query, top_k=5)
 Now that you understand basic querying, explore:
 
 - **[Strategy Selection Guide](../guides/strategy-selection.md)** - Choose the right strategy
-- **[Pipeline Setup](../tutorials/pipeline-setup.md)** - Combine multiple strategies
-- **[Performance Optimization](../tutorials/performance-optimization.md)** - Optimize query performance
+- **<!-- BROKEN LINK: Pipeline Setup <!-- (broken link to: ../tutorials/pipeline-setup.md) --> --> Pipeline Setup** - Combine multiple strategies
+- **<!-- BROKEN LINK: Performance Optimization <!-- (broken link to: ../tutorials/performance-optimization.md) --> --> Performance Optimization** - Optimize query performance
 
 ---
 
@@ -314,4 +314,4 @@ Now that you understand basic querying, explore:
 - Use metadata filtering
 - Enable caching
 
-See the [Troubleshooting Guide](../troubleshooting/performance-issues.md) for more help.
+See the <!-- BROKEN LINK: Troubleshooting Guide <!-- (broken link to: ../troubleshooting/performance-issues.md) --> --> Troubleshooting Guide for more help.

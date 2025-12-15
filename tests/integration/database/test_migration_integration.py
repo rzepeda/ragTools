@@ -44,6 +44,9 @@ class TestMigrationIntegration:
     @pytest.mark.asyncio
     async def test_migration_with_existing_data(self, alembic_config: Config, test_db_url: str) -> None:
         """Test migration with existing data in database."""
+        # Start from clean state
+        command.downgrade(alembic_config, "base")
+        
         # Upgrade to initial schema
         command.upgrade(alembic_config, "001")
 
@@ -72,25 +75,37 @@ class TestMigrationIntegration:
     @pytest.mark.asyncio
     async def test_rollback_functionality(self, alembic_config: Config, test_db_url: str) -> None:
         """Test rolling back migrations."""
+        # Start from clean state
+        command.downgrade(alembic_config, "base")
+        
         # Upgrade to head
         command.upgrade(alembic_config, "head")
 
         # Verify hierarchy columns exist (from migration 002)
         engine = create_engine(test_db_url)
         inspector = inspect(engine)
+        
+        # Check if chunks table exists
+        tables = inspector.get_table_names()
+        assert "chunks" in tables, "chunks table should exist after upgrade to head"
+        
         columns = [col['name'] for col in inspector.get_columns("chunks")]
+        assert "parent_chunk_id" in columns, "parent_chunk_id should exist in migration 002"
 
         # Downgrade to 001
         command.downgrade(alembic_config, "001")
 
         # Verify hierarchy columns removed
         inspector = inspect(engine)
+        tables_after = inspector.get_table_names()
+        
+        # Table should still exist after downgrade to 001
+        assert "chunks" in tables_after, "chunks table should still exist after downgrade to 001"
+        
         columns_after = [col['name'] for col in inspector.get_columns("chunks")]
+        assert "parent_chunk_id" not in columns_after, "parent_chunk_id should be removed after downgrade"
 
         engine.dispose()
-
-        # Columns should be different
-        assert len(columns) != len(columns_after)
 
     @pytest.mark.asyncio
     async def test_pgvector_extension_installed(self, alembic_config: Config, test_db_url: str) -> None:

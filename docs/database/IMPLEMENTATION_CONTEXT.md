@@ -114,11 +114,13 @@ All 31 tests in:
 
 Replace:
 ```python
-from rag_factory.database.migrations import MigrationManager
+async def example():
+    from rag_factory.database.migrations import MigrationManager
 
-manager = MigrationManager(db_service)
-await manager.run_migrations()
-version = await manager.get_current_version()
+    manager = MigrationManager(db_service)
+    await manager.run_migrations()
+    version = await manager.get_current_version()
+
 ```
 
 With:

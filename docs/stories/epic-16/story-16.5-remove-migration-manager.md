@@ -201,9 +201,11 @@ class TestDatabaseMigrations:
 ## Option 2: Using Custom Migration Manager
 
 ```python
-from rag_factory.database.migrations import MigrationManager
-manager = MigrationManager(db_service)
-await manager.run_migrations()
+async def example():
+    from rag_factory.database.migrations import MigrationManager
+    manager = MigrationManager(db_service)
+    await manager.run_migrations()
+
 ```
 ```
 
@@ -301,11 +303,13 @@ The custom `MigrationManager` class has been removed. The project now uses **Ale
 
 **Before:**
 ```python
-from rag_factory.database.migrations import MigrationManager
+async def example():
+    from rag_factory.database.migrations import MigrationManager
 
-manager = MigrationManager(db_service, migrations_dir="migrations")
-executed = await manager.run_migrations()
-version = await manager.get_current_version()
+    manager = MigrationManager(db_service, migrations_dir="migrations")
+    executed = await manager.run_migrations()
+    version = await manager.get_current_version()
+
 ```
 
 **After:**
@@ -357,7 +361,7 @@ python scripts/cleanup_schema_migrations.py
 See:
 - [Alembic Documentation](https://alembic.sqlalchemy.org/)
 - [docs/database/README.md](README.md)
-- [docs/epics/epic-16-database-consolidation.md](../epics/epic-16-database-consolidation.md)
+- <!-- BROKEN LINK: docs/epics/epic-16-database-consolidation.md <!-- (broken link to: ../epics/epic-16-database-consolidation.md) --> --> docs/epics/epic-16-database-consolidation.md
 ```
 
 ---
