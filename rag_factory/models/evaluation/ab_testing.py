@@ -174,7 +174,9 @@ class ABTestingFramework:
             p_values[metric_name] = p_value
 
             # Confidence interval for difference
-            diff = np.array(model_b_values) - np.array(model_a_values[:len(model_b_values)])
+            min_len = min(len(model_a_values), len(model_b_values))
+            diff = np.array(model_b_values[:min_len]) - np.array(model_a_values[:min_len])
+            
             if len(diff) > 1:
                 ci = stats.t.interval(
                     0.95,

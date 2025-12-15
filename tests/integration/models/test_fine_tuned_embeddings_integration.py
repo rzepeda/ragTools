@@ -106,7 +106,7 @@ def test_ab_testing_workflow(tmp_path):
             # Base model: baseline performance
             framework.record_result(
                 "model_comparison",
-                "base_model",
+                "base_model_a",
                 {
                     "latency": 50.0 + np.random.randn() * 2,
                     "accuracy": 0.82 + np.random.randn() * 0.02
@@ -175,7 +175,7 @@ def test_model_registry_persistence_workflow(tmp_path):
 
 
 @pytest.mark.integration
-def test_model_comparison_workflow(tmp_path):
+def test_ab_testing_framework_logic(tmp_path):
     """Test comparing two models end-to-end (simplified to test A/B framework)."""
     # This test focuses on the A/B testing framework, not actual model loading
     ab_framework = ABTestingFramework()
@@ -266,11 +266,15 @@ def test_model_comparison_workflow(tmp_path):
             for _ in range(20):
                 embeddings = loader.embed_texts(test_texts, model, config)
                 
-                # Record metrics
-                model_id = "base_model"
+                # traffic splitting
+                if ab_framework.should_use_model_b("comparison"):
+                    record_model_id = "base_model_b"
+                else:
+                    record_model_id = "base_model_a"
+
                 ab_framework.record_result(
                     "comparison",
-                    model_id,
+                    record_model_id,
                     {"latency": 50.0, "embedding_dim": len(embeddings[0])}
                 )
             

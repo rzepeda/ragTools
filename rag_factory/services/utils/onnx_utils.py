@@ -107,17 +107,21 @@ def download_onnx_model(
         return potential_local_path
     
     # Check if model exists in cache directory
-    model_dir_name = model_name.replace("/", "_")
-    local_model_dir = cache_dir / model_dir_name
+    # Try both naming conventions: underscore (old) and double-dash (HF standard)
+    model_dir_name_underscore = model_name.replace("/", "_")
+    model_dir_name_dash = model_name.replace("/", "--")
     
-    if local_model_dir.exists():
-        # Look for ONNX files in the directory (recursively, Xenova models have onnx/ subdirectory)
-        onnx_files = list(local_model_dir.rglob("*.onnx"))
-        if onnx_files:
-            # Prefer the main model.onnx if available, otherwise use first one
-            main_model = next((f for f in onnx_files if f.name == "model.onnx"), onnx_files[0])
-            logger.info(f"Using cached ONNX model: {main_model}")
-            return main_model
+    for model_dir_name in [model_dir_name_dash, model_dir_name_underscore]:
+        local_model_dir = cache_dir / model_dir_name
+        
+        if local_model_dir.exists():
+            # Look for ONNX files in the directory (recursively, Xenova models have onnx/ subdirectory)
+            onnx_files = list(local_model_dir.rglob("*.onnx"))
+            if onnx_files:
+                # Prefer the main model.onnx if available, otherwise use first one
+                main_model = next((f for f in onnx_files if f.name == "model.onnx"), onnx_files[0])
+                logger.info(f"Using cached ONNX model: {main_model}")
+                return main_model
     
     # Model not found locally, try to download
     cache_dir.mkdir(parents=True, exist_ok=True)
