@@ -1,0 +1,16 @@
+# Service Registry - Local ONNX Services (No API Keys Needed)
+services:
+  embedding_local:
+    name: "local-onnx-minilm"
+    provider: "onnx"
+    model: "Xenova/all-MiniLM-L6-v2"
+    cache_dir: "./models/embeddings"
+    batch_size: 32
+    dimensions: 384
+  
+  db_main:
+    name: "main-postgres"
+    type: "postgres"
+    connection_string: "${DATABASE_URL}"
+    pool_size: 10
+    max_overflow: 20

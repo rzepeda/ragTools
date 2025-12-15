@@ -8,6 +8,15 @@ from typing import Dict, Any, List, Optional, TYPE_CHECKING
 import logging
 import json
 
+from rag_factory.services.database.database_context import DatabaseContext
+
+try:
+    from sqlalchemy import create_engine
+    from sqlalchemy.engine import Engine
+    SQLALCHEMY_AVAILABLE = True
+except ImportError:
+    SQLALCHEMY_AVAILABLE = False
+
 if TYPE_CHECKING:
     import asyncpg
 
@@ -83,6 +92,10 @@ class PostgresqlDatabaseService(IDatabaseService):
         self.table_name = table_name
         self.vector_dimensions = vector_dimensions
         self._pool: Optional["asyncpg.Pool"] = None  # type: ignore
+        
+        # Synchronous engine for DatabaseContext (Epic 17)
+        self._sync_engine: Optional["Engine"] = None  # type: ignore
+        self._contexts: Dict[tuple, DatabaseContext] = {}  # Cache contexts
 
         logger.info(
             f"Initialized PostgreSQL service for {host}:{port}/{database}"
@@ -350,15 +363,118 @@ class PostgresqlDatabaseService(IDatabaseService):
             
         await self.store_chunks(enriched_chunks)
 
+    def _get_sync_engine(self) -> "Engine":  # type: ignore
+        """Get or create synchronous SQLAlchemy engine.
+
+        This engine is used for DatabaseContext instances and uses
+        connection pooling for efficiency.
+
+        Returns:
+            SQLAlchemy Engine instance
+
+        Raises:
+            ImportError: If SQLAlchemy is not installed
+        """
+        if not SQLALCHEMY_AVAILABLE:
+            raise ImportError(
+                "SQLAlchemy package not installed. Install with:\n"
+                "  pip install sqlalchemy psycopg2-binary"
+            )
+
+        if self._sync_engine is None:
+            # Build connection string for SQLAlchemy
+            password_part = f":{self.password}" if self.password else ""
+            connection_string = (
+                f"postgresql://{self.user}{password_part}@"
+                f"{self.host}:{self.port}/{self.database}"
+            )
+
+            self._sync_engine = create_engine(
+                connection_string,
+                pool_size=10,
+                max_overflow=20,
+                pool_pre_ping=True  # Verify connections before using
+            )
+
+            logger.info("Created synchronous SQLAlchemy engine for contexts")
+
+        return self._sync_engine
+
+    def get_context(
+        self,
+        table_mapping: Dict[str, str],
+        field_mapping: Optional[Dict[str, str]] = None
+    ) -> DatabaseContext:
+        """Create strategy-specific database context.
+
+        Multiple contexts share the same connection pool (same engine)
+        but have different table/field mappings for isolation.
+
+        Args:
+            table_mapping: Dict mapping logical → physical table names
+                          e.g., {"chunks": "semantic_chunks", "vectors": "semantic_vectors"}
+            field_mapping: Optional dict mapping logical → physical field names
+                          e.g., {"content": "text_content", "embedding": "vector_embedding"}
+
+        Returns:
+            DatabaseContext with specified mappings and shared engine
+
+        Example:
+            >>> # Strategy 1: Semantic search
+            >>> semantic_ctx = db_service.get_context(
+            ...     table_mapping={"chunks": "semantic_chunks", "vectors": "semantic_vectors"},
+            ...     field_mapping={"content": "text_content"}
+            ... )
+            >>>
+            >>> # Strategy 2: Keyword search (same DB, different tables)
+            >>> keyword_ctx = db_service.get_context(
+            ...     table_mapping={"chunks": "keyword_chunks", "index": "keyword_inverted_index"}
+            ... )
+            >>>
+            >>> # Both share same connection pool
+            >>> assert semantic_ctx.engine is keyword_ctx.engine  # True
+        """
+        # Create unique key from mappings for caching
+        table_key = frozenset(table_mapping.items())
+        field_key = frozenset(field_mapping.items()) if field_mapping else frozenset()
+        cache_key = (table_key, field_key)
+
+        # Return cached context if exists
+        if cache_key not in self._contexts:
+            engine = self._get_sync_engine()
+            self._contexts[cache_key] = DatabaseContext(
+                engine=engine,  # Shared engine
+                table_mapping=table_mapping,
+                field_mapping=field_mapping
+            )
+            logger.debug(
+                f"Created new DatabaseContext with {len(table_mapping)} table mappings"
+            )
+        else:
+            logger.debug("Returning cached DatabaseContext")
+
+        return self._contexts[cache_key]
+
+
     async def close(self):
         """Close the database connection pool.
 
         Should be called when the service is no longer needed.
+        Also disposes of synchronous engine and clears context cache.
         """
         if self._pool:
             await self._pool.close()
             self._pool = None
-            logger.info("Closed PostgreSQL connection pool")
+            logger.info("Closed PostgreSQL async connection pool")
+        
+        # Close synchronous engine and clear contexts
+        if self._sync_engine:
+            self._sync_engine.dispose()
+            self._sync_engine = None
+            logger.info("Disposed synchronous SQLAlchemy engine")
+        
+        self._contexts.clear()
+        logger.debug("Cleared DatabaseContext cache")
 
     async def __aenter__(self):
         """Async context manager entry."""

@@ -1,118 +1,99 @@
-# Epic 17 Configuration System - Quick Reference
+# Configuration Quick Reference
 
-## Installation
+## Overview
 
-```bash
-pip install jsonschema python-dotenv
+RAG Factory uses YAML-based configuration with JSON Schema validation and environment variable support.
+
+## File Structure
+
+```
+config/
+├── services.yaml              # Service registry (LLM, embedding, database)
+└── strategies/
+    ├── semantic-local.yaml    # Strategy pair configurations
+    ├── hybrid-search.yaml
+    └── knowledge-graph.yaml
 ```
 
-## Basic Usage
+## Service Registry (`services.yaml`)
 
-### 1. Load and Validate Service Registry
-
-```python
-from rag_factory.config.validator import load_yaml_with_validation
-from rag_factory.config.env_resolver import EnvResolver
-
-# Load services
-services = load_yaml_with_validation(
-    "config/services.yaml",
-    config_type="service_registry"
-)
-
-# Resolve environment variables
-services = EnvResolver.resolve(services)
-```
-
-### 2. Load and Validate Strategy Pair
-
-```python
-# Load strategy pair with service reference validation
-strategy = load_yaml_with_validation(
-    "strategies/semantic-local-pair.yaml",
-    config_type="strategy_pair",
-    service_registry=services  # For reference validation
-)
-
-strategy = EnvResolver.resolve(strategy)
-```
-
-## Environment Variable Syntax
-
-### Required Variable
-```yaml
-api_key: "${API_KEY}"  # Raises error if not set
-```
-
-### Optional with Default
-```yaml
-host: "${DB_HOST:-localhost}"  # Uses 'localhost' if not set
-```
-
-### Required with Custom Error
-```yaml
-password: "${DB_PASSWORD:?Database password is required}"
-```
-
-## Service Registry Format
+### LLM Service
 
 ```yaml
-version: "1.0.0"
-
 services:
-  embedding_local:
-    name: "local-onnx-minilm"
-    type: "embedding"
-    provider: "onnx"
-    model: "Xenova/all-MiniLM-L6-v2"
-    dimensions: 384
-
   llm_openai:
-    name: "openai-gpt-4"
+    name: "OpenAI GPT-4"
     type: "llm"
     url: "https://api.openai.com/v1"
     api_key: "${OPENAI_API_KEY}"
     model: "gpt-4"
-
-  db_main:
-    name: "main-postgres"
-    type: "postgres"
-    connection_string: "${DATABASE_URL}"
+    temperature: 0.7
+    max_tokens: 2000
+    timeout: 60
 ```
 
-## Strategy Pair Format
+**Required**: `name`, `type`  
+**Optional**: `url`, `api_key`, `model`, `temperature`, `max_tokens`, `timeout`
+
+### Embedding Service
 
 ```yaml
-strategy_name: "semantic-local-pair"
-version: "1.0.0"
-description: "Semantic search using local ONNX embeddings"
+services:
+  embedding_local:
+    name: "Local ONNX MiniLM"
+    type: "embedding"
+    provider: "onnx"                    # onnx, openai, cohere, huggingface
+    model: "Xenova/all-MiniLM-L6-v2"
+    cache_dir: "./models/embeddings"
+    batch_size: 32
+    dimensions: 384
+```
 
-tags:
-  - "semantic"
-  - "local"
+**Required**: `name`, `type`, `provider`  
+**Optional**: `model`, `cache_dir`, `batch_size`, `dimensions`, `api_key`
+
+### Database Service
+
+```yaml
+services:
+  db_main:
+    name: "Main Database"
+    type: "postgres"                    # postgres, neo4j, mongodb
+    connection_string: "${DATABASE_URL}"
+    pool_size: 10
+    max_overflow: 20
+```
+
+**Required**: `name`, `type`  
+**Optional**: `connection_string`, `host`, `port`, `database`, `user`, `password`, `pool_size`, `max_overflow`
+
+## Strategy Pair Configuration
+
+### Basic Structure
+
+```yaml
+strategy_name: "semantic-local"         # lowercase, numbers, hyphens only
+version: "1.0.0"                        # semantic versioning
+description: "Basic semantic search"
 
 indexer:
-  strategy: "SemanticIndexer"
+  strategy: "VectorEmbeddingIndexer"
   services:
-    embedding: "$embedding_local"  # Reference to service
+    embedding: "$embedding_local"       # Service reference
     database: "$db_main"
-  
   db_config:
     tables:
+      documents: "documents"
       chunks: "chunks"
-    fields:
-      embedding: "embedding"
-  
   config:
     chunk_size: 512
-    batch_size: 32
+    chunk_overlap: 50
 
 retriever:
   strategy: "SemanticRetriever"
   services:
     embedding: "$embedding_local"
     database: "$db_main"
-  
   config:
     top_k: 5
     similarity_threshold: 0.7
@@ -123,16 +104,86 @@ migrations:
     - "002_create_chunks_table"
 
 expected_schema:
-  tables:
-    - "documents"
-    - "chunks"
-  extensions:
-    - "vector"
+  tables: ["documents", "chunks"]
+  indexes: ["idx_chunks_embedding"]
+  extensions: ["vector"]
+
+tags: ["semantic-search", "local", "basic"]
 ```
 
-## Validation
+## Environment Variables
 
-### Programmatic Validation
+### Syntax
+
+```yaml
+# Required variable (error if not set)
+api_key: "${OPENAI_API_KEY}"
+
+# Optional with default
+host: "${DB_HOST:-localhost}"
+
+# Required with custom error
+api_key: "${API_KEY:?API key is required}"
+
+# Partial string replacement
+connection: "postgresql://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
+```
+
+### Setup (.env file)
+
+```bash
+# Database
+DATABASE_URL=postgresql://user:pass@localhost:5432/rag_factory
+DB_HOST=localhost
+DB_PORT=5432
+
+# API Keys
+OPENAI_API_KEY=sk-...
+COHERE_API_KEY=...
+ANTHROPIC_API_KEY=sk-ant-...
+
+# Neo4j
+NEO4J_URL=bolt://localhost:7687
+NEO4J_USER=neo4j
+NEO4J_PASSWORD=...
+
+# Configuration
+CHUNK_SIZE=512
+CHUNK_OVERLAP=50
+```
+
+## Loading Configuration
+
+### Python API
+
+```python
+from rag_factory.config import load_yaml_with_validation, EnvResolver
+from dotenv import load_dotenv
+import yaml
+
+# Load environment variables
+load_dotenv()
+
+# Load service registry
+services = load_yaml_with_validation(
+    "config/services.yaml",
+    config_type="service_registry"
+)
+services = EnvResolver.resolve(services)
+
+# Load strategy pair
+with open("config/services.yaml") as f:
+    service_registry = yaml.safe_load(f)
+
+strategy = load_yaml_with_validation(
+    "config/strategies/semantic-local.yaml",
+    config_type="strategy_pair",
+    service_registry=service_registry
+)
+strategy = EnvResolver.resolve(strategy)
+```
+
+### Validation Only
 
 ```python
 from rag_factory.config.validator import ConfigValidator
@@ -140,180 +191,231 @@ from rag_factory.config.validator import ConfigValidator
 validator = ConfigValidator()
 
 # Validate service registry
-warnings = validator.validate_services_yaml(config, "services.yaml")
+warnings = validator.validate_services_yaml(config, "config/services.yaml")
 
 # Validate strategy pair
 warnings = validator.validate_strategy_pair_yaml(
     strategy_config,
     service_registry=services,
-    file_path="strategy.yaml"
+    file_path="config/strategy.yaml"
 )
 ```
 
-### Error Handling
+## Service Reference
 
-```python
-from rag_factory.config.validator import ConfigValidationError
-from rag_factory.config.env_resolver import EnvironmentVariableError
+### Using References
 
-try:
-    config = load_yaml_with_validation("config.yaml", "service_registry")
-    config = EnvResolver.resolve(config)
-except ConfigValidationError as e:
-    print(f"Validation error: {e.message}")
-    print(f"File: {e.file_path}")
-    print(f"Field: {e.field}")
-except EnvironmentVariableError as e:
-    print(f"Environment variable error: {e}")
+```yaml
+# Define service once in services.yaml
+services:
+  embedding_local:
+    name: "Local Embedding"
+    type: "embedding"
+    provider: "onnx"
+
+# Reference in strategy pair
+indexer:
+  services:
+    embedding: "$embedding_local"  # $ prefix required
 ```
 
-## Common Patterns
-
-### Inline Service Configuration
-
-Instead of referencing a service, you can define it inline:
+### Inline Configuration
 
 ```yaml
 indexer:
-  strategy: "SemanticIndexer"
   services:
     embedding:
-      name: "inline-embedding"
+      name: "Inline Embedding"
       type: "embedding"
       provider: "onnx"
-      model: "test-model"
+      model: "all-MiniLM-L6-v2"
 ```
 
-### Multiple Service References
+## Database Mapping
 
-```yaml
-indexer:
-  strategy: "ComplexIndexer"
-  services:
-    embedding: "$embedding_local"
-    llm: "$llm_openai"
-    database: "$db_main"
-```
-
-### Database Table Mapping
+### Table Mapping
 
 ```yaml
 db_config:
   tables:
-    documents: "my_documents"      # Logical -> Physical
+    documents: "my_documents"      # logical: physical
     chunks: "my_chunks"
-  fields:
-    chunk_id: "id"
-    content: "text_content"
-    embedding: "vector_embedding"
+    metadata: "my_metadata"
 ```
+
+### Field Mapping
+
+```yaml
+db_config:
+  fields:
+    content: "text_content"        # logical: physical
+    embedding: "vector_embedding"
+    document_id: "doc_id"
+```
+
+## Common Patterns
+
+### Local Development
+
+```yaml
+services:
+  embedding_local:
+    name: "Local ONNX"
+    type: "embedding"
+    provider: "onnx"
+    model: "${MODEL_NAME:-Xenova/all-MiniLM-L6-v2}"
+    cache_dir: "${CACHE_DIR:-./models}"
+  
+  db_dev:
+    name: "Dev Database"
+    type: "postgres"
+    host: "${DB_HOST:-localhost}"
+    port: ${DB_PORT:-5432}
+    database: "${DB_NAME:-rag_factory_dev}"
+    user: "${DB_USER:-postgres}"
+    password: "${DB_PASSWORD}"
+```
+
+### Production
+
+```yaml
+services:
+  embedding_prod:
+    name: "OpenAI Embeddings"
+    type: "embedding"
+    provider: "openai"
+    api_key: "${OPENAI_API_KEY}"
+    model: "text-embedding-3-small"
+  
+  db_prod:
+    name: "Production Database"
+    type: "postgres"
+    connection_string: "${DATABASE_URL}"
+    pool_size: 20
+    max_overflow: 40
+```
+
+### Hybrid Search
+
+```yaml
+strategy_name: "hybrid-search"
+version: "1.0.0"
+
+indexer:
+  strategy: "HybridIndexer"
+  services:
+    embedding: "$embedding_local"
+    database: "$db_main"
+  config:
+    chunk_size: 512
+    extract_keywords: true
+
+retriever:
+  strategy: "HybridRetriever"
+  services:
+    embedding: "$embedding_local"
+    database: "$db_main"
+  config:
+    top_k: 10
+    semantic_weight: 0.7
+    keyword_weight: 0.3
+```
+
+## Validation
+
+### Command Line
+
+```bash
+# Validate service registry
+python -c "
+from rag_factory.config.validator import load_yaml_with_validation
+load_yaml_with_validation('config/services.yaml', 'service_registry')
+print('✓ Valid')
+"
+
+# Check required environment variables
+python -c "
+from rag_factory.config.env_resolver import EnvResolver
+import yaml
+with open('config/services.yaml') as f:
+    config = yaml.safe_load(f)
+print('Required:', EnvResolver.extract_variable_names(config))
+"
+```
+
+### Common Errors
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| `'name' is a required property` | Missing required field | Add the field |
+| `'xyz' is not one of [...]` | Invalid enum value | Use valid value |
+| `Service reference '$xyz' not found` | Service doesn't exist | Add to services.yaml |
+| `${VAR} is not set` | Missing environment variable | Set the variable |
+| `does not match '^[a-z0-9-]+$'` | Invalid strategy name | Use lowercase + hyphens |
 
 ## Best Practices
 
-1. **Always use environment variables for secrets**
-   ```yaml
-   api_key: "${OPENAI_API_KEY}"  # ✅ Good
-   api_key: "sk-123456"           # ❌ Bad - plaintext secret
-   ```
+### Security
+- ✅ Always use environment variables for secrets
+- ✅ Never commit `.env` files
+- ✅ Provide `.env.example` template
+- ✅ Use secret management in production
 
-2. **Provide sensible defaults**
-   ```yaml
-   host: "${DB_HOST:-localhost}"
-   port: 5432
-   ```
+### Configuration
+- ✅ Define services once, reference everywhere
+- ✅ Use descriptive service names
+- ✅ Provide defaults for optional settings
+- ✅ Version your configurations
+- ✅ Document required environment variables
 
-3. **Use service references for reusability**
-   ```yaml
-   # Define once in services.yaml
-   services:
-     embedding1:
-       name: "my-embedding"
-       type: "embedding"
-       provider: "onnx"
-   
-   # Reference multiple times in strategy pairs
-   indexer:
-     services:
-       embedding: "$embedding1"
-   retriever:
-     services:
-       embedding: "$embedding1"
-   ```
+### Validation
+- ✅ Validate before deployment
+- ✅ Test with missing environment variables
+- ✅ Check service references
+- ✅ Verify database mappings
 
-4. **Document required environment variables**
-   Create a `.env.example` file:
+## Examples
+
+See complete examples in:
+- `rag_factory/config/examples/services.yaml`
+- `rag_factory/config/examples/semantic-local-pair.yaml`
+- `rag_factory/config/examples/hybrid-search-pair.yaml`
+
+## Documentation
+
+Detailed guides:
+- [Service Registry Schema](service-registry-schema.md)
+- [Strategy Pair Schema](strategy-pair-schema.md)
+- [Environment Variables](environment-variables.md)
+- [Troubleshooting](troubleshooting.md)
+
+## Quick Start
+
+1. **Copy example configuration**:
    ```bash
-   # Required
-   DATABASE_URL=postgresql://user:pass@localhost:5432/db
-   OPENAI_API_KEY=sk-...
-   
-   # Optional (with defaults)
-   DB_HOST=localhost
-   LLM_URL=http://localhost:1234/v1
+   cp rag_factory/config/examples/services.yaml config/services.yaml
    ```
 
-## Troubleshooting
+2. **Create .env file**:
+   ```bash
+   cat > .env << EOF
+   DATABASE_URL=postgresql://localhost/rag_factory
+   OPENAI_API_KEY=sk-your-key
+   EOF
+   ```
 
-### "Service reference not found"
-- Check service name spelling (case-sensitive)
-- Ensure service exists in `services.yaml`
-- Verify you're using `$service_name` syntax (with dollar sign)
+3. **Load and use**:
+   ```python
+   from dotenv import load_dotenv
+   from rag_factory.config import load_yaml_with_validation, EnvResolver
+   
+   load_dotenv()
+   config = load_yaml_with_validation("config/services.yaml", "service_registry")
+   config = EnvResolver.resolve(config)
+   ```
 
-### "Required environment variable not set"
-- Check variable name spelling
-- Ensure variable is set in your environment
-- For `.env` files, load them before validation
+## Support
 
-### "Schema validation failed"
-- Check all required fields are present
-- Verify field types match the schema
-- Ensure names use valid characters:
-  - Service names: alphanumeric + underscore
-  - Strategy names: lowercase + hyphen
-
-## Examples Location
-
-See `rag_factory/config/examples/` for:
-- `services.yaml`: Complete service registry example
-- `semantic-local-pair.yaml`: Basic strategy pair
-- `hybrid-search-pair.yaml`: Advanced strategy pair
-- `README.md`: Detailed documentation
-
-## API Reference
-
-### ConfigValidator
-
-```python
-validator = ConfigValidator(schemas_dir=None)
-warnings = validator.validate_services_yaml(config, file_path=None)
-warnings = validator.validate_strategy_pair_yaml(config, service_registry=None, file_path=None)
-```
-
-### EnvResolver
-
-```python
-resolved = EnvResolver.resolve(value)  # Recursively resolve env vars
-variables = EnvResolver.extract_variable_names(value)  # Extract var names
-is_valid = EnvResolver.validate_no_injection(var_name)  # Validate var name
-```
-
-### Helper Functions
-
-```python
-config = load_yaml_with_validation(file_path, config_type, service_registry=None)
-```
-
-## Schema Versions
-
-Current versions:
-- Service Registry: `1.0.0`
-- Strategy Pair: `1.0.0`
-
-Check compatibility:
-```python
-from rag_factory.config.schemas import is_compatible
-
-if is_compatible("service_registry", "1.0.0"):
-    # Version is compatible
-    pass
-```
+- Examples: `rag_factory/config/examples/`
+- Tests: `tests/unit/config/`, `tests/integration/config/`
+- Documentation: `docs/configuration/`
