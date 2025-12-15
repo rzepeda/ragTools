@@ -116,10 +116,10 @@ def downgrade() -> None:
     op.execute("DROP TRIGGER IF EXISTS update_documents_updated_at ON documents")
     op.execute("DROP FUNCTION IF EXISTS update_updated_at_column()")
 
-    # Drop indexes
+    # Drop indexes (with IF EXISTS to handle cases where they don't exist)
     op.execute("DROP INDEX IF EXISTS idx_chunks_embedding_hnsw")
-    op.drop_index("idx_chunks_created_at", table_name="chunks")
-    op.drop_index("idx_chunks_document_id_index", table_name="chunks")
+    op.execute("DROP INDEX IF EXISTS idx_chunks_created_at")
+    op.execute("DROP INDEX IF EXISTS idx_chunks_document_id_index")
 
     # Drop tables
     op.drop_table("chunks")

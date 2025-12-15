@@ -235,14 +235,28 @@ def downgrade() -> None:
     # Drop view
     op.execute("DROP VIEW IF EXISTS chunk_hierarchy_validation")
 
-    # Drop indexes
-    op.drop_index("idx_chunks_hierarchy", table_name="chunks")
-    op.drop_index("idx_chunks_parent_chunk_id", table_name="chunks")
+    # Drop indexes (with IF EXISTS to handle cases where they don't exist)
+    op.execute("DROP INDEX IF EXISTS idx_chunks_hierarchy")
+    op.execute("DROP INDEX IF EXISTS idx_chunks_parent_chunk_id")
 
-    # Drop foreign key constraint
-    op.drop_constraint("fk_chunks_parent_chunk_id", "chunks", type_="foreignkey")
+    # Drop foreign key constraint (with table existence check)
+    op.execute("""
+        DO $$ 
+        BEGIN
+            IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'chunks') THEN
+                ALTER TABLE chunks DROP CONSTRAINT IF EXISTS fk_chunks_parent_chunk_id;
+            END IF;
+        END $$;
+    """)
 
-    # Drop columns
-    op.drop_column("chunks", "hierarchy_metadata")
-    op.drop_column("chunks", "hierarchy_level")
-    op.drop_column("chunks", "parent_chunk_id")
+    # Drop columns (with table existence check)
+    op.execute("""
+        DO $$ 
+        BEGIN
+            IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'chunks') THEN
+                ALTER TABLE chunks DROP COLUMN IF EXISTS hierarchy_metadata;
+                ALTER TABLE chunks DROP COLUMN IF EXISTS hierarchy_level;
+                ALTER TABLE chunks DROP COLUMN IF EXISTS parent_chunk_id;
+            END IF;
+        END $$;
+    """)

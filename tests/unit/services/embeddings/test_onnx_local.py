@@ -139,12 +139,12 @@ class TestONNXLocalProvider:
         assert abs(norm - 1.0) < 0.01
 
     def test_tokenization_with_tiktoken(self, mock_provider, mock_session):
-        """Test tokenization with tiktoken."""
-        if mock_provider.tokenizer_type == "tiktoken":
+        """Test tokenization with HuggingFace tokenizer."""
+        if mock_provider.hf_tokenizer is not None:
             mock_embeddings = np.random.randn(1, 512, 384).astype(np.float32)
             mock_session.run.return_value = [mock_embeddings]
 
-            result = mock_provider.get_embeddings(["Test document with tiktoken"])
+            result = mock_provider.get_embeddings(["Test document with HF tokenizer"])
 
             # Verify session was called with correct inputs
             assert mock_session.run.called
@@ -154,9 +154,12 @@ class TestONNXLocalProvider:
 
     def test_tokenization_simple_fallback(self, mock_provider, mock_session):
         """Test simple tokenization fallback."""
-        # Force simple tokenization
-        mock_provider.tokenizer_type = "simple"
-        mock_provider.tokenizer = None
+        # Force simple tokenization by setting hf_tokenizer to None
+        mock_provider.hf_tokenizer = None
+        # Ensure fallback tokenizer exists
+        if not hasattr(mock_provider, 'tokenizer') or mock_provider.tokenizer is None:
+            from rag_factory.utils.tokenization import Tokenizer
+            mock_provider.tokenizer = Tokenizer(encoding_name="cl100k_base", use_fallback=True)
 
         mock_embeddings = np.random.randn(1, 512, 384).astype(np.float32)
         mock_session.run.return_value = [mock_embeddings]

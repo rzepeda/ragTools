@@ -11,6 +11,7 @@ from prompt_toolkit.history import InMemoryHistory
 from rich.console import Console
 
 from rag_factory.cli.formatters import print_error, print_success, print_warning
+from rag_factory.cli.utils.validation import validate_config_file
 
 console = Console()
 
@@ -33,7 +34,6 @@ class REPLSession:
         # Load config if provided
         if config_path:
             try:
-                from rag_factory.cli.utils import validate_config_file
                 self.config = validate_config_file(config_path)
                 console.print(f"[green]Loaded configuration from: {config_path}[/green]")
             except Exception as e:
@@ -179,7 +179,6 @@ class REPLSession:
 
         config_path = " ".join(args)
         try:
-            from rag_factory.cli.utils import validate_config_file
             self.config = validate_config_file(config_path)
             self.config_path = config_path
             print_success(f"Loaded configuration from: {config_path}")

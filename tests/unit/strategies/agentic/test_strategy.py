@@ -133,7 +133,7 @@ def test_strategy_initialization_with_config(
         )
     )
     
-    assert strategy.config.max_iterations == 5
+    assert strategy.strategy_config.max_iterations == 5
     assert len(strategy.tools) == 2  # Only enabled tools
 
 

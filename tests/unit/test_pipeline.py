@@ -21,12 +21,21 @@ from rag_factory.strategies.base import Chunk, IRAGStrategy
 
 
 # Test helper classes
-class DummyStrategy(IRAGStrategy):
-    """Dummy strategy for testing purposes."""
+class BaseTestStrategy(IRAGStrategy):
+    """Base class for test strategies with common boilerplate."""
 
-    def initialize(self, config: Any) -> None:
-        """Initialize the dummy strategy."""
-        self.config = config
+    def __init__(self, config: Dict[str, Any] = None, dependencies: Any = None) -> None:
+        """Initialize without calling super to avoid dependency validation."""
+        self.config = config or {}
+        self.deps = dependencies
+
+    def requires_services(self) -> set:
+        """Return empty set - no services required for test strategies."""
+        return set()
+
+
+class DummyStrategy(BaseTestStrategy):
+    """Dummy strategy for testing purposes."""
 
     def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
         """Prepare data (not used in these tests)."""
@@ -65,12 +74,8 @@ def test_pipeline_add_stage() -> None:
 
 def test_pipeline_chaining() -> None:
     """Test add_stage supports method chaining."""
-    class Strategy1(IRAGStrategy):
+    class Strategy1(BaseTestStrategy):
         """Test strategy 1."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -88,12 +93,8 @@ def test_pipeline_chaining() -> None:
             """Process query."""
             return ""
 
-    class Strategy2(IRAGStrategy):
+    class Strategy2(BaseTestStrategy):
         """Test strategy 2."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -123,12 +124,8 @@ def test_sequential_execution_order() -> None:
     """Test strategies execute in correct order."""
     execution_order: List[int] = []
 
-    class Strategy1(IRAGStrategy):
+    class Strategy1(BaseTestStrategy):
         """Test strategy that tracks execution order."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -147,12 +144,8 @@ def test_sequential_execution_order() -> None:
             """Process query."""
             return ""
 
-    class Strategy2(IRAGStrategy):
+    class Strategy2(BaseTestStrategy):
         """Test strategy that tracks execution order."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -183,12 +176,8 @@ def test_sequential_execution_order() -> None:
 
 def test_sequential_execution_collects_results() -> None:
     """Test sequential execution collects all results."""
-    class Strategy1(IRAGStrategy):
+    class Strategy1(BaseTestStrategy):
         """Test strategy returning result A."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -206,12 +195,8 @@ def test_sequential_execution_collects_results() -> None:
             """Process query."""
             return ""
 
-    class Strategy2(IRAGStrategy):
+    class Strategy2(BaseTestStrategy):
         """Test strategy returning result B."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -249,12 +234,8 @@ async def test_parallel_execution() -> None:
 
     execution_times: Dict[str, float] = {}
 
-    class SlowStrategy(IRAGStrategy):
+    class SlowStrategy(BaseTestStrategy):
         """Slow strategy for parallel testing."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -275,12 +256,8 @@ async def test_parallel_execution() -> None:
             """Process query."""
             return ""
 
-    class FastStrategy(IRAGStrategy):
+    class FastStrategy(BaseTestStrategy):
         """Fast strategy for parallel testing."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -317,12 +294,8 @@ async def test_parallel_execution() -> None:
 # TC3.4: Error Handling Tests
 def test_strategy_error_caught() -> None:
     """Test pipeline catches strategy errors."""
-    class FailingStrategy(IRAGStrategy):
+    class FailingStrategy(BaseTestStrategy):
         """Strategy that always fails."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -340,12 +313,8 @@ def test_strategy_error_caught() -> None:
             """Process query."""
             return ""
 
-    class WorkingStrategy(IRAGStrategy):
+    class WorkingStrategy(BaseTestStrategy):
         """Strategy that works correctly."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -381,12 +350,8 @@ def test_strategy_error_caught() -> None:
 
 def test_fallback_strategy_executed() -> None:
     """Test fallback strategy used on primary failure."""
-    class PrimaryStrategy(IRAGStrategy):
+    class PrimaryStrategy(BaseTestStrategy):
         """Primary strategy that fails."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -404,12 +369,8 @@ def test_fallback_strategy_executed() -> None:
             """Process query."""
             return ""
 
-    class FallbackStrategy(IRAGStrategy):
+    class FallbackStrategy(BaseTestStrategy):
         """Fallback strategy that succeeds."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -443,12 +404,8 @@ def test_fallback_strategy_executed() -> None:
 # TC3.5: Result Merging Tests
 def test_duplicate_results_removed() -> None:
     """Test duplicate results are deduplicated."""
-    class Strategy1(IRAGStrategy):
+    class Strategy1(BaseTestStrategy):
         """Strategy returning duplicate and unique results."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -469,12 +426,8 @@ def test_duplicate_results_removed() -> None:
             """Process query."""
             return ""
 
-    class Strategy2(IRAGStrategy):
+    class Strategy2(BaseTestStrategy):
         """Strategy returning duplicate and unique results."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -508,12 +461,8 @@ def test_duplicate_results_removed() -> None:
 
 def test_results_sorted_by_score() -> None:
     """Test merged results sorted by relevance score."""
-    class Strategy1(IRAGStrategy):
+    class Strategy1(BaseTestStrategy):
         """Strategy returning low-score result."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -531,12 +480,8 @@ def test_results_sorted_by_score() -> None:
             """Process query."""
             return ""
 
-    class Strategy2(IRAGStrategy):
+    class Strategy2(BaseTestStrategy):
         """Strategy returning high-score result."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -567,12 +512,8 @@ def test_results_sorted_by_score() -> None:
 # TC3.6: Performance Tracking Tests
 def test_performance_metrics_collected() -> None:
     """Test execution time tracked for each stage."""
-    class Strategy1(IRAGStrategy):
+    class Strategy1(BaseTestStrategy):
         """Strategy with artificial delay."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -648,12 +589,8 @@ async def test_cascade_mode_not_implemented_async() -> None:
 
 def test_required_stage_failure_raises_exception() -> None:
     """Test required stage failure raises exception."""
-    class FailingRequiredStrategy(IRAGStrategy):
+    class FailingRequiredStrategy(BaseTestStrategy):
         """Strategy that fails and is required."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -682,12 +619,8 @@ def test_required_stage_failure_raises_exception() -> None:
 @pytest.mark.asyncio
 async def test_required_stage_failure_raises_exception_async() -> None:
     """Test required stage failure raises exception in async mode."""
-    class FailingRequiredAsyncStrategy(IRAGStrategy):
+    class FailingRequiredAsyncStrategy(BaseTestStrategy):
         """Strategy that fails in async mode and is required."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -714,12 +647,8 @@ async def test_required_stage_failure_raises_exception_async() -> None:
 
 def test_fallback_failure_when_required() -> None:
     """Test fallback failure on required stage raises exception."""
-    class FailingPrimary(IRAGStrategy):
+    class FailingPrimary(BaseTestStrategy):
         """Primary strategy that fails."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -737,12 +666,8 @@ def test_fallback_failure_when_required() -> None:
             """Process query."""
             return ""
 
-    class FailingFallback(IRAGStrategy):
+    class FailingFallback(BaseTestStrategy):
         """Fallback strategy that also fails."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -774,12 +699,8 @@ def test_fallback_failure_when_required() -> None:
 @pytest.mark.asyncio
 async def test_fallback_failure_when_required_async() -> None:
     """Test fallback failure on required stage raises exception in async."""
-    class FailingPrimaryAsync(IRAGStrategy):
+    class FailingPrimaryAsync(BaseTestStrategy):
         """Primary async strategy that fails."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -797,12 +718,8 @@ async def test_fallback_failure_when_required_async() -> None:
             """Process query."""
             return ""
 
-    class FailingFallbackAsync(IRAGStrategy):
+    class FailingFallbackAsync(BaseTestStrategy):
         """Fallback async strategy that also fails."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -834,12 +751,8 @@ async def test_fallback_failure_when_required_async() -> None:
 @pytest.mark.asyncio
 async def test_parallel_required_stage_failure() -> None:
     """Test parallel execution with required stage failure."""
-    class FailingParallelRequired(IRAGStrategy):
+    class FailingParallelRequired(BaseTestStrategy):
         """Required strategy that fails in parallel mode."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -867,12 +780,8 @@ async def test_parallel_required_stage_failure() -> None:
 @pytest.mark.asyncio
 async def test_parallel_required_fallback_failure() -> None:
     """Test parallel execution with required stage and failing fallback."""
-    class FailingParallelPrimary(IRAGStrategy):
+    class FailingParallelPrimary(BaseTestStrategy):
         """Primary strategy that fails."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -890,12 +799,8 @@ async def test_parallel_required_fallback_failure() -> None:
             """Process query."""
             return ""
 
-    class FailingParallelFallback(IRAGStrategy):
+    class FailingParallelFallback(BaseTestStrategy):
         """Fallback strategy that fails."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -926,12 +831,8 @@ async def test_parallel_required_fallback_failure() -> None:
 
 def test_non_required_fallback_failure_continues() -> None:
     """Test non-required stage with failing fallback continues pipeline."""
-    class FailingPrimaryNonReq(IRAGStrategy):
+    class FailingPrimaryNonReq(BaseTestStrategy):
         """Primary strategy that fails."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -949,12 +850,8 @@ def test_non_required_fallback_failure_continues() -> None:
             """Process query."""
             return ""
 
-    class FailingFallbackNonReq(IRAGStrategy):
+    class FailingFallbackNonReq(BaseTestStrategy):
         """Fallback strategy that also fails."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -991,12 +888,8 @@ def test_non_required_fallback_failure_continues() -> None:
 @pytest.mark.asyncio
 async def test_non_required_fallback_failure_continues_async() -> None:
     """Test non-required stage with failing fallback continues in async."""
-    class FailingPrimaryAsyncNonReq(IRAGStrategy):
+    class FailingPrimaryAsyncNonReq(BaseTestStrategy):
         """Primary async strategy that fails."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -1014,12 +907,8 @@ async def test_non_required_fallback_failure_continues_async() -> None:
             """Process query."""
             return ""
 
-    class FailingFallbackAsyncNonReq(IRAGStrategy):
+    class FailingFallbackAsyncNonReq(BaseTestStrategy):
         """Fallback async strategy that also fails."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -1056,12 +945,8 @@ async def test_non_required_fallback_failure_continues_async() -> None:
 @pytest.mark.asyncio
 async def test_parallel_non_required_fallback_success() -> None:
     """Test parallel execution with non-required stage and successful fallback."""
-    class FailingParallelPrimaryNonReq(IRAGStrategy):
+    class FailingParallelPrimaryNonReq(BaseTestStrategy):
         """Primary strategy that fails."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -1079,12 +964,8 @@ async def test_parallel_non_required_fallback_success() -> None:
             """Process query."""
             return ""
 
-    class WorkingParallelFallback(IRAGStrategy):
+    class WorkingParallelFallback(BaseTestStrategy):
         """Fallback strategy that works."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -1122,12 +1003,8 @@ async def test_parallel_non_required_fallback_success() -> None:
 @pytest.mark.asyncio
 async def test_parallel_non_required_both_fail() -> None:
     """Test parallel execution with non-required stage where both fail."""
-    class FailingParallelPrimaryBoth(IRAGStrategy):
+    class FailingParallelPrimaryBoth(BaseTestStrategy):
         """Primary strategy that fails."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""
@@ -1145,12 +1022,8 @@ async def test_parallel_non_required_both_fail() -> None:
             """Process query."""
             return ""
 
-    class FailingParallelFallbackBoth(IRAGStrategy):
+    class FailingParallelFallbackBoth(BaseTestStrategy):
         """Fallback strategy that also fails."""
-
-        def initialize(self, config: Any) -> None:
-            """Initialize."""
-            pass
 
         def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
             """Prepare data."""

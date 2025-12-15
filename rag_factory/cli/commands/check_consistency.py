@@ -83,10 +83,17 @@ def check_consistency(
             console.print(f"[dim]Type filter: {type_filter}[/dim]")
             console.print()
 
+        # Validate and load config if provided
+        config_data = None
+        if config:
+            if verbose:
+                console.print(f"[dim]Loading config from: {config}[/dim]")
+            config_data = validate_config_file(config)
+
         # Create factory instance
         # Note: For consistency checking, we create a factory without services
         # The check will identify which services are required
-        factory = RAGFactory()
+        factory = RAGFactory(config=config_data) if config_data else RAGFactory()
 
         # Run consistency checks
         if verbose:

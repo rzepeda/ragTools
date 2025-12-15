@@ -191,33 +191,45 @@ class TestDatabaseServices:
         except ImportError:
             pytest.skip("asyncpg package not installed")
 
-        with patch('asyncpg.create_pool') as mock_create_pool:
-            # Setup mocks
-            mock_pool = AsyncMock()
-            mock_create_pool.return_value = mock_pool
+        # Setup mocks
+        mock_pool = AsyncMock()
+        mock_conn = AsyncMock()
+        
+        # Mock the async context manager for pool.acquire()
+        # We need to create a proper async context manager mock
+        class AsyncContextManagerMock:
+            async def __aenter__(self):
+                return mock_conn
+            
+            async def __aexit__(self, exc_type, exc_val, exc_tb):
+                return None
+        
+        # Use Mock (not AsyncMock) for acquire since it's not an async function
+        # It just returns an async context manager
+        mock_pool.acquire = Mock(side_effect=lambda: AsyncContextManagerMock())
 
-            mock_conn = AsyncMock()
-            mock_pool.acquire.return_value.__aenter__.return_value = mock_conn
+        # Create service
+        service = PostgresqlDatabaseService(
+            host="localhost",
+            database="test_db",
+            user="postgres",
+            password="password"
+        )
+        
+        # Pre-set the pool to avoid connection attempts
+        service._pool = mock_pool
 
-            # Create service
-            service = PostgresqlDatabaseService(
-                host="localhost",
-                database="test_db",
-                user="postgres",
-                password="password"
-            )
+        # Test store_chunks (just verify it doesn't crash)
+        chunks = [{
+            "chunk_id": "test_1",
+            "text": "Test content",
+            "embedding": [0.1, 0.2, 0.3],
+            "metadata": {}
+        }]
+        await service.store_chunks(chunks)
 
-            # Test store_chunks (just verify it doesn't crash)
-            chunks = [{
-                "chunk_id": "test_1",
-                "text": "Test content",
-                "embedding": [0.1, 0.2, 0.3],
-                "metadata": {}
-            }]
-            await service.store_chunks(chunks)
-
-            # Verify execute was called
-            assert mock_conn.execute.called
+        # Verify execute was called
+        assert mock_conn.execute.called
 
 
 class TestLocalServices:

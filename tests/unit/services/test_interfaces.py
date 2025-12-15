@@ -367,6 +367,15 @@ async def test_idatabase_service_mock_implementation():
 
         async def get_chunk(self, chunk_id: str) -> Dict[str, Any]:
             return self.chunks.get(chunk_id, {})
+        
+        async def get_chunks_for_documents(self, document_ids: List[str]) -> List[Dict[str, Any]]:
+            # Simple mock: return chunks that match document_ids
+            return [chunk for chunk in self.chunks.values() 
+                    if chunk.get("document_id") in document_ids]
+        
+        async def store_chunks_with_hierarchy(self, chunks: List[Dict[str, Any]]) -> None:
+            # Simple mock: store chunks same as store_chunks
+            await self.store_chunks(chunks)
 
     service = MockDatabaseService()
     assert service is not None

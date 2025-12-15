@@ -47,9 +47,6 @@ class AgenticRAGStrategy(IRAGStrategy):
         # Initialize base class (validates dependencies)
         super().__init__(config, dependencies)
         
-        # Parse configuration
-        self.strategy_config = AgenticStrategyConfig(**config)
-        
         # Note: chunk_repository and document_repository would need to be
         # added to StrategyDependencies or passed via config
         # For now, we'll access services from self.deps
@@ -63,9 +60,18 @@ class AgenticRAGStrategy(IRAGStrategy):
         # Initialize query analyzer if enabled
         self.query_analyzer = (
             QueryAnalyzer(self.deps.llm_service)
-            if self.strategy_config.enable_query_analysis
+            if self.config.get('enable_query_analysis', True)
             else None
         )
+    
+    @property
+    def strategy_config(self) -> AgenticStrategyConfig:
+        """Get parsed strategy configuration.
+        
+        Returns:
+            Parsed AgenticStrategyConfig object
+        """
+        return AgenticStrategyConfig(**self.config)
     
     def requires_services(self) -> Set[ServiceDependency]:
         """Declare required services.
@@ -81,14 +87,43 @@ class AgenticRAGStrategy(IRAGStrategy):
         Returns:
             List of tool instances
         """
-        # TODO: Update when repositories are added to dependencies
-        # For now, tools would need to be initialized differently
-        # or repositories need to be part of StrategyDependencies
+        # Get repositories from database service
+        # The database service should have chunk_repository and document_repository attributes
+        chunk_repo = getattr(self.deps.database_service, 'chunk_repository', None)
+        doc_repo = getattr(self.deps.database_service, 'document_repository', None)
+        
+        # Create all available tools
         all_tools = []
         
+        # Only create tools if we have the required repositories
+        if chunk_repo and self.deps.embedding_service:
+            all_tools.extend([
+                SemanticSearchTool(
+                    chunk_repository=chunk_repo,
+                    embedding_service=self.deps.embedding_service
+                ),
+                MetadataSearchTool(
+                    chunk_repository=chunk_repo,
+                    embedding_service=self.deps.embedding_service
+                ),
+                HybridSearchTool(
+                    chunk_repository=chunk_repo,
+                    embedding_service=self.deps.embedding_service
+                )
+            ])
+        
+        if doc_repo and chunk_repo:
+            all_tools.append(
+                DocumentReaderTool(
+                    document_repository=doc_repo,
+                    chunk_repository=chunk_repo
+                )
+            )
+        
         # Filter by enabled tools if specified
-        if self.strategy_config.enabled_tools:
-            enabled_names = set(self.strategy_config.enabled_tools)
+        enabled_tools_config = self.config.get('enabled_tools')
+        if enabled_tools_config:
+            enabled_names = set(enabled_tools_config)
             all_tools = [t for t in all_tools if t.name in enabled_names]
         
         logger.info(f"Initialized {len(all_tools)} tools: {[t.name for t in all_tools]}")

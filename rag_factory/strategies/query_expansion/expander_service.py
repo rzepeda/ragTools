@@ -95,8 +95,15 @@ class QueryExpanderService:
 
             if cached_result:
                 self._stats["cache_hits"] += 1
-                cached_result.cache_hit = True
-                return cached_result
+                # Create a new result with updated timing (cache retrieval time)
+                execution_time_ms = (time.time() - start_time) * 1000
+                # Return a new ExpansionResult with cache hit flag and updated timing
+                from dataclasses import replace
+                return replace(
+                    cached_result,
+                    execution_time_ms=execution_time_ms,
+                    cache_hit=True
+                )
 
         self._stats["cache_misses"] += 1
 

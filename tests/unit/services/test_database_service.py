@@ -15,23 +15,37 @@ def mock_pool():
     """Create mock connection pool."""
     pool = AsyncMock()
     conn = AsyncMock()
-    pool.acquire.return_value.__aenter__.return_value = conn
+    
+    # Mock the async context manager for pool.acquire()
+    class AsyncContextManagerMock:
+        async def __aenter__(self):
+            return conn
+        
+        async def __aexit__(self, exc_type, exc_val, exc_tb):
+            return None
+    
+    # Use Mock (not AsyncMock) for acquire since it's not an async function
+    # It just returns an async context manager
+    pool.acquire = Mock(side_effect=lambda: AsyncContextManagerMock())
+    
     return pool, conn
 
 @pytest.fixture
 def service(mock_pool):
     """Create service with mock pool."""
     pool, _ = mock_pool
-    with patch("asyncpg.create_pool", new=AsyncMock(return_value=pool)), \
-         patch("rag_factory.services.database.postgres.ASYNCPG_AVAILABLE", True):
-        service = PostgresqlDatabaseService(
-            host="localhost",
-            port=5432,
-            database="test_db",
-            user="test_user",
-            password="test_password"
-        )
-        return service
+    
+    service = PostgresqlDatabaseService(
+        host="localhost",
+        port=5432,
+        database="test_db",
+        user="test_user",
+        password="test_password"
+    )
+    # Pre-set the pool to avoid connection attempts
+    service._pool = pool
+    return service
+
 
 @pytest.mark.asyncio
 async def test_service_initialization():
@@ -54,8 +68,13 @@ async def test_ensure_table(service, mock_pool):
     """Test table creation."""
     pool, conn = mock_pool
     
-    # Trigger pool creation which calls ensure_table
-    await service._get_pool()
+    # Clear the pre-set pool so _get_pool() will create a new one
+    service._pool = None
+    
+    # Patch asyncpg.create_pool to return our mock pool
+    with patch("rag_factory.services.database.postgres.asyncpg.create_pool", new=AsyncMock(return_value=pool)):
+        # Trigger pool creation which calls ensure_table
+        await service._get_pool()
     
     # Check if create extension and table queries were executed
     assert conn.execute.call_count >= 3

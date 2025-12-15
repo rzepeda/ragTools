@@ -274,38 +274,20 @@ def test_get_model_name(
             assert provider.get_model_name() == "Xenova/all-mpnet-base-v2"
 
 
-@patch("rag_factory.services.embedding.providers.onnx_local.create_onnx_session")
-@patch("rag_factory.services.embedding.providers.onnx_local.download_onnx_model")
-@patch("rag_factory.services.embedding.providers.onnx_local.validate_onnx_model")
-@patch("rag_factory.services.embedding.providers.onnx_local.get_model_metadata")
-def test_mean_pooling(
-    mock_metadata, mock_validate, mock_download, mock_session, onnx_config, mock_onnx_available, mock_hf_hub_available
-):
+def test_mean_pooling():
     """Test mean pooling implementation."""
-    from rag_factory.services.embedding.providers.onnx_local import ONNXLocalProvider
-    from pathlib import Path
+    from rag_factory.services.utils.onnx_utils import mean_pooling
+    import numpy as np
 
-    mock_download.return_value = Path("/fake/path/to/onnx/model.onnx")
-    mock_session_obj = Mock()
-    mock_output = Mock()
-    mock_output.shape = [1, 512, 768]
-    mock_session_obj.get_outputs.return_value = [mock_output]
-    mock_session.return_value = mock_session_obj
-    mock_metadata.return_value = {"embedding_dim": 768}
+    # Create test data
+    token_embeddings = np.random.randn(2, 10, 768).astype(np.float32)
+    attention_mask = np.array([[1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
+                              [1, 1, 1, 1, 1, 1, 1, 0, 0, 0]], dtype=np.int64)
 
-    with patch("pathlib.Path.exists", return_value=True):
-        with patch("tokenizers.Tokenizer.from_file"):
-            provider = ONNXLocalProvider(onnx_config)
+    # Call mean pooling utility function
+    result = mean_pooling(token_embeddings, attention_mask)
 
-            # Create test data
-            token_embeddings = np.random.randn(2, 10, 768).astype(np.float32)
-            attention_mask = np.array([[1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
-                                      [1, 1, 1, 1, 1, 1, 1, 0, 0, 0]], dtype=np.int64)
-
-            # Call mean pooling
-            result = provider._mean_pooling(token_embeddings, attention_mask)
-
-            # Check output shape
-            assert result.shape == (2, 768)
-            # Check that result is not all zeros
-            assert not np.allclose(result, 0)
+    # Check output shape
+    assert result.shape == (2, 768)
+    # Check that result is not all zeros
+    assert not np.allclose(result, 0)
