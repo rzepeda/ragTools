@@ -98,7 +98,7 @@ def test_local_embedding_provider():
         assert len(result.embeddings) == 2
         assert result.provider == "onnx-local"
         assert result.cost == 0.0  # Local models have no cost
-        assert len(result.embeddings[0]) == 768  # all-mpnet-base-v2 dimensions
+        assert len(result.embeddings[0]) == result.dimensions  # Use actual model dimensions
 
     except ImportError:
         pytest.skip("ONNX dependencies not installed (optimum[onnxruntime], transformers)")
@@ -244,7 +244,7 @@ def test_onnx_provider_compatibility():
 
         # Verify metadata
         assert result1.provider == "onnx-local"
-        assert result1.dimensions == 768
+        assert result1.dimensions in [384, 768]  # Support both MiniLM (384) and mpnet (768)
         assert result1.cost == 0.0
 
     except ImportError:

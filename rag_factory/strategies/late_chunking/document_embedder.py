@@ -112,14 +112,21 @@ class DocumentEmbedder:
                 f"Document truncated to {len(token_ids)} tokens (max: {self.max_length})"
             )
 
+        # Prepare inputs for ONNX model
+        inputs = {
+            "input_ids": input_ids,
+            "attention_mask": attention_mask
+        }
+        
+        # Check if model requires token_type_ids (BERT-based models like MiniLM)
+        input_names = [inp.name for inp in self.session.get_inputs()]
+        if "token_type_ids" in input_names:
+            # Create token_type_ids (all zeros for single sequence)
+            token_type_ids = np.zeros_like(input_ids, dtype=np.int64)
+            inputs["token_type_ids"] = token_type_ids
+
         # Run ONNX inference
-        outputs = self.session.run(
-            None,
-            {
-                "input_ids": input_ids,
-                "attention_mask": attention_mask
-            }
-        )
+        outputs = self.session.run(None, inputs)
 
         # Extract token-level embeddings
         # Output shape: [batch_size, seq_length, embedding_dim]

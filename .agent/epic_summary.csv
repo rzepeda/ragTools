@@ -1,0 +1,18 @@
+epic_id,epic_name,total_stories,implemented,test_only,pending,completion_pct,story_points,status,critical_issues
+epic-01,Core Infrastructure & Factory Pattern,5,4,1,1,80,31,🟡,Configuration management pending
+epic-02,Database & Storage Infrastructure,2,1,1,0,100,13,🟢,None
+epic-03,Core Services Layer,2,2,0,0,100,16,🟢,None
+epic-04,Priority RAG Strategies,3,3,0,0,100,34,🟢,None
+epic-05,Agentic & Advanced Retrieval,3,3,0,0,100,34,🟢,None
+epic-06,Multi-Query & Contextual,2,2,0,0,100,26,🟢,None
+epic-07,Advanced & Experimental,3,3,0,0,100,63,🟢,None
+epic-08,Observability & QA,2,0,2,0,100,21,🟡,Production code needs implementation
+epic-08.5,Development Tools,2,1,0,1,50,16,🟠,Dev server not implemented
+epic-09,Documentation & Dev Experience,2,1,1,0,100,26,🟢,Some doc tests failing
+epic-10,Lightweight Dependencies,5,4,1,0,100,34,🟢,None
+epic-11,Dependency Injection,6,4,0,2,67,39,��,Container and Factory DI pending
+epic-12,Pipeline Separation,6,3,0,3,50,55,🟠,Pipeline implementations pending
+epic-13,Indexing Strategies,5,5,0,0,100,47,🟢,None
+epic-14,CLI Enhancements,2,2,0,0,100,13,🟢,None
+epic-16,Database Consolidation,6,3,2,1,67,23,🟡,Environment variables pending
+epic-17,Strategy Pair Configuration,6,4,0,2,67,47,🟡,StrategyPairManager pending

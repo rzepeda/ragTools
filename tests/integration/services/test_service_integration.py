@@ -51,7 +51,7 @@ def llm_service():
         model="claude-sonnet-4.5",
         enable_rate_limiting=False
     )
-    with patch("rag_factory.services.llm.service.AnthropicProvider") as mock_provider_cls:
+    with patch("rag_factory.services.llm.providers.anthropic.AnthropicProvider") as mock_provider_cls:
         mock_provider = Mock()
         mock_provider.complete.return_value = LLMResponse(
             content="Generated answer",
@@ -75,11 +75,17 @@ def llm_service():
 @pytest.fixture
 def database_service():
     """Create database service."""
+    from unittest.mock import MagicMock
     with patch("asyncpg.create_pool") as mock_create_pool, \
          patch("rag_factory.services.database.postgres.ASYNCPG_AVAILABLE", True):
         pool = AsyncMock()
         conn = AsyncMock()
-        pool.acquire.return_value.__aenter__.return_value = conn
+        # Create an async context manager for acquire()
+        acquire_cm = AsyncMock()
+        acquire_cm.__aenter__.return_value = conn
+        acquire_cm.__aexit__.return_value = None
+        # Make acquire() return the context manager directly (not as a coroutine)
+        pool.acquire = MagicMock(return_value=acquire_cm)
         mock_create_pool.return_value = pool
         
         service = PostgresqlDatabaseService(
