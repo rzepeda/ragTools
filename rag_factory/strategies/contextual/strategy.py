@@ -141,9 +141,9 @@ class ContextualRetrievalStrategy(IRAGStrategy):
         
         return {
             "document_id": document_id,
+            **cost_summary,
             "total_chunks": len(contextualized_chunks),
-            "contextualized_chunks": sum(1 for c in contextualized_chunks if "context_description" in c),
-            **cost_summary
+            "contextualized_chunks": sum(1 for c in contextualized_chunks if "context_description" in c)
         }
 
     def prepare_data(self, documents: List[Dict[str, Any]]):

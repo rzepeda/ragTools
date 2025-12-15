@@ -71,8 +71,27 @@ Define machine learning concepts"""
         service = Mock()
         service.store_chunk = Mock()
         service.get_chunks = Mock(return_value=[])
-        # Add async search method for fallback retrieval
-        service.asearch_similar = AsyncMock(return_value=[])
+        
+        # Add async search method that parallel executor expects
+        async def mock_search(query, top_k):
+            # Return different results based on query
+            if "machine learning" in query.lower():
+                return [
+                    {"chunk_id": "ml1", "text": "ML is a subset of AI", "score": 0.9},
+                    {"chunk_id": "ml2", "text": "ML uses algorithms", "score": 0.8},
+                ]
+            elif "artificial intelligence" in query.lower():
+                return [
+                    {"chunk_id": "ai1", "text": "AI is intelligence by machines", "score": 0.85},
+                    {"chunk_id": "ml1", "text": "ML is a subset of AI", "score": 0.75},
+                ]
+            else:
+                return [
+                    {"chunk_id": "gen1", "text": f"Result for {query}", "score": 0.7},
+                ]
+        
+        service.asearch = mock_search
+        service.asearch_similar = mock_search
         return service
 
     def test_multi_query_complete_workflow(self, mock_vector_store, mock_llm_service, mock_embedding_service, mock_database_service):
@@ -305,13 +324,16 @@ class TestMultiQueryWithLMStudio:
             ]
 
         vector_store.asearch = mock_search
+        vector_store.asearch_similar = mock_search
 
         # Create strategy
         config = MultiQueryConfig(num_variants=3, final_top_k=5)
         strategy = MultiQueryRAGStrategy(
             config=config,
             dependencies=StrategyDependencies(
-                llm_service=llm_service_from_env
+                llm_service=llm_service_from_env,
+                embedding_service=Mock(),
+                database_service=vector_store
             )
         )
 

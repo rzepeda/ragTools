@@ -1,0 +1,68 @@
+# Semantic Search Strategy Pair (Local)
+# Uses local ONNX embeddings with PostgreSQL vector storage
+
+strategy_name: "semantic-local-pair"
+version: "1.0.0"
+description: "Semantic search using local ONNX embeddings and PostgreSQL pgvector"
+
+tags:
+  - "semantic"
+  - "local"
+  - "production-ready"
+
+indexer:
+  strategy: "SemanticIndexer"
+  services:
+    embedding: "$embedding_local"
+    database: "$db_main"
+  
+  db_config:
+    tables:
+      documents: "documents"
+      chunks: "chunks"
+    fields:
+      chunk_id: "id"
+      document_id: "document_id"
+      content: "content"
+      embedding: "embedding"
+      metadata: "metadata"
+  
+  config:
+    chunk_size: 512
+    chunk_overlap: 50
+    batch_size: 32
+
+retriever:
+  strategy: "SemanticRetriever"
+  services:
+    embedding: "$embedding_local"
+    database: "$db_main"
+  
+  db_config:
+    tables:
+      chunks: "chunks"
+    fields:
+      chunk_id: "id"
+      content: "content"
+      embedding: "embedding"
+      metadata: "metadata"
+  
+  config:
+    top_k: 5
+    similarity_threshold: 0.7
+
+migrations:
+  required_revisions:
+    - "001_create_documents_table"
+    - "002_create_chunks_table"
+    - "003_add_pgvector_extension"
+
+expected_schema:
+  tables:
+    - "documents"
+    - "chunks"
+  indexes:
+    - "idx_chunks_embedding_vector"
+    - "idx_chunks_document_id"
+  extensions:
+    - "vector"

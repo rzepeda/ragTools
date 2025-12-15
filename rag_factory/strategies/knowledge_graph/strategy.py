@@ -59,9 +59,8 @@ class KnowledgeGraphRAGStrategy(IRAGStrategy):
             raise ValueError(f"Unsupported graph backend: {graph_backend}")
         
         # Initialize hybrid retriever
-        # TODO: vector_store needs to be from dependencies
         self.hybrid_retriever = HybridRetriever(
-            None,  # vector_store_service placeholder
+            self.deps.database_service,  # Use database service as vector store
             self.graph_store,
             self.strategy_config
         )

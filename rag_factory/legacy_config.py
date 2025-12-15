@@ -5,7 +5,7 @@ This module provides centralized configuration management with validation,
 environment-specific overrides, hot-reload capability, and a simple access API.
 
 Example usage:
-    >>> from rag_factory.config import ConfigManager
+    >>> from rag_factory.legacy_config import ConfigManager
     >>>
     >>> # Load configuration
     >>> config = ConfigManager()

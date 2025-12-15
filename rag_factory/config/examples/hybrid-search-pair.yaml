@@ -1,0 +1,78 @@
+# Hybrid Search Strategy Pair
+# Combines semantic and keyword search for better retrieval
+
+strategy_name: "hybrid-search-pair"
+version: "1.0.0"
+description: "Hybrid search combining semantic vectors and BM25 keyword search"
+
+tags:
+  - "hybrid"
+  - "advanced"
+  - "production-ready"
+
+indexer:
+  strategy: "HybridIndexer"
+  services:
+    embedding: "$embedding_openai"
+    database: "$db_main"
+  
+  db_config:
+    tables:
+      documents: "documents"
+      chunks: "chunks"
+      bm25_index: "bm25_statistics"
+    fields:
+      chunk_id: "id"
+      document_id: "document_id"
+      content: "content"
+      embedding: "embedding"
+      metadata: "metadata"
+      term_frequencies: "term_frequencies"
+  
+  config:
+    chunk_size: 512
+    chunk_overlap: 50
+    batch_size: 32
+    compute_bm25_stats: true
+
+retriever:
+  strategy: "HybridRetriever"
+  services:
+    embedding: "$embedding_openai"
+    database: "$db_main"
+  
+  db_config:
+    tables:
+      chunks: "chunks"
+      bm25_index: "bm25_statistics"
+    fields:
+      chunk_id: "id"
+      content: "content"
+      embedding: "embedding"
+      metadata: "metadata"
+      term_frequencies: "term_frequencies"
+  
+  config:
+    top_k: 10
+    semantic_weight: 0.7
+    keyword_weight: 0.3
+    similarity_threshold: 0.6
+
+migrations:
+  required_revisions:
+    - "001_create_documents_table"
+    - "002_create_chunks_table"
+    - "003_add_pgvector_extension"
+    - "004_create_bm25_statistics_table"
+
+expected_schema:
+  tables:
+    - "documents"
+    - "chunks"
+    - "bm25_statistics"
+  indexes:
+    - "idx_chunks_embedding_vector"
+    - "idx_chunks_document_id"
+    - "idx_bm25_term"
+  extensions:
+    - "vector"

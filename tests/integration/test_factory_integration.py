@@ -26,13 +26,18 @@ from rag_factory.strategies.base import (
 class DummyStrategy(IRAGStrategy):
     """Complete dummy strategy for integration testing."""
 
+    def __init__(self, config: Dict[str, Any], dependencies: Any) -> None:
+        """Initialize with config and dependencies."""
+        super().__init__(config, dependencies)
+        self.initialized = True
+
     def requires_services(self):
         """Declare required services."""
         from rag_factory.services.dependencies import ServiceDependency
         return set()  # No services required for dummy
 
     def initialize(self, config: StrategyConfig) -> None:
-        """Initialize the strategy with config."""
+        """Initialize the strategy with config (legacy)."""
         self.config = config
         self.initialized = True
 
@@ -83,13 +88,17 @@ class StrategyA(IRAGStrategy):
 
     strategy_type = "A"
 
+    def __init__(self, config: Dict[str, Any], dependencies: Any) -> None:
+        """Initialize with config and dependencies."""
+        super().__init__(config, dependencies)
+
     def requires_services(self):
         """Declare required services."""
         from rag_factory.services.dependencies import ServiceDependency
         return set()
 
     def initialize(self, config: StrategyConfig) -> None:
-        """Initialize."""
+        """Initialize (legacy)."""
         self.config = config
 
     def prepare_data(self, documents: List[Dict[str, Any]]) -> PreparedData:
@@ -114,13 +123,17 @@ class StrategyB(IRAGStrategy):
 
     strategy_type = "B"
 
+    def __init__(self, config: Dict[str, Any], dependencies: Any) -> None:
+        """Initialize with config and dependencies."""
+        super().__init__(config, dependencies)
+
     def requires_services(self):
         """Declare required services."""
         from rag_factory.services.dependencies import ServiceDependency
         return set()
 
     def initialize(self, config: StrategyConfig) -> None:
-        """Initialize."""
+        """Initialize (legacy)."""
         self.config = config
 
     def prepare_data(self, documents: List[Dict[str, Any]]) -> PreparedData:
@@ -171,13 +184,17 @@ class StrategyWithDeps(IRAGStrategy):
 class WorkingStrategy(IRAGStrategy):
     """Strategy that works correctly."""
 
+    def __init__(self, config: Dict[str, Any], dependencies: Any) -> None:
+        """Initialize with config and dependencies."""
+        super().__init__(config, dependencies)
+
     def requires_services(self):
         """Declare required services."""
         from rag_factory.services.dependencies import ServiceDependency
         return set()
 
     def initialize(self, config: StrategyConfig) -> None:
-        """Initialize."""
+        """Initialize (legacy)."""
         self.config = config
 
     def prepare_data(self, documents: List[Dict[str, Any]]) -> PreparedData:
@@ -200,13 +217,18 @@ class WorkingStrategy(IRAGStrategy):
 class BrokenStrategy(IRAGStrategy):
     """Strategy that fails during initialization."""
 
+    def __init__(self, config: Dict[str, Any], dependencies: Any) -> None:
+        """Initialize with config and dependencies."""
+        super().__init__(config, dependencies)
+        raise RuntimeError("Initialization failed")
+
     def requires_services(self):
         """Declare required services."""
         from rag_factory.services.dependencies import ServiceDependency
         return set()
 
     def initialize(self, config: StrategyConfig) -> None:
-        """Initialize and raise error."""
+        """Initialize and raise error (legacy)."""
         raise RuntimeError("Initialization failed")
 
     def prepare_data(self, documents: List[Dict[str, Any]]) -> PreparedData:
@@ -252,8 +274,8 @@ def test_register_create_use_strategy(factory: RAGFactory) -> None:
 
     # Verify initialization
     assert strategy.initialized
-    assert strategy.config.chunk_size == 512
-    assert strategy.config.top_k == 3
+    assert strategy.config["chunk_size"] == 512
+    assert strategy.config["top_k"] == 3
 
     # Use - prepare data
     documents = [
@@ -315,8 +337,8 @@ def test_create_multiple_instances_of_same_strategy(
 
     # Different instances with different configs
     assert strategy1 is not strategy2
-    assert strategy1.config.chunk_size == 256
-    assert strategy2.config.chunk_size == 1024
+    assert strategy1.config["chunk_size"] == 256
+    assert strategy2.config["chunk_size"] == 1024
 
 
 # IS2.3: Dependency Injection Integration
@@ -371,11 +393,11 @@ metadata:
     strategy = factory.create_from_config(str(config_file))
 
     assert isinstance(strategy, DummyStrategy)
-    assert strategy.config.chunk_size == 2048
-    assert strategy.config.chunk_overlap == 100
-    assert strategy.config.top_k == 15
-    assert strategy.config.metadata["author"] == "test"
-    assert strategy.config.metadata["version"] == 1.0
+    assert strategy.config["chunk_size"] == 2048
+    assert strategy.config["chunk_overlap"] == 100
+    assert strategy.config["top_k"] == 15
+    assert strategy.config["metadata"]["author"] == "test"
+    assert strategy.config["metadata"]["version"] == 1.0
 
 
 @pytest.mark.integration
@@ -397,8 +419,8 @@ def test_config_file_with_json(tmp_path: Path, factory: RAGFactory) -> None:
     strategy = factory.create_from_config(str(config_file))
 
     assert isinstance(strategy, DummyStrategy)
-    assert strategy.config.chunk_size == 768
-    assert strategy.config.top_k == 7
+    assert strategy.config["chunk_size"] == 768
+    assert strategy.config["top_k"] == 7
 
 
 # IS2.5: Error Recovery Integration
@@ -410,7 +432,7 @@ def test_factory_error_recovery(factory: RAGFactory) -> None:
     factory.register_strategy("working", WorkingStrategy)
     factory.register_strategy("broken", BrokenStrategy)
 
-    # Try to create broken strategy
+    # Try to create broken strategy - should fail during __init__
     with pytest.raises(RuntimeError, match="Initialization failed"):
         factory.create_strategy("broken", {"chunk_size": 512})
 
@@ -428,14 +450,15 @@ def test_factory_state_after_failed_creation(factory: RAGFactory) -> None:
     """Test factory state remains consistent after failed strategy creation."""
     factory.register_strategy("dummy", DummyStrategy)
 
-    # Try to create with invalid config
-    with pytest.raises(ValueError):
-        factory.create_strategy("dummy", {"chunk_size": -100})
+    # Try to create a strategy that doesn't exist
+    from rag_factory.exceptions import StrategyNotFoundError
+    with pytest.raises(StrategyNotFoundError):
+        factory.create_strategy("nonexistent", {"chunk_size": 512})
 
     # Factory should still work normally
     strategy = factory.create_strategy("dummy", {"chunk_size": 512})
     assert isinstance(strategy, DummyStrategy)
-    assert strategy.config.chunk_size == 512
+    assert strategy.config["chunk_size"] == 512
 
 
 # Additional Integration Tests
@@ -451,13 +474,17 @@ def test_decorator_integration(factory: RAGFactory) -> None:
     class DecoratedStrategy(IRAGStrategy):
         """Strategy registered via decorator."""
 
+        def __init__(self, config: Dict[str, Any], dependencies: Any) -> None:
+            """Initialize with config and dependencies."""
+            super().__init__(config, dependencies)
+
         def requires_services(self):
             """Declare required services."""
             from rag_factory.services.dependencies import ServiceDependency
             return set()
 
         def initialize(self, config: StrategyConfig) -> None:
-            """Initialize."""
+            """Initialize (legacy)."""
             self.config = config
 
         def prepare_data(

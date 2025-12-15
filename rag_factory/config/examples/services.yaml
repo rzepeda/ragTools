@@ -1,0 +1,91 @@
+# Service Registry Configuration Example
+# This file defines reusable services that can be referenced by strategy pairs
+
+version: "1.0.0"
+
+services:
+  # Local ONNX embedding service
+  embedding_local:
+    name: "local-onnx-minilm"
+    type: "embedding"
+    provider: "onnx"
+    model: "Xenova/all-MiniLM-L6-v2"
+    cache_dir: "./models/embeddings"
+    batch_size: 32
+    dimensions: 384
+
+  # OpenAI embedding service
+  embedding_openai:
+    name: "openai-text-embedding-3-small"
+    type: "embedding"
+    provider: "openai"
+    model: "text-embedding-3-small"
+    api_key: "${OPENAI_API_KEY}"
+    dimensions: 1536
+
+  # Cohere embedding service
+  embedding_cohere:
+    name: "cohere-embed-english-v3"
+    type: "embedding"
+    provider: "cohere"
+    model: "embed-english-v3.0"
+    api_key: "${COHERE_API_KEY}"
+    dimensions: 1024
+
+  # Local LLM service (e.g., LM Studio)
+  llm_local:
+    name: "local-llama"
+    type: "llm"
+    url: "${LLM_URL:-http://localhost:1234/v1}"
+    model: "local-model"
+    temperature: 0.7
+    max_tokens: 2048
+    timeout: 30
+
+  # OpenAI LLM service
+  llm_openai:
+    name: "openai-gpt-4"
+    type: "llm"
+    url: "https://api.openai.com/v1"
+    api_key: "${OPENAI_API_KEY}"
+    model: "gpt-4"
+    temperature: 0.7
+    max_tokens: 4096
+
+  # Anthropic LLM service
+  llm_anthropic:
+    name: "anthropic-claude"
+    type: "llm"
+    url: "https://api.anthropic.com/v1"
+    api_key: "${ANTHROPIC_API_KEY}"
+    model: "claude-3-sonnet-20240229"
+    temperature: 0.7
+    max_tokens: 4096
+
+  # PostgreSQL database service
+  db_main:
+    name: "main-postgres"
+    type: "postgres"
+    connection_string: "${DATABASE_URL:?Database URL is required}"
+    pool_size: 10
+    max_overflow: 20
+
+  # Alternative: PostgreSQL with individual parameters
+  db_postgres_detailed:
+    name: "postgres-detailed"
+    type: "postgres"
+    host: "${DB_HOST:-localhost}"
+    port: 5432
+    database: "${DB_NAME:-rag_factory}"
+    user: "${DB_USER:-postgres}"
+    password: "${DB_PASSWORD:?Database password is required}"
+    pool_size: 10
+    max_overflow: 20
+
+  # Neo4j database service (for knowledge graph strategies)
+  db_neo4j:
+    name: "neo4j-graph"
+    type: "neo4j"
+    connection_string: "${NEO4J_URL:-bolt://localhost:7687}"
+    user: "${NEO4J_USER:-neo4j}"
+    password: "${NEO4J_PASSWORD:?Neo4j password is required}"

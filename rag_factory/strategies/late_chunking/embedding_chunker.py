@@ -128,7 +128,21 @@ class EmbeddingChunker:
                         i - 1,
                         EmbeddingChunkingMethod.SEMANTIC_BOUNDARY
                     )
-                continue
+                    continue
+                # If this is the first chunk and it's small, keep it anyway
+                # (better to have one small chunk than no chunks at all)
+                elif i == 0 and len(boundaries) == 2:
+                    # This is the only chunk (entire document is small)
+                    chunk = self._create_chunk(
+                        doc_embedding,
+                        chunk_tokens,
+                        i,
+                        EmbeddingChunkingMethod.SEMANTIC_BOUNDARY
+                    )
+                    chunks.append(chunk)
+                    continue
+                else:
+                    continue
 
             chunk = self._create_chunk(
                 doc_embedding,

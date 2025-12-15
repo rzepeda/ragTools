@@ -9,13 +9,13 @@ import os
 from rag_factory.services.embedding import EmbeddingService, EmbeddingServiceConfig
 
 # Get embedding model from environment or use ONNX-compatible default
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL_NAME", "Xenova/all-mpnet-base-v2")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL_NAME", "Xenova/all-MiniLM-L6-v2")
 
 
 @pytest.mark.integration
 @pytest.mark.skipif(
-    not os.getenv("OPENAI_API_KEY"),
-    reason="OPENAI_API_KEY environment variable not set"
+    not os.getenv("OPENAI_API_KEY") or not os.getenv("OPENAI_API_KEY").startswith("sk-"),
+    reason="Valid OPENAI_API_KEY environment variable not set (must start with sk-)"
 )
 def test_openai_full_workflow():
     """Test complete embedding workflow with real OpenAI API."""

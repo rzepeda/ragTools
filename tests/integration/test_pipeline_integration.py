@@ -22,11 +22,14 @@ from rag_factory.strategies.base import Chunk, IRAGStrategy
 class TestStrategy(IRAGStrategy):
     """Base test strategy with configurable behavior."""
 
-    def __init__(self, name: str, delay: float = 0.0) -> None:
+    def __init__(self, name: str, delay: float = 0.0, config: Dict[str, Any] = None, dependencies: Any = None) -> None:
         """Initialize test strategy."""
+        if dependencies is None:
+            from rag_factory.services.dependencies import StrategyDependencies
+            dependencies = StrategyDependencies()
+        super().__init__(config or {}, dependencies)
         self.strategy_name = name
         self.delay = delay
-        self.config: Any = None
 
     def requires_services(self):
         """Declare required services."""
@@ -174,8 +177,9 @@ def test_pipeline_continues_after_non_critical_failure() -> None:
     pipeline = StrategyPipeline()
     # Add optional failing stage
     from rag_factory.pipeline import PipelineStage
+    from rag_factory.services.dependencies import StrategyDependencies
     optional_stage = PipelineStage(
-        strategy=OptionalStrategy(),
+        strategy=OptionalStrategy({}, StrategyDependencies()),
         name="optional",
         required=False
     )
@@ -349,8 +353,9 @@ async def test_async_fallback_execution() -> None:
             """Process query."""
             return ""
 
+    from rag_factory.services.dependencies import StrategyDependencies
     fallback_strategy = TestStrategy("Fallback")
-    primary_strategy = FailingAsyncStrategy()
+    primary_strategy = FailingAsyncStrategy({}, StrategyDependencies())
 
     pipeline = StrategyPipeline(mode=ExecutionMode.SEQUENTIAL)
     pipeline.add_stage(primary_strategy, "primary", fallback=fallback_strategy)
@@ -395,8 +400,9 @@ async def test_parallel_execution_with_failures() -> None:
             """Process query."""
             return ""
 
+    from rag_factory.services.dependencies import StrategyDependencies
     working_strategy = TestStrategy("Working")
-    failing_strategy = FailingParallelStrategy()
+    failing_strategy = FailingParallelStrategy({}, StrategyDependencies())
 
     pipeline = StrategyPipeline(mode=ExecutionMode.PARALLEL)
     # Add non-required failing stage

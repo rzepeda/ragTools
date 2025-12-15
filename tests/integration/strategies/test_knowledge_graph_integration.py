@@ -111,7 +111,8 @@ def test_knowledge_graph_workflow(mock_vector_store, mock_llm, mock_embedding_se
     dependencies = StrategyDependencies(
         llm_service=mock_llm,
         embedding_service=mock_embedding_service,
-        graph_service=mock_graph_service
+        graph_service=mock_graph_service,
+        database_service=mock_vector_store
     )
     
     strategy = KnowledgeGraphRAGStrategy(
@@ -149,7 +150,8 @@ def test_hybrid_retrieval(mock_vector_store, mock_llm, mock_embedding_service, m
     dependencies = StrategyDependencies(
         llm_service=mock_llm,
         embedding_service=mock_embedding_service,
-        graph_service=mock_graph_service
+        graph_service=mock_graph_service,
+        database_service=mock_vector_store
     )
     
     strategy = KnowledgeGraphRAGStrategy(
@@ -182,7 +184,8 @@ def test_relationship_queries(mock_vector_store, mock_llm, mock_embedding_servic
     dependencies = StrategyDependencies(
         llm_service=mock_llm,
         embedding_service=mock_embedding_service,
-        graph_service=mock_graph_service
+        graph_service=mock_graph_service,
+        database_service=mock_vector_store
     )
     
     strategy = KnowledgeGraphRAGStrategy(
@@ -213,7 +216,8 @@ def test_graph_statistics(mock_vector_store, mock_llm, mock_embedding_service, m
     dependencies = StrategyDependencies(
         llm_service=mock_llm,
         embedding_service=mock_embedding_service,
-        graph_service=mock_graph_service
+        graph_service=mock_graph_service,
+        database_service=mock_vector_store
     )
     
     strategy = KnowledgeGraphRAGStrategy(

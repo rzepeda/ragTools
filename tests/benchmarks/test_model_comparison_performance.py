@@ -11,7 +11,7 @@ import time
 from rag_factory.models.embedding import CustomModelLoader, ModelConfig, ModelFormat
 
 # Get embedding model from environment or use ONNX-compatible default
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL_NAME", "Xenova/all-mpnet-base-v2")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL_NAME", "Xenova/all-MiniLM-L6-v2")
 
 # Check if sentence-transformers is available
 try:

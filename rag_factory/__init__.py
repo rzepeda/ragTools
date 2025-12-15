@@ -26,7 +26,7 @@ from rag_factory.pipeline import (
     PipelineStage,
     PipelineResult,
 )
-from rag_factory.config import (
+from rag_factory.legacy_config import (
     ConfigManager,
     GlobalConfigSchema,
     StrategyConfigSchema,

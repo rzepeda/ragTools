@@ -96,6 +96,9 @@ def test_get_embeddings(
     mock_output = Mock()
     mock_output.shape = [1, 512, 768]
     mock_session_obj.get_outputs.return_value = [mock_output]
+    mock_input = Mock()
+    mock_input.name = "input_ids"
+    mock_session_obj.get_inputs.return_value = [mock_input]
     
     # Mock ONNX inference
     mock_embeddings = np.random.randn(2, 512, 768).astype(np.float32)

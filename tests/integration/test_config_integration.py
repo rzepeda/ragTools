@@ -10,7 +10,7 @@ from typing import Any, Dict, List
 
 import pytest
 
-from rag_factory.config import ConfigManager, StrategyConfigSchema
+from rag_factory.legacy_config import ConfigManager, StrategyConfigSchema
 from rag_factory.factory import RAGFactory
 from rag_factory.pipeline import StrategyPipeline
 from rag_factory.strategies.base import Chunk, IRAGStrategy
@@ -34,12 +34,16 @@ def reset_config_manager():
 class TestIntegrationStrategy(IRAGStrategy):
     """Test strategy for integration tests."""
 
+    def __init__(self, config: Dict[str, Any], dependencies: Any) -> None:
+        """Initialize with config and dependencies."""
+        super().__init__(config, dependencies)
+
     def requires_services(self):
         """Declare required services."""
         return set()
 
     def initialize(self, config: Any) -> None:
-        """Initialize strategy with config."""
+        """Initialize strategy with config (legacy method)."""
         self.config = config
 
     def prepare_data(self, documents: List[Dict[str, Any]]) -> Any:
@@ -175,15 +179,18 @@ strategies:
         override=True
     )
 
+    # Create factory instance
+    factory = RAGFactory()
+    
     # Get strategy config and create strategy
     strategy_config = config.get_strategy_config("test_strategy")
-    strategy = RAGFactory.create_strategy(
+    strategy = factory.create_strategy(
         "test_strategy",
         strategy_config.model_dump()
     )
 
-    assert strategy.config.chunk_size == 1024
-    assert strategy.config.top_k == 10
+    assert strategy.config["chunk_size"] == 1024
+    assert strategy.config["top_k"] == 10
 
 
 # IS4.4: Integration with Pipeline

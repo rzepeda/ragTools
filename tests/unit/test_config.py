@@ -13,7 +13,7 @@ from typing import Any
 import pytest
 import yaml
 
-from rag_factory.config import (
+from rag_factory.legacy_config import (
     ConfigFileHandler,
     ConfigManager,
     ConfigurationError,

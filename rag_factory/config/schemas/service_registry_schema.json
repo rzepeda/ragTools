@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Service Registry Configuration",
+  "type": "object",
+  "required": ["services"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Schema version (semver)"
+    },
+    "services": {
+      "type": "object",
+      "description": "Service definitions",
+      "patternProperties": {
+        "^[a-zA-Z0-9_]+$": {
+          "oneOf": [
+            { "$ref": "#/definitions/llm_service" },
+            { "$ref": "#/definitions/embedding_service" },
+            { "$ref": "#/definitions/database_service" }
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "definitions": {
+    "llm_service": {
+      "type": "object",
+      "required": ["name", "type"],
+      "properties": {
+        "name": { "type": "string", "description": "Human-readable service name" },
+        "type": { "type": "string", "enum": ["llm"], "description": "Service type identifier" },
+        "url": { "type": "string", "format": "uri", "description": "LLM API endpoint" },
+        "api_key": { "type": "string", "description": "API key (use ${ENV_VAR})" },
+        "model": { "type": "string", "description": "Model identifier" },
+        "temperature": { "type": "number", "minimum": 0, "maximum": 2, "default": 0.7 },
+        "max_tokens": { "type": "integer", "minimum": 1 },
+        "timeout": { "type": "integer", "minimum": 1, "default": 30 }
+      }
+    },
+    "embedding_service": {
+      "type": "object",
+      "required": ["name", "type", "provider"],
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string", "enum": ["embedding"], "description": "Service type identifier" },
+        "provider": {
+          "type": "string",
+          "enum": ["onnx", "openai", "cohere", "huggingface"]
+        },
+        "model": { "type": "string", "description": "Model name/path" },
+        "cache_dir": { "type": "string", "description": "Model cache directory" },
+        "batch_size": { "type": "integer", "minimum": 1, "default": 32 },
+        "dimensions": { "type": "integer", "minimum": 1, "description": "Embedding dimensions" },
+        "api_key": { "type": "string", "description": "API key for cloud providers" }
+      }
+    },
+    "database_service": {
+      "type": "object",
+      "required": ["name", "type"],
+      "properties": {
+        "name": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["database", "postgres", "neo4j", "mongodb"]
+        },
+        "connection_string": { "type": "string", "description": "Full connection string" },
+        "host": { "type": "string" },
+        "port": { "type": "integer" },
+        "database": { "type": "string" },
+        "user": { "type": "string" },
+        "password": { "type": "string", "description": "Use ${ENV_VAR}" },
+        "pool_size": { "type": "integer", "minimum": 1, "default": 10 },
+        "max_overflow": { "type": "integer", "minimum": 0, "default": 20 }
+      }
+    }
+  }
+}

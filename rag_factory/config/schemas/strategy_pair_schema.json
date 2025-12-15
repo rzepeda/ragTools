@@ -1,0 +1,137 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Strategy Pair Configuration",
+    "type": "object",
+    "required": [
+        "strategy_name",
+        "version",
+        "indexer",
+        "retriever"
+    ],
+    "properties": {
+        "strategy_name": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$",
+            "description": "Unique strategy pair identifier"
+        },
+        "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$",
+            "description": "Configuration version (semver)"
+        },
+        "description": {
+            "type": "string",
+            "description": "Human-readable description"
+        },
+        "indexer": {
+            "$ref": "#/definitions/strategy_config"
+        },
+        "retriever": {
+            "$ref": "#/definitions/strategy_config"
+        },
+        "migrations": {
+            "type": "object",
+            "properties": {
+                "required_revisions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Alembic revision IDs required"
+                }
+            }
+        },
+        "expected_schema": {
+            "type": "object",
+            "properties": {
+                "tables": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "indexes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "extensions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "tags": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "description": "Tags for discovery/filtering"
+        }
+    },
+    "definitions": {
+        "strategy_config": {
+            "type": "object",
+            "required": [
+                "strategy",
+                "services"
+            ],
+            "properties": {
+                "strategy": {
+                    "type": "string",
+                    "description": "Strategy class name"
+                },
+                "services": {
+                    "type": "object",
+                    "description": "Service references or inline configs",
+                    "patternProperties": {
+                        "^[a-zA-Z_]+$": {
+                            "oneOf": [
+                                {
+                                    "type": "string",
+                                    "pattern": "^\\$[a-zA-Z0-9_]+$",
+                                    "description": "Service reference"
+                                },
+                                {
+                                    "type": "object",
+                                    "description": "Inline service config"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "db_config": {
+                    "type": "object",
+                    "properties": {
+                        "tables": {
+                            "type": "object",
+                            "description": "Logical to physical table mapping",
+                            "patternProperties": {
+                                "^[a-zA-Z_]+$": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "fields": {
+                            "type": "object",
+                            "description": "Logical to physical field mapping",
+                            "patternProperties": {
+                                "^[a-zA-Z_]+$": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                },
+                "config": {
+                    "type": "object",
+                    "description": "Strategy-specific configuration",
+                    "additionalProperties": true
+                }
+            }
+        }
+    }
+}

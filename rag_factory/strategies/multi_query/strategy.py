@@ -47,8 +47,8 @@ class MultiQueryRAGStrategy(IRAGStrategy):
 
         # Initialize components
         self.variant_generator = QueryVariantGenerator(self.deps.llm_service, self.strategy_config)
-        # TODO: vector_store needs to be from dependencies
-        self.parallel_executor = ParallelQueryExecutor(None, self.strategy_config)
+        # Use database_service as vector store
+        self.parallel_executor = ParallelQueryExecutor(self.deps.database_service, self.strategy_config)
         self.deduplicator = ResultDeduplicator(self.strategy_config, self.deps.embedding_service)
         self.ranker = ResultRanker(self.strategy_config)
     
@@ -76,7 +76,7 @@ class MultiQueryRAGStrategy(IRAGStrategy):
             # Step 1: Generate query variants
             variants = await self.variant_generator.generate_variants(query)
 
-            if self.config.log_variants:
+            if self.strategy_config.log_variants:
                 logger.info(f"Query variants: {variants}")
 
             # Step 2: Execute variants in parallel

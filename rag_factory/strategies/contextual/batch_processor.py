@@ -69,7 +69,6 @@ class BatchProcessor:
             processed_chunks = await self._process_batches_sequential(batches, document_context)
         
         logger.info(f"Processed {len(processed_chunks)} chunks")
-        
         return processed_chunks
 
     def _create_batches(self, chunks: List[Dict[str, Any]]) -> List[List[Dict[str, Any]]]:
@@ -185,6 +184,7 @@ class BatchProcessor:
         ]
         
         results = await asyncio.gather(*tasks, return_exceptions=True)
+        
         
         for chunk, result in zip(batch, results):
             if isinstance(result, Exception):

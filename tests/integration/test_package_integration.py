@@ -95,6 +95,11 @@ class TestFullWorkflow:
         class TestStrategy(IRAGStrategy):
             """Test strategy implementation."""
 
+            def requires_services(self):
+                """Declare required services."""
+                from rag_factory.services.dependencies import ServiceDependency
+                return set()
+
             def initialize(
                 self, config: Optional[dict[str, Any]] = None
             ) -> None:

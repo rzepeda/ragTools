@@ -11,7 +11,7 @@ from rag_factory.strategies.late_chunking.document_embedder import DocumentEmbed
 from rag_factory.strategies.late_chunking.models import LateChunkingConfig
 
 # Get embedding model from environment or use ONNX-compatible default
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL_NAME", "Xenova/all-mpnet-base-v2")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL_NAME", "Xenova/all-MiniLM-L6-v2")
 
 
 @pytest.fixture
@@ -31,6 +31,10 @@ def mock_session():
     output_meta = Mock()
     output_meta.shape = [1, 512, 384]  # [batch, seq, dim]
     session.get_outputs.return_value = [output_meta]
+    # Mock inputs for token_type_ids check
+    mock_input = Mock()
+    mock_input.name = "input_ids"
+    session.get_inputs.return_value = [mock_input]
     return session
 
 
