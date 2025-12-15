@@ -1,0 +1,29 @@
+FAILED tests/integration/models/test_fine_tuned_embeddings_integration.py::test_ab_testing_workflow - AssertionError: assert 0 > 0
+FAILED tests/integration/models/test_fine_tuned_embeddings_integration.py::test_model_comparison_workflow - AssertionError: assert (0 + 0) == 20
+FAILED tests/integration/services/test_onnx_embeddings_integration.py::TestONNXEmbeddingsIntegration::test_performance_target - AssertionError: Average time 2913.74ms exceeds 100ms target
+FAILED tests/integration/services/test_service_integration.py::test_embedding_database_consistency - TypeError: 'coroutine' object does not support the asynchronous context manager protocol
+FAILED tests/integration/strategies/test_contextual_integration.py::test_error_recovery - assert 7 == 10
+FAILED tests/integration/strategies/test_knowledge_graph_integration.py::test_hybrid_retrieval - AttributeError: 'NoneType' object has no attribute 'search'
+FAILED tests/integration/strategies/test_knowledge_graph_integration.py::test_relationship_queries - AttributeError: 'NoneType' object has no attribute 'search'
+FAILED tests/integration/strategies/test_late_chunking_integration.py::test_late_chunking_workflow - assert 0 > 0
+FAILED tests/integration/strategies/test_late_chunking_integration.py::test_multiple_documents - assert 0 >= 3
+FAILED tests/integration/strategies/test_late_chunking_integration.py::test_short_document - assert 0 >= 1
+FAILED tests/integration/strategies/test_multi_query_integration.py::TestMultiQueryIntegration::test_multi_query_complete_workflow - assert 0 > 0
+FAILED tests/integration/strategies/test_multi_query_integration.py::TestMultiQueryIntegration::test_multi_query_async_workflow - assert 0 > 0
+FAILED tests/integration/strategies/test_multi_query_integration.py::TestMultiQueryIntegration::test_variant_diversity - assert 0 > 0
+FAILED tests/integration/strategies/test_multi_query_integration.py::TestMultiQueryIntegration::test_performance_requirements - assert 0 > 0
+FAILED tests/integration/strategies/test_multi_query_integration.py::TestMultiQueryIntegration::test_fallback_on_failure - assert 0 > 0
+FAILED tests/integration/strategies/test_multi_query_integration.py::TestMultiQueryIntegration::test_ranking_strategy_comparison - assert 0 > 0
+FAILED tests/integration/strategies/test_multi_query_integration.py::TestMultiQueryWithLMStudio::test_with_real_llm - ValueError: MultiQueryRAGStrategy requires services: EMBEDDING, DATABASE
+FAILED tests/integration/test_config_integration.py::test_config_with_factory - AttributeError: 'str' object has no attribute '_registry'
+FAILED tests/integration/test_factory_integration.py::test_register_create_use_strategy - AttributeError: 'DummyStrategy' object has no attribute 'initialized'. Did you mean: 'initialize'?
+FAILED tests/integration/test_factory_integration.py::test_create_multiple_instances_of_same_strategy - AttributeError: 'dict' object has no attribute 'chunk_size'
+FAILED tests/integration/test_factory_integration.py::test_config_file_with_yaml - AttributeError: 'dict' object has no attribute 'chunk_size'
+FAILED tests/integration/test_factory_integration.py::test_config_file_with_json - AttributeError: 'dict' object has no attribute 'chunk_size'
+FAILED tests/integration/test_factory_integration.py::test_factory_error_recovery - Failed: DID NOT RAISE <class 'RuntimeError'>
+FAILED tests/integration/test_factory_integration.py::test_factory_state_after_failed_creation - Failed: DID NOT RAISE <class 'ValueError'>
+FAILED tests/integration/test_package_integration.py::TestPackageInstallation::test_package_installable - assert 1 == 0
+FAILED tests/integration/test_package_integration.py::TestFullWorkflow::test_full_workflow_with_installed_package - TypeError: Can't instantiate abstract class TestStrategy without an implementation for abstract method 'requires_services'
+FAILED tests/integration/test_pipeline_integration.py::test_pipeline_continues_after_non_critical_failure - TypeError: IRAGStrategy.__init__() missing 2 required positional arguments: 'config' and 'dependencies'
+FAILED tests/integration/test_pipeline_integration.py::test_async_fallback_execution - TypeError: IRAGStrategy.__init__() missing 2 required positional arguments: 'config' and 'dependencies'
+FAILED tests/integration/test_pipeline_integration.py::test_parallel_execution_with_failures - TypeError: IRAGStrategy.__init__() missing 2 required positional arguments: 'config' and 'dependencies'

@@ -178,21 +178,27 @@ Paragraph 2 with more content.
     
     def test_multiple_documents(self, mock_vector_store, mock_database):
         """Test indexing multiple documents."""
+        import uuid
+        
         strategy = HierarchicalRAGStrategy(
             vector_store_service=mock_vector_store,
             database_service=mock_database
         )
         
-        doc1 = "# Document 1\n\nContent about AI"
-        doc2 = "# Document 2\n\nContent about ML"
+        doc1 = "# Document 1\\n\\nContent about AI"
+        doc2 = "# Document 2\\n\\nContent about ML"
         
         strategy.index_document(doc1, "doc1")
         strategy.index_document(doc2, "doc2")
         
+        # Generate expected UUIDs (same way the code does it)
+        doc1_uuid = uuid.uuid5(uuid.NAMESPACE_DNS, "doc1")
+        doc2_uuid = uuid.uuid5(uuid.NAMESPACE_DNS, "doc2")
+        
         # Both documents should be indexed
         chunks = mock_database.chunk_repository.chunks
-        doc1_chunks = [c for c in chunks.values() if str(c.document_id) == "doc1"]
-        doc2_chunks = [c for c in chunks.values() if str(c.document_id) == "doc2"]
+        doc1_chunks = [c for c in chunks.values() if c.document_id == doc1_uuid]
+        doc2_chunks = [c for c in chunks.values() if c.document_id == doc2_uuid]
         
         assert len(doc1_chunks) > 0
         assert len(doc2_chunks) > 0

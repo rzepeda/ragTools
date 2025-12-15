@@ -118,16 +118,18 @@ class ContextualRetrievalStrategy(IRAGStrategy):
         self.storage_manager.store_chunks(contextualized_chunks)
         
         # Index in vector store (using contextualized embeddings)
-        # TODO: vector_store needs to be added to dependencies or accessed differently
-        # for chunk in contextualized_chunks:
-        #     self.vector_store.index_chunk(
-        #         chunk_id=chunk["chunk_id"],
-        #         embedding=chunk["embedding"],
-        #         metadata={
-        #             "document_id": document_id,
-        #             "has_context": "context_description" in chunk
-        #         }
-        #     )
+        # Check if vector_store is available (optional dependency for testing)
+        vector_store = getattr(self.deps, 'vector_store', None)
+        if vector_store:
+            for chunk in contextualized_chunks:
+                vector_store.index_chunk(
+                    chunk_id=chunk["chunk_id"],
+                    embedding=chunk["embedding"],
+                    metadata={
+                        "document_id": document_id,
+                        "has_context": "context_description" in chunk
+                    }
+                )
         
         # Get cost summary
         cost_summary = self.cost_tracker.get_summary()
@@ -215,9 +217,13 @@ class ContextualRetrievalStrategy(IRAGStrategy):
         logger.info(f"Contextual retrieval for: {query}")
         
         # Search using contextualized embeddings
-        # TODO: vector_store needs to be added to dependencies
-        # results = self.vector_store.search(query=query, top_k=top_k)
-        results = []
+        vector_store = getattr(self.deps, 'vector_store', None)
+        if vector_store:
+            results = vector_store.search(query=query, top_k=top_k)
+        else:
+            # Fallback: return empty results if no vector store
+            logger.warning("No vector_store available for retrieval")
+            results = []
         
         # Get chunk IDs
         chunk_ids = [r.get("chunk_id") or r.get("id") for r in results]

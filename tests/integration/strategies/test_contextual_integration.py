@@ -79,10 +79,11 @@ async def test_contextual_retrieval_complete_workflow(
     # Import StrategyDependencies
     from rag_factory.services.dependencies import StrategyDependencies
     
-    # Setup strategy
     config = ContextualRetrievalConfig(
         enable_contextualization=True,
-        batch_size=10
+        batch_size=10,
+        min_chunk_size_for_context=10,  # Lower threshold so test chunks aren't skipped
+        context_length_min=10  # Accept shorter mock responses
     )
     
     dependencies = StrategyDependencies(
@@ -90,9 +91,11 @@ async def test_contextual_retrieval_complete_workflow(
         llm_service=mock_llm_service,
         embedding_service=mock_embedding_service
     )
+    # Add vector_store as additional attribute for testing
+    dependencies.vector_store = mock_vector_store
     
     strategy = ContextualRetrievalStrategy(
-        config=config.dict(),
+        config=config.model_dump(),
         dependencies=dependencies
     )
     
@@ -145,16 +148,22 @@ async def test_cost_tracking_accuracy(
     """Test accuracy of cost tracking."""
     from rag_factory.services.dependencies import StrategyDependencies
     
-    config = ContextualRetrievalConfig(enable_cost_tracking=True)
+    config = ContextualRetrievalConfig(
+        enable_cost_tracking=True,
+        min_chunk_size_for_context=10,
+        context_length_min=10
+    )
     
     dependencies = StrategyDependencies(
         database_service=mock_database,
         llm_service=mock_llm_service,
         embedding_service=mock_embedding_service
     )
+    # Add vector_store as additional attribute for testing
+    dependencies.vector_store = mock_vector_store
     
     strategy = ContextualRetrievalStrategy(
-        config=config.dict(),
+        config=config.model_dump(),
         dependencies=dependencies
     )
     
@@ -185,10 +194,11 @@ async def test_retrieval_with_different_formats(
     """Test retrieval with different return formats."""
     from rag_factory.services.dependencies import StrategyDependencies
     
-    # Test with original text
     config_original = ContextualRetrievalConfig(
         return_original_text=True,
-        return_context=False
+        return_context=False,
+        min_chunk_size_for_context=10,
+        context_length_min=10
     )
     
     dependencies = StrategyDependencies(
@@ -196,13 +206,15 @@ async def test_retrieval_with_different_formats(
         llm_service=mock_llm_service,
         embedding_service=mock_embedding_service
     )
+    # Add vector_store as additional attribute for testing
+    dependencies.vector_store = mock_vector_store
     
     strategy = ContextualRetrievalStrategy(
-        config=config_original.dict(),
+        config=config_original.model_dump(),
         dependencies=dependencies
     )
     
-    chunks = [{"chunk_id": f"c{i}", "text": f"Text {i}", "metadata": {}} for i in range(5)]
+    chunks = [{"chunk_id": f"c{i}", "text": f"Text {i} " * 10, "metadata": {}} for i in range(5)]
     await strategy.aindex_document("doc", "doc_1", chunks)
     
     results = strategy.retrieve("query", top_k=2)
@@ -230,14 +242,18 @@ async def test_error_recovery(
         if call_count % 3 == 0:
             raise Exception("LLM error")
         response = Mock()
-        response.text = "Context description"
+        # Return longer text to pass context_length_min=10 (need ~40+ characters)
+        response.text = "This chunk provides detailed contextual information about the content."
         return response
     
     mock_llm_service.agenerate = flaky_generate
     
     config = ContextualRetrievalConfig(
         fallback_to_no_context=True,
-        batch_size=5
+        batch_size=5,
+        min_chunk_size_for_context=10,
+        context_length_min=10,
+        enable_parallel_batches=False  # Use sequential to ensure proper error handling
     )
     
     dependencies = StrategyDependencies(
@@ -245,13 +261,15 @@ async def test_error_recovery(
         llm_service=mock_llm_service,
         embedding_service=mock_embedding_service
     )
+    # Add vector_store as additional attribute for testing
+    dependencies.vector_store = mock_vector_store
     
     strategy = ContextualRetrievalStrategy(
-        config=config.dict(),
+        config=config.model_dump(),
         dependencies=dependencies
     )
     
-    chunks = [{"chunk_id": f"c{i}", "text": f"Text {i}", "metadata": {}} for i in range(10)]
+    chunks = [{"chunk_id": f"c{i}", "text": f"Text {i} " * 10, "metadata": {}} for i in range(10)]
     
     # Should complete despite errors
     result = await strategy.aindex_document("doc", "doc_1", chunks)
@@ -271,20 +289,26 @@ def test_synchronous_indexing(
     """Test synchronous indexing wrapper."""
     from rag_factory.services.dependencies import StrategyDependencies
     
-    config = ContextualRetrievalConfig(batch_size=5)
+    config = ContextualRetrievalConfig(
+        batch_size=5,
+        min_chunk_size_for_context=10,
+        context_length_min=10
+    )
     
     dependencies = StrategyDependencies(
         database_service=mock_database,
         llm_service=mock_llm_service,
         embedding_service=mock_embedding_service
     )
+    # Add vector_store as additional attribute for testing
+    dependencies.vector_store = mock_vector_store
     
     strategy = ContextualRetrievalStrategy(
-        config=config.dict(),
+        config=config.model_dump(),
         dependencies=dependencies
     )
     
-    chunks = [{"chunk_id": f"c{i}", "text": f"Text {i}", "metadata": {}} for i in range(5)]
+    chunks = [{"chunk_id": f"c{i}", "text": f"Text {i} " * 10, "metadata": {}} for i in range(5)]
     
     # Use synchronous method
     loop = asyncio.new_event_loop()
@@ -313,7 +337,9 @@ async def test_large_document_processing(
     config = ContextualRetrievalConfig(
         batch_size=20,
         enable_parallel_batches=True,
-        max_concurrent_batches=5
+        max_concurrent_batches=5,
+        min_chunk_size_for_context=10,
+        context_length_min=10
     )
     
     dependencies = StrategyDependencies(
@@ -321,9 +347,11 @@ async def test_large_document_processing(
         llm_service=mock_llm_service,
         embedding_service=mock_embedding_service
     )
+    # Add vector_store as additional attribute for testing
+    dependencies.vector_store = mock_vector_store
     
     strategy = ContextualRetrievalStrategy(
-        config=config.dict(),
+        config=config.model_dump(),
         dependencies=dependencies
     )
     

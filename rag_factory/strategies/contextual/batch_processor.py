@@ -197,6 +197,7 @@ class BatchProcessor:
             else:
                 processed_chunks.append(result)
         
+        logger.info(f"Batch processed {len(processed_chunks)} chunks out of {len(batch)}")
         return processed_chunks
 
     async def _process_single_chunk(
@@ -249,9 +250,17 @@ class BatchProcessor:
                 chunk["context_generation_method"] = self.config.context_method
                 
                 logger.debug(f"Chunk {chunk_id} contextualized (cost: ${cost:.6f})")
+            else:
+                logger.warning(f"Chunk {chunk_id} returned without context (context was None)")
             
             return chunk
             
         except Exception as e:
             logger.error(f"Error processing chunk {chunk_id}: {e}")
-            raise
+            
+            if self.config.fallback_to_no_context:
+                # Return chunk without context
+                logger.warning(f"Returning chunk {chunk_id} without context due to error")
+                return chunk
+            else:
+                raise

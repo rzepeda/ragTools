@@ -1,6 +1,12 @@
-tests/benchmarks/test_late_chunking_performance.py
 tests/integration/models/test_fine_tuned_embeddings_integration.py
+tests/integration/services/test_embedding_integration.py
 tests/integration/services/test_onnx_embeddings_integration.py
 tests/integration/services/test_service_integration.py
 tests/integration/strategies/test_contextual_integration.py
-tests/integration/strategies/test_hierarchical_integration.py
+tests/integration/strategies/test_knowledge_graph_integration.py
+tests/integration/strategies/test_late_chunking_integration.py
+tests/integration/strategies/test_multi_query_integration.py
+tests/integration/test_config_integration.py
+tests/integration/test_factory_integration.py
+tests/integration/test_package_integration.py
+tests/integration/test_pipeline_integration.py

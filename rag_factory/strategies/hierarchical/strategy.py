@@ -157,9 +157,17 @@ class HierarchicalRAGStrategy(IRAGStrategy):
             # Generate embedding
             embedding = self.vector_store.embed_text(h_chunk.text)
             
+            # Convert document_id to UUID for this chunk
+            try:
+                chunk_doc_uuid = UUID(h_chunk.document_id)
+            except (ValueError, AttributeError):
+                # If document_id is not a valid UUID, generate a deterministic one
+                import uuid
+                chunk_doc_uuid = uuid.uuid5(uuid.NAMESPACE_DNS, h_chunk.document_id)
+            
             # Store in database
             self.database.chunk_repository.create(
-                document_id=UUID(h_chunk.document_id),
+                document_id=chunk_doc_uuid,
                 chunk_index=h_chunk.hierarchy_metadata.position_in_parent,
                 text=h_chunk.text,
                 embedding=embedding,
