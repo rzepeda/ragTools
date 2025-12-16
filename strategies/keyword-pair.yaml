@@ -1,0 +1,67 @@
+strategy_name: "keyword-pair"
+version: "1.0.0"
+description: "BM25 keyword-based search (no embeddings required)"
+
+indexer:
+  strategy: "KeywordIndexer"
+  services:
+    db: "$db_main"
+  
+  db_config:
+    tables:
+      chunks: "keyword_chunks"
+      inverted_index: "keyword_inverted_index"
+      metadata: "keyword_metadata"
+    fields:
+      text: "text_content"
+      doc_id: "document_id"
+      chunk_id: "chunk_id"
+      term: "term"
+      frequency: "term_frequency"
+  
+  config:
+    chunk_size: 512
+    overlap: 50
+    min_chunk_size: 100
+    language: "english"
+    stemming: true
+    remove_stopwords: true
+
+retriever:
+  strategy: "KeywordRetriever"
+  services:
+    db: "$db_main"
+  
+  db_config:
+    tables:
+      chunks: "keyword_chunks"
+      inverted_index: "keyword_inverted_index"
+    fields:
+      text: "text_content"
+      term: "term"
+      frequency: "term_frequency"
+  
+  config:
+    top_k: 5
+    algorithm: "bm25"
+    k1: 1.5
+    b: 0.75
+
+migrations:
+  required_revisions:
+    - "keyword_schema"
+
+expected_schema:
+  tables:
+    - "keyword_chunks"
+    - "keyword_inverted_index"
+    - "keyword_metadata"
+  indexes:
+    - "idx_keyword_inverted_index_term"
+    - "idx_keyword_chunks_doc_id"
+
+tags:
+  - "keyword"
+  - "bm25"
+  - "lexical"
+  - "no-embeddings"

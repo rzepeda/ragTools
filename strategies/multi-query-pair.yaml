@@ -1,0 +1,68 @@
+strategy_name: "multi-query-pair"
+version: "1.0.0"
+description: "Generate multiple query variants using LLM for improved recall"
+
+indexer:
+  strategy: "VectorEmbeddingIndexer"
+  services:
+    embedding: "$embedding_local"
+    db: "$db_main"
+  
+  db_config:
+    tables:
+      chunks: "multi_query_chunks"
+      vectors: "multi_query_vectors"
+      metadata: "multi_query_metadata"
+    fields:
+      text: "text_content"
+      embedding: "vector_embedding"
+      doc_id: "document_id"
+      chunk_id: "chunk_id"
+  
+  config:
+    chunk_size: 512
+    overlap: 50
+    min_chunk_size: 100
+
+retriever:
+  strategy: "MultiQueryRAGStrategy"
+  services:
+    embedding: "$embedding_local"
+    llm: "$llm_local"
+    db: "$db_main"
+  
+  db_config:
+    tables:
+      chunks: "multi_query_chunks"
+      vectors: "multi_query_vectors"
+    fields:
+      embedding: "vector_embedding"
+      text: "text_content"
+  
+  config:
+    final_top_k: 5
+    num_variants: 3
+    similarity_threshold: 0.7
+    ranking_strategy: "rrf"
+    temperature: 0.7
+    fallback_to_original: true
+
+migrations:
+  required_revisions:
+    - "multi_query_schema"
+
+expected_schema:
+  tables:
+    - "multi_query_chunks"
+    - "multi_query_vectors"
+    - "multi_query_metadata"
+  indexes:
+    - "idx_multi_query_vectors_embedding"
+  extensions:
+    - "vector"
+
+tags:
+  - "multi-query"
+  - "llm-enhanced"
+  - "high-recall"
+  - "semantic"

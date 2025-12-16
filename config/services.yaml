@@ -2,6 +2,7 @@
 services:
   embedding_local:
     name: "local-onnx-minilm"
+    type: "embedding"
     provider: "onnx"
     model: "Xenova/all-MiniLM-L6-v2"
     cache_dir: "./models/embeddings"

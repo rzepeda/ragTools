@@ -1,0 +1,19 @@
+# CLI Configuration for RAG Factory
+strategy_pair: "semantic-local-pair"
+service_registry: "config/services.yaml"
+alembic_config: "alembic.ini"
+
+defaults:
+  top_k: 5
+  verbose: true
+  validate_migrations: true
+
+output:
+  format: "table"
+  show_scores: true
+  show_metadata: true
+  max_content_length: 200
+
+performance:
+  batch_size: 32
+  show_timing: true

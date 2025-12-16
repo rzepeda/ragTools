@@ -1,0 +1,71 @@
+strategy_name: "hierarchical-rag-pair"
+version: "1.0.0"
+description: "Parent-child chunk hierarchy for context-aware retrieval"
+
+indexer:
+  strategy: "HierarchicalIndexing"
+  services:
+    embedding: "$embedding_local"
+    db: "$db_main"
+  
+  db_config:
+    tables:
+      chunks: "hierarchical_chunks"
+      vectors: "hierarchical_vectors"
+      metadata: "hierarchical_metadata"
+      hierarchy: "hierarchical_relationships"
+    fields:
+      text: "text_content"
+      embedding: "vector_embedding"
+      doc_id: "document_id"
+      chunk_id: "chunk_id"
+      parent_id: "parent_chunk_id"
+      level: "hierarchy_level"
+  
+  config:
+    max_depth: 2
+    min_chunk_size: 100
+
+retriever:
+  strategy: "SemanticRetriever"
+  services:
+    embedding: "$embedding_local"
+    db: "$db_main"
+  
+  db_config:
+    tables:
+      chunks: "hierarchical_chunks"
+      vectors: "hierarchical_vectors"
+      hierarchy: "hierarchical_relationships"
+    fields:
+      embedding: "vector_embedding"
+      text: "text_content"
+      parent_id: "parent_chunk_id"
+      level: "hierarchy_level"
+  
+  config:
+    top_k: 5
+    similarity_threshold: 0.7
+
+migrations:
+  required_revisions:
+    - "hierarchical_schema"
+
+expected_schema:
+  tables:
+    - "hierarchical_chunks"
+    - "hierarchical_vectors"
+    - "hierarchical_metadata"
+    - "hierarchical_relationships"
+  indexes:
+    - "idx_hierarchical_vectors_embedding"
+    - "idx_hierarchical_relationships_parent"
+    - "idx_hierarchical_relationships_child"
+  extensions:
+    - "vector"
+
+tags:
+  - "hierarchical"
+  - "parent-child"
+  - "context-aware"
+  - "semantic"

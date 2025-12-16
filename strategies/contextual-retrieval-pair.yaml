@@ -1,0 +1,72 @@
+strategy_name: "contextual-retrieval-pair"
+version: "1.0.0"
+description: "LLM-enriched chunks with contextual information for improved retrieval"
+
+indexer:
+  strategy: "ContextAwareChunkingIndexing"
+  services:
+    embedding: "$embedding_local"
+    llm: "$llm_local"
+    db: "$db_main"
+  
+  db_config:
+    tables:
+      chunks: "contextual_chunks"
+      vectors: "contextual_vectors"
+      metadata: "contextual_metadata"
+      contexts: "contextual_contexts"
+    fields:
+      text: "text_content"
+      embedding: "vector_embedding"
+      doc_id: "document_id"
+      chunk_id: "chunk_id"
+      context: "chunk_context"
+  
+  config:
+    chunk_size: 512
+    overlap: 50
+    min_chunk_size: 100
+    context_window: 3
+    batch_size: 10
+    temperature: 0.3
+
+retriever:
+  strategy: "SemanticRetriever"
+  services:
+    embedding: "$embedding_local"
+    db: "$db_main"
+  
+  db_config:
+    tables:
+      chunks: "contextual_chunks"
+      vectors: "contextual_vectors"
+    fields:
+      embedding: "vector_embedding"
+      text: "text_content"
+  
+  config:
+    top_k: 5
+    similarity_threshold: 0.7
+    distance_metric: "cosine"
+
+migrations:
+  required_revisions:
+    - "contextual_schema"
+
+expected_schema:
+  tables:
+    - "contextual_chunks"
+    - "contextual_vectors"
+    - "contextual_metadata"
+    - "contextual_contexts"
+  indexes:
+    - "idx_contextual_vectors_embedding"
+    - "idx_contextual_chunks_doc_id"
+  extensions:
+    - "vector"
+
+tags:
+  - "contextual"
+  - "llm-enhanced"
+  - "high-quality"
+  - "semantic"

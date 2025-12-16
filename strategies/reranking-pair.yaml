@@ -1,0 +1,64 @@
+strategy_name: "reranking-pair"
+version: "1.0.0"
+description: "Two-stage retrieval with cross-encoder reranking for precision"
+
+indexer:
+  strategy: "VectorEmbeddingIndexer"
+  services:
+    embedding: "$embedding_local"
+    db: "$db_main"
+  
+  db_config:
+    tables:
+      chunks: "reranking_chunks"
+      vectors: "reranking_vectors"
+      metadata: "reranking_metadata"
+    fields:
+      text: "text_content"
+      embedding: "vector_embedding"
+      doc_id: "document_id"
+      chunk_id: "chunk_id"
+  
+  config:
+    chunk_size: 512
+    overlap: 50
+    min_chunk_size: 100
+
+retriever:
+  strategy: "SemanticRetriever"
+  services:
+    embedding: "$embedding_local"
+    reranker: "$reranker_local"
+    db: "$db_main"
+  
+  db_config:
+    tables:
+      chunks: "reranking_chunks"
+      vectors: "reranking_vectors"
+    fields:
+      embedding: "vector_embedding"
+      text: "text_content"
+  
+  config:
+    top_k: 5
+    similarity_threshold: 0.7
+
+migrations:
+  required_revisions:
+    - "reranking_schema"
+
+expected_schema:
+  tables:
+    - "reranking_chunks"
+    - "reranking_vectors"
+    - "reranking_metadata"
+  indexes:
+    - "idx_reranking_vectors_embedding"
+  extensions:
+    - "vector"
+
+tags:
+  - "reranking"
+  - "two-stage"
+  - "cross-encoder"
+  - "high-precision"

@@ -1,0 +1,69 @@
+strategy_name: "fine-tuned-embeddings-pair"
+version: "1.0.0"
+description: "Custom fine-tuned embedding models for domain-specific retrieval"
+
+indexer:
+  strategy: "VectorEmbeddingIndexer"
+  services:
+    embedding: "$embedding_finetuned"
+    db: "$db_main"
+  
+  db_config:
+    tables:
+      chunks: "finetuned_chunks"
+      vectors: "finetuned_vectors"
+      metadata: "finetuned_metadata"
+    fields:
+      text: "text_content"
+      embedding: "vector_embedding"
+      doc_id: "document_id"
+      chunk_id: "chunk_id"
+  
+  config:
+    chunk_size: 512
+    overlap: 50
+    min_chunk_size: 100
+
+retriever:
+  strategy: "SemanticRetriever"
+  services:
+    embedding: "$embedding_finetuned"
+    db: "$db_main"
+  
+  db_config:
+    tables:
+      chunks: "finetuned_chunks"
+      vectors: "finetuned_vectors"
+    fields:
+      embedding: "vector_embedding"
+      text: "text_content"
+  
+  config:
+    top_k: 5
+    similarity_threshold: 0.7
+    distance_metric: "cosine"
+
+migrations:
+  required_revisions:
+    - "finetuned_schema"
+
+expected_schema:
+  tables:
+    - "finetuned_chunks"
+    - "finetuned_vectors"
+    - "finetuned_metadata"
+  indexes:
+    - "idx_finetuned_vectors_embedding"
+  extensions:
+    - "vector"
+
+tags:
+  - "fine-tuned"
+  - "custom-model"
+  - "domain-specific"
+  - "advanced"
+
+notes:
+  - "Requires custom embedding service configuration"
+  - "Model dimensions must match fine-tuned model output"
+  - "Consider using HuggingFace or ONNX provider with custom model path"

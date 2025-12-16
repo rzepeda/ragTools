@@ -14,7 +14,7 @@ indexer:
       vectors: "semantic_local_vectors"
       metadata: "semantic_local_metadata"
     fields:
-      content: "text_content"
+      text: "text_content"
       embedding: "vector_embedding"
       doc_id: "document_id"
       chunk_id: "chunk_id"
@@ -32,10 +32,11 @@ retriever:
   
   db_config:
     tables:
+      chunks: "semantic_local_chunks" # Added for text retrieval
       vectors: "semantic_local_vectors"
     fields:
       embedding: "vector_embedding"
-      content: "text_content"
+      text: "text_content"
   
   config:
     top_k: 5

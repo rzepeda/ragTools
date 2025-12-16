@@ -1,0 +1,10 @@
+Understanding Embeddings
+In natural language processing (NLP), word embedding is a term used for the representation of words for text analysis, typically in the form of a real-valued vector that encodes the meaning of the word such that the words that are closer in the vector space are expected to be similar in meaning.
+Embeddings can be obtained using a set of language modeling and feature learning techniques where terms from the vocabulary are mapped to vectors of real numbers.
+Conceptually, it involves a mathematical embedding from a space with many dimensions per word to a continuous vector space with a much lower dimension.
+Common methods for generating word embeddings include:
+- Word2Vec
+- GloVe
+- FastText
+- Transformer-based models (BERT, RoBERTa, etc.)
+Embeddings are crucial for semantic search, as they allow comparing the meaning of text rather than just keyword matching.

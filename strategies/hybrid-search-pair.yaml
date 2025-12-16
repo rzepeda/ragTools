@@ -1,0 +1,71 @@
+# Hybrid Search Strategy Pair
+# Combines semantic and keyword search for better retrieval
+
+strategy_name: "hybrid-search-pair"
+version: "1.0.0"
+description: "Hybrid search combining semantic vectors and BM25 keyword search"
+
+tags:
+  - "hybrid"
+  - "advanced"
+  - "production-ready"
+
+indexer:
+  strategy: "VectorEmbeddingIndexing"
+  services:
+    embedding: "$embedding_openai"
+    db: "$db_main"
+  
+  db_config:
+    tables:
+      documents: "documents"
+      chunks: "chunks"
+    fields:
+      chunk_id: "id"
+      document_id: "document_id"
+      content: "content"
+      embedding: "embedding"
+      metadata: "metadata"
+  
+  config:
+    chunk_size: 512
+    chunk_overlap: 50
+    batch_size: 32
+
+retriever:
+  strategy: "SemanticRetriever"
+  services:
+    embedding: "$embedding_openai"
+    db: "$db_main"
+  
+  db_config:
+    tables:
+      chunks: "chunks"
+    fields:
+      chunk_id: "id"
+      content: "content"
+      embedding: "embedding"
+      metadata: "metadata"
+  
+  config:
+    top_k: 10
+    similarity_threshold: 0.6
+
+migrations:
+  required_revisions:
+    - "001_create_documents_table"
+    - "002_create_chunks_table"
+    - "003_add_pgvector_extension"
+    - "004_create_bm25_statistics_table"
+
+expected_schema:
+  tables:
+    - "documents"
+    - "chunks"
+    - "bm25_statistics"
+  indexes:
+    - "idx_chunks_embedding_vector"
+    - "idx_chunks_document_id"
+    - "idx_bm25_term"
+  extensions:
+    - "vector"

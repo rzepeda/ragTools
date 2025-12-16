@@ -49,7 +49,6 @@ load_module("rag_factory.strategies.base", "/mnt/MCPProyects/ragTools/rag_factor
 load_module("rag_factory.exceptions", "/mnt/MCPProyects/ragTools/rag_factory/exceptions.py")
 load_module("rag_factory.factory", "/mnt/MCPProyects/ragTools/rag_factory/factory.py")
 load_module("rag_factory.strategies.indexing", "/mnt/MCPProyects/ragTools/rag_factory/strategies/indexing/__init__.py")
-load_module("rag_factory.strategies.indexing.context_aware", "/mnt/MCPProyects/ragTools/rag_factory/strategies/indexing/context_aware.py")
 
 # Load CLI modules for CLI tests
 load_module("rag_factory.cli", "/mnt/MCPProyects/ragTools/rag_factory/cli/__init__.py")

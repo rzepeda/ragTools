@@ -1,0 +1,68 @@
+strategy_name: "self-reflective-pair"
+version: "1.0.0"
+description: "Self-correcting retrieval with quality assessment and refinement"
+
+indexer:
+  strategy: "VectorEmbeddingIndexer"
+  services:
+    embedding: "$embedding_local"
+    db: "$db_main"
+  
+  db_config:
+    tables:
+      chunks: "self_reflective_chunks"
+      vectors: "self_reflective_vectors"
+      metadata: "self_reflective_metadata"
+    fields:
+      text: "text_content"
+      embedding: "vector_embedding"
+      doc_id: "document_id"
+      chunk_id: "chunk_id"
+  
+  config:
+    chunk_size: 512
+    overlap: 50
+    min_chunk_size: 100
+
+retriever:
+  strategy: "SelfReflectiveRAGStrategy"
+  services:
+    embedding: "$embedding_local"
+    llm: "$llm_local"
+    db: "$db_main"
+  
+  db_config:
+    tables:
+      chunks: "self_reflective_chunks"
+      vectors: "self_reflective_vectors"
+    fields:
+      embedding: "vector_embedding"
+      text: "text_content"
+  
+  config:
+    top_k: 5
+    similarity_threshold: 0.7
+    max_iterations: 3
+    reflection_threshold: 0.6
+    temperature: 0.7
+    enable_self_correction: true
+
+migrations:
+  required_revisions:
+    - "self_reflective_schema"
+
+expected_schema:
+  tables:
+    - "self_reflective_chunks"
+    - "self_reflective_vectors"
+    - "self_reflective_metadata"
+  indexes:
+    - "idx_self_reflective_vectors_embedding"
+  extensions:
+    - "vector"
+
+tags:
+  - "self-reflective"
+  - "quality-assessment"
+  - "iterative"
+  - "llm-enhanced"

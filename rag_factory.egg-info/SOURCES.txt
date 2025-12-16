@@ -2,9 +2,9 @@ README.md
 pyproject.toml
 rag_factory/__init__.py
 rag_factory/__version__.py
-rag_factory/config.py
 rag_factory/exceptions.py
 rag_factory/factory.py
+rag_factory/legacy_config.py
 rag_factory/pipeline.py
 rag_factory.egg-info/PKG-INFO
 rag_factory.egg-info/SOURCES.txt
@@ -22,6 +22,7 @@ rag_factory/cli/commands/index.py
 rag_factory/cli/commands/query.py
 rag_factory/cli/commands/repl.py
 rag_factory/cli/commands/strategies.py
+rag_factory/cli/commands/validate_e2e.py
 rag_factory/cli/commands/validate_pipeline.py
 rag_factory/cli/formatters/__init__.py
 rag_factory/cli/formatters/consistency.py
@@ -31,6 +32,13 @@ rag_factory/cli/formatters/validation.py
 rag_factory/cli/utils/__init__.py
 rag_factory/cli/utils/progress.py
 rag_factory/cli/utils/validation.py
+rag_factory/config/__init__.py
+rag_factory/config/env_resolver.py
+rag_factory/config/strategy_loader.py
+rag_factory/config/strategy_pair_manager.py
+rag_factory/config/validator.py
+rag_factory/config/schemas/__init__.py
+rag_factory/config/schemas/version.py
 rag_factory/core/__init__.py
 rag_factory/core/capabilities.py
 rag_factory/core/indexing_interface.py
@@ -84,6 +92,10 @@ rag_factory/observability/metrics/cost.py
 rag_factory/observability/metrics/performance.py
 rag_factory/observability/monitoring/__init__.py
 rag_factory/observability/monitoring/api.py
+rag_factory/registry/__init__.py
+rag_factory/registry/exceptions.py
+rag_factory/registry/service_factory.py
+rag_factory/registry/service_registry.py
 rag_factory/repositories/__init__.py
 rag_factory/repositories/base.py
 rag_factory/repositories/chunk.py
@@ -98,6 +110,8 @@ rag_factory/services/api/anthropic.py
 rag_factory/services/api/cohere.py
 rag_factory/services/api/openai.py
 rag_factory/services/database/__init__.py
+rag_factory/services/database/database_context.py
+rag_factory/services/database/migration_validator.py
 rag_factory/services/database/neo4j.py
 rag_factory/services/database/postgres.py
 rag_factory/services/embedding/__init__.py
@@ -211,6 +225,9 @@ rag_factory/strategies/reranking/cosine_reranker.py
 rag_factory/strategies/reranking/cross_encoder_reranker.py
 rag_factory/strategies/reranking/metrics.py
 rag_factory/strategies/reranking/reranker_service.py
+rag_factory/strategies/retrieval/__init__.py
+rag_factory/strategies/retrieval/keyword_retriever.py
+rag_factory/strategies/retrieval/semantic_retriever.py
 rag_factory/strategies/self_reflective/__init__.py
 rag_factory/strategies/self_reflective/config.py
 rag_factory/strategies/self_reflective/grader.py

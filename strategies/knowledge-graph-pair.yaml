@@ -1,0 +1,85 @@
+strategy_name: "knowledge-graph-pair"
+version: "1.0.0"
+description: "Graph-based retrieval with entity relationships and vector search"
+
+indexer:
+  strategy: "KnowledgeGraphRAGStrategy"
+  services:
+    embedding: "$embedding_local"
+    llm: "$llm_local"
+    db: "$db_main"
+    graph_db: "$db_neo4j"
+  
+  db_config:
+    tables:
+      chunks: "kg_chunks"
+      vectors: "kg_vectors"
+      metadata: "kg_metadata"
+      entities: "kg_entities"
+      relationships: "kg_relationships"
+    fields:
+      text: "text_content"
+      embedding: "vector_embedding"
+      doc_id: "document_id"
+      chunk_id: "chunk_id"
+      entity_name: "entity"
+      entity_type: "entity_type"
+      relation_type: "relation"
+  
+  config:
+    chunk_size: 512
+    overlap: 50
+    min_chunk_size: 100
+    extract_entities: true
+    extract_relationships: true
+    entity_types: ["PERSON", "ORG", "LOCATION", "CONCEPT"]
+
+retriever:
+  strategy: "KnowledgeGraphRAGStrategy"
+  services:
+    embedding: "$embedding_local"
+    db: "$db_main"
+    graph_db: "$db_neo4j"
+  
+  db_config:
+    tables:
+      chunks: "kg_chunks"
+      vectors: "kg_vectors"
+      entities: "kg_entities"
+      relationships: "kg_relationships"
+    fields:
+      embedding: "vector_embedding"
+      text: "text_content"
+      entity_name: "entity"
+      relation_type: "relation"
+  
+  config:
+    top_k: 5
+    similarity_threshold: 0.7
+    graph_depth: 2
+    combine_vector_graph: true
+    graph_weight: 0.3
+
+migrations:
+  required_revisions:
+    - "knowledge_graph_schema"
+
+expected_schema:
+  tables:
+    - "kg_chunks"
+    - "kg_vectors"
+    - "kg_metadata"
+    - "kg_entities"
+    - "kg_relationships"
+  indexes:
+    - "idx_kg_vectors_embedding"
+    - "idx_kg_entities_name"
+    - "idx_kg_relationships_source"
+  extensions:
+    - "vector"
+
+tags:
+  - "knowledge-graph"
+  - "graph-db"
+  - "entity-extraction"
+  - "hybrid"

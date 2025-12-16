@@ -1,0 +1,68 @@
+strategy_name: "context-aware-chunking-pair"
+version: "1.0.0"
+description: "Semantic boundary-aware chunking for natural content divisions"
+
+indexer:
+  strategy: "ContextAwareChunker"
+  services:
+    embedding: "$embedding_local"
+    db: "$db_main"
+  
+  db_config:
+    tables:
+      chunks: "context_aware_chunks"
+      vectors: "context_aware_vectors"
+      metadata: "context_aware_metadata"
+    fields:
+      text: "text_content"
+      embedding: "vector_embedding"
+      doc_id: "document_id"
+      chunk_id: "chunk_id"
+      boundary_score: "semantic_boundary_score"
+  
+  config:
+    min_chunk_size: 100
+    max_chunk_size: 1024
+    similarity_threshold: 0.8
+    preserve_sentences: true
+    preserve_paragraphs: true
+
+retriever:
+  strategy: "SemanticRetriever"
+  services:
+    embedding: "$embedding_local"
+    db: "$db_main"
+  
+  db_config:
+    tables:
+      chunks: "context_aware_chunks"
+      vectors: "context_aware_vectors"
+    fields:
+      embedding: "vector_embedding"
+      text: "text_content"
+  
+  config:
+    top_k: 5
+    similarity_threshold: 0.7
+    distance_metric: "cosine"
+
+migrations:
+  required_revisions:
+    - "context_aware_schema"
+
+expected_schema:
+  tables:
+    - "context_aware_chunks"
+    - "context_aware_vectors"
+    - "context_aware_metadata"
+  indexes:
+    - "idx_context_aware_vectors_embedding"
+    - "idx_context_aware_chunks_boundary"
+  extensions:
+    - "vector"
+
+tags:
+  - "context-aware"
+  - "semantic-chunking"
+  - "boundary-detection"
+  - "quality"

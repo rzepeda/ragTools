@@ -1,0 +1,68 @@
+strategy_name: "late-chunking-pair"
+version: "1.0.0"
+description: "Embed-then-chunk strategy for context-preserving embeddings"
+
+indexer:
+  strategy: "LateChunkingStrategy"
+  services:
+    embedding: "$embedding_local"
+    db: "$db_main"
+  
+  db_config:
+    tables:
+      chunks: "late_chunking_chunks"
+      vectors: "late_chunking_vectors"
+      metadata: "late_chunking_metadata"
+    fields:
+      text: "text_content"
+      embedding: "vector_embedding"
+      doc_id: "document_id"
+      chunk_id: "chunk_id"
+      original_position: "position"
+  
+  config:
+    embed_full_document: true
+    chunk_size: 512
+    overlap: 50
+    min_chunk_size: 100
+    preserve_boundaries: true
+
+retriever:
+  strategy: "SemanticRetriever"
+  services:
+    embedding: "$embedding_local"
+    db: "$db_main"
+  
+  db_config:
+    tables:
+      chunks: "late_chunking_chunks"
+      vectors: "late_chunking_vectors"
+    fields:
+      embedding: "vector_embedding"
+      text: "text_content"
+  
+  config:
+    top_k: 5
+    similarity_threshold: 0.7
+    distance_metric: "cosine"
+
+migrations:
+  required_revisions:
+    - "late_chunking_schema"
+
+expected_schema:
+  tables:
+    - "late_chunking_chunks"
+    - "late_chunking_vectors"
+    - "late_chunking_metadata"
+  indexes:
+    - "idx_late_chunking_vectors_embedding"
+    - "idx_late_chunking_chunks_position"
+  extensions:
+    - "vector"
+
+tags:
+  - "late-chunking"
+  - "context-preserving"
+  - "semantic"
+  - "advanced"
