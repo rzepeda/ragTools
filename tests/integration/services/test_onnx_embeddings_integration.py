@@ -16,8 +16,7 @@ class TestONNXEmbeddingsIntegration:
     """Integration tests with real ONNX models.
     
     Note: These tests use Xenova ONNX models from environment configuration.
-    To prepare:
-        python scripts/download_embedding_model.py
+    The model must be available locally (e.g., in models/embeddings/Xenova_all-MiniLM-L6-v2).
     """
 
     @pytest.fixture(scope="class")
@@ -35,6 +34,8 @@ class TestONNXEmbeddingsIntegration:
             }
             provider = ONNXLocalProvider(config)
             return provider
+        except FileNotFoundError:
+             pytest.skip("ONNX model not found locally. Please ensure models/embeddings/Xenova_all-MiniLM-L6-v2 exists.")
         except Exception as e:
             pytest.skip(f"Could not load ONNX provider: {e}")
 

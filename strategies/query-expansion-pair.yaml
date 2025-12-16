@@ -25,10 +25,11 @@ indexer:
     min_chunk_size: 100
 
 retriever:
-  strategy: "SemanticRetriever"
+  strategy: "QueryExpansionRetriever"
   services:
     embedding: "$embedding_local"
     db: "$db_main"
+    llm: "$llm_local"
   
   db_config:
     tables:

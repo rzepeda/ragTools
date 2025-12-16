@@ -53,7 +53,7 @@ def main():
 
     # Configure late chunking strategy
     config = {
-        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "model_name": "Xenova/all-MiniLM-L6-v2",
         "chunking_method": EmbeddingChunkingMethod.SEMANTIC_BOUNDARY.value,
         "target_chunk_size": 128,
         "min_chunk_size": 50,

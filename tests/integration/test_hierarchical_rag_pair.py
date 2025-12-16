@@ -38,6 +38,8 @@ def mock_registry():
         {'id': 'chunk1', 'text': 'hierarchical content', 'metadata': {'parent_id': 'parent1'}}
     ])
     db_service.store_chunks = AsyncMock()
+    db_service.store_chunks = AsyncMock()
+    db_service.store_chunks_with_hierarchy = AsyncMock()
     db_service.search_chunks = AsyncMock(return_value=[
         {'id': 'chunk1', 'text': 'hierarchical content', 'score': 0.9, 'metadata': {'parent_id': 'parent1'}}
     ])

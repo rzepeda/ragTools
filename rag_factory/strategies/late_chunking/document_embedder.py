@@ -11,7 +11,7 @@ import numpy as np
 from pathlib import Path
 
 from rag_factory.services.utils.onnx_utils import (
-    download_onnx_model,
+    get_onnx_model_path,
     create_onnx_session,
     get_model_metadata,
     mean_pooling as onnx_mean_pooling,
@@ -34,7 +34,7 @@ class DocumentEmbedder:
         if config.model_path:
             self.model_path = Path(config.model_path)
         else:
-            self.model_path = download_onnx_model(config.model_name)
+            self.model_path = get_onnx_model_path(config.model_name)
 
         # Create ONNX session
         self.session = create_onnx_session(self.model_path)

@@ -32,6 +32,10 @@ def mock_registry():
         {'id': 'chunk1', 'text': 'keyword search content', 'metadata': {}}
     ])
     db_service.store_chunks = AsyncMock()
+    db_service.store_keyword_index = AsyncMock()
+    db_service.search_keyword = AsyncMock(return_value=[
+        {'id': 'chunk1', 'text': 'keyword search content', 'score': 0.85, 'metadata': {}}
+    ])
     db_service.search_chunks = AsyncMock(return_value=[
         {'id': 'chunk1', 'text': 'keyword search content', 'score': 0.85, 'metadata': {}}
     ])
@@ -90,7 +94,7 @@ async def test_keyword_pair_loading(mock_registry):
         assert IndexCapability.KEYWORDS in result.capabilities
         
         # Verify DB interaction
-        indexing.deps.database_service.store_chunks.assert_called()
+        indexing.deps.database_service.store_keyword_index.assert_called()
         
         # Test Retrieval
         retrieval_context = RetrievalContext(

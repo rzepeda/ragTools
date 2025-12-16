@@ -68,7 +68,7 @@ class LateChunkingConfig(BaseModel):
     # Document embedding
     use_long_context_model: bool = True
     max_document_tokens: int = 16384
-    model_name: str = "sentence-transformers/all-MiniLM-L6-v2"
+    model_name: str = "Xenova/all-MiniLM-L6-v2"
     model_path: Optional[str] = None  # Path to local ONNX model
 
     # Chunking

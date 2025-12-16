@@ -71,12 +71,12 @@ def mock_tokenizer():
 @pytest.fixture
 def document_embedder(embedder_config, mock_session, mock_tokenizer):
     """Create document embedder instance with mocked dependencies."""
-    with patch("rag_factory.strategies.late_chunking.document_embedder.download_onnx_model") as mock_download:
+    with patch("rag_factory.strategies.late_chunking.document_embedder.get_onnx_model_path") as mock_get_path:
         with patch("rag_factory.strategies.late_chunking.document_embedder.create_onnx_session") as mock_create:
             with patch("rag_factory.strategies.late_chunking.document_embedder.get_model_metadata") as mock_metadata:
                 with patch("transformers.AutoTokenizer.from_pretrained") as mock_tok_class:
                     from pathlib import Path
-                    mock_download.return_value = Path("/fake/path/model.onnx")
+                    mock_get_path.return_value = Path("/fake/path/model.onnx")
                     mock_create.return_value = mock_session
                     mock_metadata.return_value = {"embedding_dim": 384}
                     mock_tok_class.return_value = mock_tokenizer

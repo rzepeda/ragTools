@@ -69,8 +69,7 @@ try:
 except Exception as e:
     print(f"\n❌ Error: {e}")
     print("\nTroubleshooting:")
-    print("  1. Make sure the model is downloaded:")
-    print("     python scripts/download_embedding_model.py")
+    print("  1. Make sure the model is available locally in models/embeddings/")
     print("  2. Check your .env file has correct variables")
     print("  3. Verify ONNX Runtime is installed:")
     print("     pip install onnxruntime")

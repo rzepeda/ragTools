@@ -184,6 +184,7 @@ rag_factory/strategies/indexing/context_aware.py
 rag_factory/strategies/indexing/hierarchical.py
 rag_factory/strategies/indexing/in_memory.py
 rag_factory/strategies/indexing/keyword_indexing.py
+rag_factory/strategies/indexing/knowledge_graph_indexing.py
 rag_factory/strategies/indexing/vector_embedding.py
 rag_factory/strategies/knowledge_graph/__init__.py
 rag_factory/strategies/knowledge_graph/config.py
@@ -227,6 +228,9 @@ rag_factory/strategies/reranking/metrics.py
 rag_factory/strategies/reranking/reranker_service.py
 rag_factory/strategies/retrieval/__init__.py
 rag_factory/strategies/retrieval/keyword_retriever.py
+rag_factory/strategies/retrieval/knowledge_graph_retriever.py
+rag_factory/strategies/retrieval/multi_query_retriever.py
+rag_factory/strategies/retrieval/query_expansion_retriever.py
 rag_factory/strategies/retrieval/semantic_retriever.py
 rag_factory/strategies/self_reflective/__init__.py
 rag_factory/strategies/self_reflective/config.py

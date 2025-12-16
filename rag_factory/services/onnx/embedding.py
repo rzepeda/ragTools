@@ -31,7 +31,7 @@ class ONNXEmbeddingService(IEmbeddingService):
 
     def __init__(
         self,
-        model: str = "sentence-transformers/all-MiniLM-L6-v2",
+        model: str = "Xenova/all-MiniLM-L6-v2",
         model_path: str = None,
         cache_dir: str = None,
         max_batch_size: int = 32,
@@ -41,7 +41,7 @@ class ONNXEmbeddingService(IEmbeddingService):
         """Initialize ONNX embedding service.
 
         Args:
-            model: Model name from HuggingFace (default: all-MiniLM-L6-v2)
+            model: Model name from HuggingFace (default: Xenova/all-MiniLM-L6-v2)
             model_path: Optional path to local ONNX model file
             cache_dir: Optional directory for model cache
             max_batch_size: Maximum batch size for processing (default: 32)

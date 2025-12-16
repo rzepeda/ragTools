@@ -25,7 +25,7 @@ indexer:
     min_chunk_size: 100
 
 retriever:
-  strategy: "MultiQueryRAGStrategy"
+  strategy: "MultiQueryRetriever"
   services:
     embedding: "$embedding_local"
     llm: "$llm_local"

@@ -18,15 +18,11 @@ try:
 except ImportError:
     ONNX_AVAILABLE = False
 
-try:
-    from huggingface_hub import hf_hub_download
-    HF_HUB_AVAILABLE = True
-except ImportError:
-    HF_HUB_AVAILABLE = False
+
 
 from ..base import IEmbeddingProvider, EmbeddingResult
 from ...utils.onnx_utils import (
-    download_onnx_model,
+    get_onnx_model_path,
     create_onnx_session,
     validate_onnx_model,
     get_model_metadata,
@@ -64,7 +60,9 @@ class ONNXLocalProvider(IEmbeddingProvider):
     # Common models with their dimensions
     KNOWN_MODELS = {
         "sentence-transformers/all-MiniLM-L6-v2": {"dimensions": 384, "size_mb": 90},
+        "Xenova/all-MiniLM-L6-v2": {"dimensions": 384, "size_mb": 90},
         "sentence-transformers/all-mpnet-base-v2": {"dimensions": 768, "size_mb": 420},
+        "Xenova/all-mpnet-base-v2": {"dimensions": 768, "size_mb": 420},
         "sentence-transformers/paraphrase-MiniLM-L6-v2": {"dimensions": 384, "size_mb": 90},
         "sentence-transformers/paraphrase-mpnet-base-v2": {"dimensions": 768, "size_mb": 420},
         "BAAI/bge-small-en-v1.5": {"dimensions": 384, "size_mb": 133},
@@ -95,15 +93,11 @@ class ONNXLocalProvider(IEmbeddingProvider):
                 "Total size: ~215MB (vs ~2.5GB for PyTorch)"
             )
 
-        if not HF_HUB_AVAILABLE:
-            raise ImportError(
-                "HuggingFace Hub not installed. Install with:\n"
-                "  pip install huggingface-hub>=0.20.0"
-            )
+
 
         # Get model name from config or environment variable
         # Default to Xenova model (has pre-converted ONNX files)
-        default_model = os.getenv("EMBEDDING_MODEL_NAME", "Xenova/all-mpnet-base-v2")
+        default_model = os.getenv("EMBEDDING_MODEL_NAME", "Xenova/all-MiniLM-L6-v2")
         self.model_name = config.get("model", default_model)
         
         self.max_batch_size = config.get("max_batch_size", 32)
@@ -116,11 +110,10 @@ class ONNXLocalProvider(IEmbeddingProvider):
 
         logger.info(f"Loading ONNX model: {self.model_name}")
 
-        # Load or download model
         if model_path:
             self.model_path = Path(model_path)
         else:
-            self.model_path = download_onnx_model(
+            self.model_path = get_onnx_model_path(
                 self.model_name,
                 cache_dir=Path(cache_dir) if cache_dir else None
             )

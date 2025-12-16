@@ -222,12 +222,12 @@ class StrategyPairManager:
             StrategyDependencies object.
         """
         # Map generic keys to StrategyDependencies fields
-        # supported keys in yaml: llm, embedding, db, graph, reranker
+        # supported keys in yaml: llm, embedding, db, graph, graph_db, reranker
         return StrategyDependencies(
             llm_service=resolved_services.get('llm'),
             embedding_service=resolved_services.get('embedding'),
             database_service=resolved_services.get('db'),
-            graph_service=resolved_services.get('graph'),
+            graph_service=resolved_services.get('graph') or resolved_services.get('graph_db'),
             reranker_service=resolved_services.get('reranker')
         )
 

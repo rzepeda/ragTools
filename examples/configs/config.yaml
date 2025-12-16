@@ -16,7 +16,7 @@ strategies:
     top_k: 20
     strategy_name: semantic_search
     metadata:
-      embedding_model: "all-MiniLM-L6-v2"
+      embedding_model: "Xenova/all-MiniLM-L6-v2"
       similarity_metric: "cosine"
       index_type: "flat"
 

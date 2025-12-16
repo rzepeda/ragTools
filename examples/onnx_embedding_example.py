@@ -33,9 +33,9 @@ def example_1_basic_usage():
     # Configure ONNX local provider
     config = EmbeddingServiceConfig(
         provider="onnx-local",
-        model="sentence-transformers/all-MiniLM-L6-v2",
+        model="Xenova/all-MiniLM-L6-v2",
         provider_config={
-            "model": "sentence-transformers/all-MiniLM-L6-v2",
+            "model": "Xenova/all-MiniLM-L6-v2",
             "max_batch_size": 32,
         },
         enable_cache=True,
@@ -75,7 +75,7 @@ def example_2_model_comparison():
     models = [
         {
             "name": "MiniLM-L6 (Fast & Lightweight)",
-            "model": "sentence-transformers/all-MiniLM-L6-v2",
+            "model": "Xenova/all-MiniLM-L6-v2",
             "dims": 384,
             "size": "90MB",
         },
@@ -135,7 +135,7 @@ def example_3_batch_processing():
 
     config = EmbeddingServiceConfig(
         provider="onnx-local",
-        model="sentence-transformers/all-MiniLM-L6-v2",
+        model="Xenova/all-MiniLM-L6-v2",
         provider_config={"max_batch_size": 32},
         enable_cache=True,
     )
@@ -178,7 +178,7 @@ def example_4_similarity_search():
 
     config = EmbeddingServiceConfig(
         provider="onnx-local",
-        model="sentence-transformers/all-MiniLM-L6-v2",
+        model="Xenova/all-MiniLM-L6-v2",
         enable_cache=False,
     )
 
@@ -240,7 +240,7 @@ def example_5_onnx_vs_api():
             "name": "ONNX Local (MiniLM)",
             "config": EmbeddingServiceConfig(
                 provider="onnx-local",
-                model="sentence-transformers/all-MiniLM-L6-v2",
+                model="Xenova/all-MiniLM-L6-v2",
                 enable_cache=False,
             ),
         },

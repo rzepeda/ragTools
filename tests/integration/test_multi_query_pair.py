@@ -109,15 +109,13 @@ async def test_multi_query_pair_loading(mock_registry):
         assert isinstance(result, IndexingResult)
         assert IndexCapability.VECTORS in result.capabilities
         
-        # Test Retrieval - MultiQueryRAGStrategy uses aretrieve
-        # Mock the database service's asearch_similar method
-        mock_registry._instances["db_main"].asearch_similar = AsyncMock(return_value=[
-            {'id': 'chunk1', 'text': 'multi-query content', 'score': 0.9, 'metadata': {}}
-        ])
-        
-        chunks = await retrieval.aretrieve("complex query")
+        # Test Retrieval
+        retrieval_context = RetrievalContext(
+            database_service=retrieval.deps.database_service,
+            config={}
+        )
+        chunks = await retrieval.retrieve("complex query", retrieval_context)
         
         assert len(chunks) >= 1
-        # MultiQueryRAGStrategy returns dicts, not Chunk objects
-        assert isinstance(chunks[0], dict)
-        assert chunks[0]['text'] == "multi-query content"
+        # MultiQueryRetriever returns Chunk objects
+        assert chunks[0].text == "multi-query content"

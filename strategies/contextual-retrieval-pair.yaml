@@ -3,7 +3,7 @@ version: "1.0.0"
 description: "LLM-enriched chunks with contextual information for improved retrieval"
 
 indexer:
-  strategy: "ContextAwareChunkingIndexing"
+  strategy: "ContextAwareChunker"
   services:
     embedding: "$embedding_local"
     llm: "$llm_local"

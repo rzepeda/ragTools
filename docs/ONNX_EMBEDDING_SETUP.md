@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-Successfully configured local ONNX embedding models for the RAG Factory project, replacing cloud-based embedding services with a lightweight, local solution. The implementation uses Xenova's pre-converted ONNX models (768-dimensional all-mpnet-base-v2) with the lightweight `tokenizers` library, avoiding heavy PyTorch dependencies.
+Successfully configured local ONNX embedding models for the RAG Factory project, replacing cloud-based embedding services with a lightweight, local solution. The implementation uses Xenova's pre-converted ONNX models with the lightweight `tokenizers` library, avoiding heavy PyTorch dependencies. Models are expected to be provisioned via infrastructure.
 
 **Key Achievements:**
 - ✅ Local ONNX embeddings working (768 dimensions)
@@ -97,31 +97,23 @@ EMBEDDING_MODEL_PATH=models/embedding
 - `EMBEDDING_MODEL_NAME`: Specifies which Xenova model to use
 - `EMBEDDING_MODEL_PATH`: Local directory for model storage
 
-### 2. Model Download Script
+### 2. Model Provisioning (Infrastructure)
 
-**File:** `scripts/download_embedding_model.py`
+Models MUST be provisioned via infrastructure automation (e.g., Ansible, Terraform, or Docker copy) to the `models/embeddings` directory.
 
-**Features:**
-- Downloads Xenova ONNX models from HuggingFace
-- Supports multiple model options
-- Verifies ONNX files are present (recursive search)
-- Uses environment variables for configuration
-
-**Usage:**
-```bash
-# List available models
-python scripts/download_embedding_model.py --list
-
-# Download default model (from .env)
-python scripts/download_embedding_model.py
-
-# Download specific model
-python scripts/download_embedding_model.py --model Xenova/all-MiniLM-L6-v2
+**Required File Structure:**
+```
+models/embeddings/Xenova_all-MiniLM-L6-v2/
+├── model.onnx
+├── config.json
+├── tokenizer.json
+├── vocab.txt
+└── ...
 ```
 
 **Available Models:**
-- `Xenova/all-mpnet-base-v2` - 768 dimensions, high quality (~420MB)
-- `Xenova/all-MiniLM-L6-v2` - 384 dimensions, fast (~90MB)
+- `Xenova/all-mpnet-base-v2` - 768 dimensions, high quality
+- `Xenova/all-MiniLM-L6-v2` - 384 dimensions, fast
 - `Xenova/paraphrase-MiniLM-L6-v2` - 384 dimensions, paraphrase detection
 
 ### 3. Code Updates
@@ -307,12 +299,7 @@ models/embedding/Xenova_all-mpnet-base-v2/
 
 ### Files Created
 
-1. **`scripts/download_embedding_model.py`** (178 lines)
-   - Model download utility
-   - Supports multiple Xenova models
-   - Environment variable integration
-
-2. **`scripts/test_embedding_model.py`** (67 lines)
+1. **`scripts/test_embedding_model.py`** (67 lines)
    - Quick test script
    - Verifies model setup
    - Generates sample embeddings
@@ -366,8 +353,7 @@ The only failing test is `test_performance_target`, which expects <100ms but get
 EMBEDDING_MODEL_NAME=Xenova/all-mpnet-base-v2
 EMBEDDING_MODEL_PATH=models/embedding
 
-# 2. Download the model
-python scripts/download_embedding_model.py
+# 2. Ensure model is present in models/embeddings/
 
 # 3. Test the setup
 python scripts/test_embedding_model.py
@@ -401,8 +387,7 @@ print(f"Cost: ${result.cost}")            # 0.0 (local model)
 # Use smaller, faster model
 EMBEDDING_MODEL_NAME=Xenova/all-MiniLM-L6-v2
 
-# Download it
-python scripts/download_embedding_model.py --model Xenova/all-MiniLM-L6-v2
+# Ensure the new model is available in models/embeddings/Xenova_all-MiniLM-L6-v2
 
 # Provider will automatically use it
 ```
@@ -417,11 +402,8 @@ python scripts/download_embedding_model.py --model Xenova/all-MiniLM-L6-v2
 
 **Solution:**
 ```bash
-# Re-download the model
-python scripts/download_embedding_model.py
-
 # Verify files exist
-ls -la models/embedding/Xenova_all-mpnet-base-v2/
+ls -la models/embeddings/Xenova_all-mpnet-base-v2/
 ```
 
 ### Issue: "Entry Not Found" when downloading
@@ -430,11 +412,8 @@ ls -la models/embedding/Xenova_all-mpnet-base-v2/
 
 **Solution:**
 ```bash
-# Use Xenova models (they have ONNX files)
-EMBEDDING_MODEL_NAME=Xenova/all-mpnet-base-v2
-
-# Or list available models
-python scripts/download_embedding_model.py --list
+# Ensure model directory exists and has ONNX files
+ls -F models/embeddings/
 ```
 
 ### Issue: Tests fail with dimension mismatch
@@ -466,7 +445,6 @@ python scripts/download_embedding_model.py --list
 ```
 onnxruntime>=1.16.3  # ONNX model inference (~215MB)
 tokenizers>=0.22.0   # HuggingFace tokenizers (lightweight)
-huggingface-hub      # Model downloading
 numpy                # Array operations
 ```
 

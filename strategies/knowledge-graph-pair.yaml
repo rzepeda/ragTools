@@ -3,7 +3,7 @@ version: "1.0.0"
 description: "Graph-based retrieval with entity relationships and vector search"
 
 indexer:
-  strategy: "KnowledgeGraphRAGStrategy"
+  strategy: "KnowledgeGraphIndexer"
   services:
     embedding: "$embedding_local"
     llm: "$llm_local"
@@ -32,12 +32,13 @@ indexer:
     min_chunk_size: 100
     extract_entities: true
     extract_relationships: true
-    entity_types: ["PERSON", "ORG", "LOCATION", "CONCEPT"]
+    entity_types: ["person", "organization", "place", "concept"]
 
 retriever:
-  strategy: "KnowledgeGraphRAGStrategy"
+  strategy: "KnowledgeGraphRetriever"
   services:
     embedding: "$embedding_local"
+    llm: "$llm_local"
     db: "$db_main"
     graph_db: "$db_neo4j"
   

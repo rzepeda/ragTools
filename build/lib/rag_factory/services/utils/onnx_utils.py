@@ -22,11 +22,7 @@ try:
 except ImportError:
     ONNX_AVAILABLE = False
 
-try:
-    from huggingface_hub import hf_hub_download, model_info
-    HF_HUB_AVAILABLE = True
-except ImportError:
-    HF_HUB_AVAILABLE = False
+
 
 logger = logging.getLogger(__name__)
 
@@ -44,39 +40,29 @@ def check_dependencies():
             "Total size: ~215MB (vs ~2.5GB for PyTorch)"
         )
     
-    if not HF_HUB_AVAILABLE:
-        raise ImportError(
-            "HuggingFace Hub not installed. Install with:\n"
-            "  pip install huggingface-hub>=0.20.0"
-        )
 
 
-def download_onnx_model(
+def get_onnx_model_path(
     model_name: str,
     cache_dir: Optional[Path] = None,
     filename: str = "model.onnx",
-    revision: Optional[str] = None,
 ) -> Path:
-    """Download ONNX model from HuggingFace Hub or use local path.
+    """Get path to local ONNX model.
     
-    This function supports:
+    This function checks:
     1. Local model paths (if model exists locally)
-    2. Xenova ONNX models (pre-converted, recommended)
-    3. Direct HuggingFace download (if ONNX files available)
-    4. Environment variable configuration
+    2. Local cache directory
     
     Args:
-        model_name: HuggingFace model identifier or local path
-        cache_dir: Directory for model caching (default: from EMBEDDING_MODEL_PATH env or ~/.cache/rag_factory/onnx_models)
-        filename: Name of the ONNX model file to download
-        revision: Specific model revision/branch to download
+        model_name: Model identifier or local path
+        cache_dir: Directory for model caching
+        filename: Name of the ONNX model file
         
     Returns:
         Path to ONNX model file
         
     Raises:
-        ImportError: If huggingface-hub is not installed
-        ValueError: If model cannot be downloaded or found
+        FileNotFoundError: If model is not found locally
     """
     import os
     
@@ -90,13 +76,17 @@ def download_onnx_model(
     if cache_dir is None:
         if env_model_path:
             cache_dir = Path(env_model_path)
+        elif Path("models/embeddings").exists():
+            cache_dir = Path("models/embeddings").resolve()
+            logger.info(f"Using local project cache: {cache_dir}")
         else:
+            # Default to standard location, but don't create it if we're not downloading
             cache_dir = Path.home() / ".cache" / "rag_factory" / "onnx_models"
     
     cache_dir = Path(cache_dir)
     
     # Use environment variable for model_name if it matches default
-    if env_model_name and model_name == "sentence-transformers/all-MiniLM-L6-v2":
+    if env_model_name and model_name == "Xenova/all-MiniLM-L6-v2":
         logger.info(f"Using model from EMBEDDING_MODEL_NAME env: {env_model_name}")
         model_name = env_model_name
     
@@ -123,119 +113,37 @@ def download_onnx_model(
                 logger.info(f"Using cached ONNX model: {main_model}")
                 return main_model
     
-    # Model not found locally, try to download
-    cache_dir.mkdir(parents=True, exist_ok=True)
-    logger.info(f"Downloading ONNX model: {model_name}")
-    
-    # Try Xenova version first (they have pre-converted ONNX models)
-    xenova_model = None
-    if not model_name.startswith("Xenova/"):
-        # Extract model name and try Xenova version
-        base_model = model_name.split("/")[-1]
-        xenova_model = f"Xenova/{base_model}"
-        logger.info(f"Trying Xenova ONNX model: {xenova_model}")
-        
-        try:
-            from huggingface_hub import snapshot_download
-            
-            model_path = snapshot_download(
-                repo_id=xenova_model,
-                cache_dir=str(cache_dir),
-                local_dir=str(cache_dir / xenova_model.replace("/", "_")),
-                local_dir_use_symlinks=False,
-            )
-            
-            # Find ONNX file in downloaded directory (recursively)
-            model_dir = Path(model_path)
-            onnx_files = list(model_dir.rglob("*.onnx"))
-            
-            if onnx_files:
-                # Prefer the main model.onnx if available
-                main_model = next((f for f in onnx_files if f.name == "model.onnx"), onnx_files[0])
-                logger.info(f"✅ Downloaded Xenova model to: {main_model}")
-                return main_model
-                
-        except Exception as e:
-            logger.debug(f"Xenova model not available: {e}")
-    
-    # Try original model name
-    try:
-        model_file = hf_hub_download(
-            repo_id=model_name,
-            filename=filename,
-            cache_dir=str(cache_dir),
-            revision=revision,
-        )
-        
-        model_path = Path(model_file)
-        logger.info(f"Downloaded model to: {model_path}")
-        return model_path
-        
-    except Exception as e:
-        logger.error(f"Failed to download ONNX model '{model_name}': {e}")
-        
-        # Provide helpful error message
-        error_msg = (
-            f"Could not download ONNX model '{model_name}'.\n"
-            f"Error: {e}\n\n"
-            f"💡 Solutions:\n"
-        )
-        
-        if not model_name.startswith("Xenova/"):
-            error_msg += (
-                f"  1. Use pre-converted Xenova model (recommended):\n"
-                f"     Set EMBEDDING_MODEL_NAME=Xenova/{model_name.split('/')[-1]}\n\n"
-            )
-        
-        error_msg += (
-            f"  2. Download model manually:\n"
-            f"     python scripts/download_embedding_model.py --model {model_name}\n\n"
-            f"  3. Use a different model:\n"
-            f"     python scripts/download_embedding_model.py --list\n"
-        )
-        
-        raise ValueError(error_msg)
+    # Model not found locally
+    error_msg = (
+        f"ONNX model '{model_name}' not found locally.\n"
+        f"Checked path: {cache_dir}\n"
+        f"Automatic downloading is disabled. Please ensure the model is available directly in the infrastructure.\n"
+        f"Set EMBEDDING_MODEL_PATH environment variable to the directory containing the model."
+    )
+    raise FileNotFoundError(error_msg)
 
 
-
+@DeprecationWarning
 def download_tokenizer_config(
     model_name: str,
     cache_dir: Optional[Path] = None,
 ) -> Dict[str, Any]:
-    """Download tokenizer configuration from HuggingFace Hub.
+    """Retrieves tokenizer configuration for local models.
+    
+    DEPRECATED: Downloading is disabled. This now implies looking for local config.
     
     Args:
-        model_name: HuggingFace model identifier
+        model_name: Model identifier
         cache_dir: Directory for caching
         
     Returns:
         Tokenizer configuration dictionary
-        
-    Raises:
-        ValueError: If tokenizer config cannot be downloaded
     """
     check_dependencies()
     
-    if cache_dir is None:
-        cache_dir = Path.home() / ".cache" / "rag_factory" / "onnx_models"
-    
-    try:
-        # Download tokenizer config
-        config_file = hf_hub_download(
-            repo_id=model_name,
-            filename="tokenizer_config.json",
-            cache_dir=str(cache_dir),
-        )
-        
-        with open(config_file, 'r') as f:
-            config = json.load(f)
-        
-        logger.info(f"Downloaded tokenizer config for: {model_name}")
-        return config
-        
-    except Exception as e:
-        logger.warning(f"Could not download tokenizer config: {e}")
-        return {}
+    # Removed downloading logic
+    logger.warning("download_tokenizer_config is deprecated and no longer downloads. Returning empty config.")
+    return {}
 
 
 def create_onnx_session(

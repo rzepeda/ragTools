@@ -11,7 +11,7 @@ tags:
   - "production-ready"
 
 indexer:
-  strategy: "VectorEmbeddingIndexing"
+  strategy: "VectorEmbeddingIndexer"
   services:
     embedding: "$embedding_openai"
     db: "$db_main"
