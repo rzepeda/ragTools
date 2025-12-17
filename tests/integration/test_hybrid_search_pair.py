@@ -11,8 +11,9 @@ from rag_factory.core.indexing_interface import IIndexingStrategy, IndexingConte
 from rag_factory.core.retrieval_interface import IRetrievalStrategy, RetrievalContext
 from rag_factory.core.capabilities import IndexingResult, IndexCapability
 
-# Import strategies - hybrid strategies may be in different locations
-# We'll try to import what we can
+# Import strategies to ensure they are registered
+import rag_factory.strategies.indexing.vector_embedding
+import rag_factory.strategies.retrieval.semantic_retriever
 
 # Note: Using centralized mock_registry_with_services fixture from conftest.py
 
@@ -60,7 +61,7 @@ async def test_hybrid_search_pair_loading(mock_registry_with_services):
             database_service=retrieval.deps.database_service,
             config={}
         )
-        chunks = await retrieval.retrieve("hybrid query", retrieval_context)
+        chunks = await retrieval.retrieve("query", retrieval_context)
         
-        assert len(chunks) >= 1
-        assert chunks[0].text == "hybrid search content"
+        assert len(chunks) == 1
+        assert chunks[0].text == "mock content"  # Updated to match centralized mock

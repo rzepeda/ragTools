@@ -191,10 +191,19 @@ class PostgresqlDatabaseService(IDatabaseService):
         async with pool.acquire() as conn:
             # Prepare data for insertion
             for chunk in chunks:
-                chunk_id = chunk.get("chunk_id", chunk.get("id"))
-                text = chunk.get("text", "")
-                embedding = chunk.get("embedding", [])
-                metadata = chunk.get("metadata", {})
+                # Handle both Chunk objects and dictionaries
+                if hasattr(chunk, '__dataclass_fields__'):
+                    # It's a Chunk dataclass object
+                    chunk_id = getattr(chunk, 'chunk_id', getattr(chunk, 'id', None))
+                    text = getattr(chunk, 'text', '')
+                    embedding = getattr(chunk, 'embedding', [])
+                    metadata = getattr(chunk, 'metadata', {})
+                else:
+                    # It's a dictionary
+                    chunk_id = chunk.get("chunk_id", chunk.get("id"))
+                    text = chunk.get("text", "")
+                    embedding = chunk.get("embedding", [])
+                    metadata = chunk.get("metadata", {})
 
                 # Convert embedding to string format for pgvector
                 embedding_str = "[" + ",".join(str(x) for x in embedding) + "]"
@@ -425,6 +434,17 @@ class PostgresqlDatabaseService(IDatabaseService):
     def engine(self) -> "Engine":
         """Access the synchronous SQLAlchemy engine."""
         return self._get_sync_engine()
+
+    @engine.setter
+    def engine(self, value: "Engine") -> None:
+        """Set the synchronous SQLAlchemy engine.
+        
+        This is primarily used for testing to inject a test database engine.
+        
+        Args:
+            value: SQLAlchemy Engine instance to use
+        """
+        self._sync_engine = value
 
     def get_context(
         self,

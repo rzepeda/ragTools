@@ -244,7 +244,8 @@ def real_cohere_embedding_service(require_cohere):
 @pytest.fixture
 def real_llm_service(require_llm):
     """Provide real LLM service (LM Studio or OpenAI)."""
-    from rag_factory.services.llm.openai import OpenAILLMService
+    from rag_factory.services.llm.service import LLMService
+    from rag_factory.services.llm.config import LLMServiceConfig
     
     # Check if using real OpenAI API
     api_key = os.getenv("OPENAI_API_KEY", "lm-studio")
@@ -252,20 +253,28 @@ def real_llm_service(require_llm):
     if api_key != "lm-studio" and api_key.startswith("sk-"):
         # Real OpenAI API
         model = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
-        return OpenAILLMService(
-            api_key=api_key,
-            model=model
+        config = LLMServiceConfig(
+            provider="openai",
+            provider_config={
+                "api_key": api_key,
+                "model": model
+            }
         )
     else:
         # LM Studio (OpenAI-compatible)
         base_url = os.getenv("LM_STUDIO_BASE_URL") or os.getenv("OPENAI_API_BASE")
         model = os.getenv("LM_STUDIO_MODEL") or os.getenv("OPENAI_MODEL", "default")
         
-        return OpenAILLMService(
-            api_key="lm-studio",
-            model=model,
-            base_url=base_url
+        config = LLMServiceConfig(
+            provider="openai",
+            provider_config={
+                "api_key": "lm-studio",
+                "model": model,
+                "base_url": base_url
+            }
         )
+    
+    return LLMService(config)
 
 
 @pytest_asyncio.fixture
@@ -316,19 +325,19 @@ def sample_texts():
 @pytest.fixture
 def sample_documents():
     """Provide sample documents for testing."""
-    from rag_factory.repositories.document import Document
-    
+    # Return simple dictionaries for testing, not database models
     return [
-        Document(
-            content="The quick brown fox jumps over the lazy dog",
-            metadata={"source": "test1.txt", "category": "animals"}
-        ),
-        Document(
-            content="Python is a high-level programming language used for web development, data science, and automation",
-            metadata={"source": "test2.txt", "category": "programming"}
-        ),
-        Document(
-            content="Machine learning algorithms can learn from data and make predictions without being explicitly programmed",
-            metadata={"source": "test3.txt", "category": "ai"}
-        )
+        {
+            "content": "The quick brown fox jumps over the lazy dog",
+            "metadata": {"source": "test1.txt", "category": "animals"}
+        },
+        {
+            "content": "Python is a high-level programming language used for web development, data science, and automation",
+            "metadata": {"source": "test2.txt", "category": "programming"}
+        },
+        {
+            "content": "Machine learning algorithms can learn from data and make predictions without being explicitly programmed",
+            "metadata": {"source": "test3.txt", "category": "ai"}
+        }
     ]
+

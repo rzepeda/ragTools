@@ -8,6 +8,13 @@ from rag_factory.strategies.self_reflective.models import (
 )
 
 
+class MockDependencies:
+    """Mock dependencies for strategy."""
+    def __init__(self, database_service, llm_service):
+        self.database_service = database_service
+        self.llm_service = llm_service
+
+
 @pytest.fixture
 def mock_base_strategy():
     """Create a mock base strategy."""
@@ -32,11 +39,8 @@ def self_reflective_strategy(mock_base_strategy, mock_llm_service):
         "grade_threshold": 4.0,
         "max_retries": 2
     }
-    return SelfReflectiveRAGStrategy(
-        mock_base_strategy,
-        mock_llm_service,
-        config
-    )
+    dependencies = MockDependencies(mock_base_strategy, mock_llm_service)
+    return SelfReflectiveRAGStrategy(config, dependencies)
 
 
 def test_retrieve_good_results_no_retry(self_reflective_strategy, mock_base_strategy):
@@ -177,11 +181,8 @@ def test_timeout_protection(mock_base_strategy, mock_llm_service):
         "max_retries": 10,  # High retries
         "timeout_seconds": 0.1  # Very short timeout
     }
-    strategy = SelfReflectiveRAGStrategy(
-        mock_base_strategy,
-        mock_llm_service,
-        config
-    )
+    dependencies = MockDependencies(mock_base_strategy, mock_llm_service)
+    strategy = SelfReflectiveRAGStrategy(config, dependencies)
 
     with patch.object(strategy.grader, 'grade_results') as mock_grader:
         # Always return poor grades

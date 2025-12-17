@@ -674,6 +674,23 @@ def mock_registry_with_graph_services():
 
 
 @pytest.fixture
+def mock_registry_with_reranker_services():
+    """Provide mock registry with reranker service support.
+    
+    Use this for reranking tests.
+    
+    Returns:
+        Mock service registry with reranker support
+    """
+    return create_mock_registry_with_services(
+        include_embedding=True,
+        include_database=True,
+        include_llm=False,
+        include_reranker=True
+    )
+
+
+@pytest.fixture
 def mock_migration_validator():
     """Provide mock migration validator (always valid).
     

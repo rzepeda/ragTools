@@ -2,34 +2,55 @@
 TEST RESULTS SUMMARY - BY FILE
 ================================================================================
 
-Execution Date: Mon Dec 15 03:40:15 PM -03 2025
-Total test files: 156
-Total duration: 69m 7s
+Execution Date: Wed Dec 17 05:19:05 PM -03 2025
+Total test files: 197
+Total duration: 69m 25s
 
 FILE RESULTS:
-  ✅ PASSED FILES    : 152 (97.4%)
-  ❌ FAILED FILES    : 2 (1.3%)
-  ⏭️  SKIPPED FILES   : 2 (1.3%)
+  ✅ PASSED FILES    : 172 (87.3%)
+  ❌ FAILED FILES    : 22 (11.2%)
+  ⏭️  SKIPPED FILES   : 3 (1.5%)
   ⏱️  TIMEOUT FILES   : 0 (0.0%)
 
 TEST RESULTS:
-  ✅ PASSED TESTS    : 1754 (97.1%)
-  ❌ FAILED TESTS    : 14 (0.8%)
-  ⏭️  SKIPPED TESTS   : 38 (2.1%)
-  📊 TOTAL TESTS     : 1806
+  ✅ PASSED TESTS    : 1966 (89.0%)
+  ❌ FAILED TESTS    : 180 (8.1%)
+  ⏭️  SKIPPED TESTS   : 64 (2.9%)
+  📊 TOTAL TESTS     : 2210
 
 ================================================================================
-FAILED TEST FILES (2)
+FAILED TEST FILES (22)
 ================================================================================
+tests/benchmarks/test_late_chunking_performance.py
+tests/integration/database/test_migration_integration.py
+tests/integration/database/test_migration_validator_integration.py
+tests/integration_real/test_database_real.py
+tests/integration_real/test_end_to_end_real.py
+tests/integration_real/test_llm_real.py
+tests/integration/registry/test_registry_integration.py
+tests/integration/strategies/test_hierarchical_integration.py
+tests/integration/strategies/test_late_chunking_integration.py
+tests/integration/strategies/test_self_reflective_integration.py
+tests/integration/test_package_integration.py
+tests/test_mock_registry.py
+tests/unit/config/test_strategy_pair_manager.py
+tests/unit/database/test_migrations.py
+tests/unit/documentation/test_code_examples.py
+tests/unit/documentation/test_links.py
+tests/unit/registry/test_service_factory.py
+tests/unit/services/embeddings/test_onnx_local.py
 tests/unit/services/embedding/test_onnx_local_provider.py
-tests/unit/strategies/late_chunking/test_document_embedder.py
+tests/unit/strategies/indexing/test_context_aware.py
+tests/unit/strategies/self_reflective/test_strategy.py
+tests/unit/test_package.py
 
 ================================================================================
 TIMEOUT TEST FILES (0)
 ================================================================================
 
 ================================================================================
-SKIPPED TEST FILES (2)
+SKIPPED TEST FILES (3)
 ================================================================================
 tests/benchmarks/test_model_comparison_performance.py
 tests/integration/documentation/test_documentation_integration.py
+tests/integration_real/test_neo4j_real.py

@@ -59,7 +59,7 @@ async def test_hierarchical_rag_pair_loading(mock_registry_with_services):
             database_service=retrieval.deps.database_service,
             config={}
         )
-        chunks = await retrieval.retrieve("hierarchical query", retrieval_context)
+        chunks = await retrieval.retrieve("query", retrieval_context)
         
-        assert len(chunks) >= 1
-        assert chunks[0].text == "hierarchical content"
+        assert len(chunks) == 1
+        assert chunks[0].text == "mock content"  # Updated to match centralized mock

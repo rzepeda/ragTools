@@ -41,14 +41,26 @@ class MockVectorStore:
         return results
 
 
+class MockDependencies:
+    """Mock dependencies for strategy."""
+    def __init__(self, database_service):
+        self.database_service = database_service
+
+
 @pytest.fixture
 def test_vector_store():
     """Create mock vector store."""
     return MockVectorStore()
 
 
+@pytest.fixture
+def test_dependencies(test_vector_store):
+    """Create mock dependencies with vector store."""
+    return MockDependencies(test_vector_store)
+
+
 @pytest.mark.integration
-def test_late_chunking_workflow(test_vector_store):
+def test_late_chunking_workflow(test_dependencies, test_vector_store):
     """Test complete late chunking workflow."""
     config = {
         "model_name": EMBEDDING_MODEL,
@@ -58,10 +70,7 @@ def test_late_chunking_workflow(test_vector_store):
 
     }
 
-    strategy = LateChunkingRAGStrategy(
-        vector_store_service=test_vector_store,
-        config=config
-    )
+    strategy = LateChunkingRAGStrategy(config, test_dependencies)
 
     # Index document
     document = """
@@ -93,7 +102,7 @@ def test_late_chunking_workflow(test_vector_store):
 
 
 @pytest.mark.integration
-def test_fixed_size_chunking_integration(test_vector_store):
+def test_fixed_size_chunking_integration(test_dependencies):
     """Test integration with fixed-size chunking."""
     config = {
         "model_name": EMBEDDING_MODEL,
@@ -104,7 +113,7 @@ def test_fixed_size_chunking_integration(test_vector_store):
 
     }
 
-    strategy = LateChunkingRAGStrategy(test_vector_store, config)
+    strategy = LateChunkingRAGStrategy(config, test_dependencies)
 
     document = "This is a test document. " * 20
 
@@ -114,7 +123,7 @@ def test_fixed_size_chunking_integration(test_vector_store):
 
 
 @pytest.mark.integration
-def test_adaptive_chunking_integration(test_vector_store):
+def test_adaptive_chunking_integration(test_dependencies, test_vector_store):
     """Test integration with adaptive chunking."""
     config = {
         "model_name": EMBEDDING_MODEL,
@@ -124,7 +133,7 @@ def test_adaptive_chunking_integration(test_vector_store):
 
     }
 
-    strategy = LateChunkingRAGStrategy(test_vector_store, config)
+    strategy = LateChunkingRAGStrategy(config, test_dependencies)
 
     document = """
     Python is a versatile programming language. It is widely used in data science and machine learning.
@@ -142,7 +151,7 @@ def test_adaptive_chunking_integration(test_vector_store):
 
 
 @pytest.mark.integration
-def test_multiple_documents(test_vector_store):
+def test_multiple_documents(test_dependencies, test_vector_store):
     """Test indexing multiple documents."""
     config = {
         "model_name": EMBEDDING_MODEL,
@@ -150,7 +159,7 @@ def test_multiple_documents(test_vector_store):
 
     }
 
-    strategy = LateChunkingRAGStrategy(test_vector_store, config)
+    strategy = LateChunkingRAGStrategy(config, test_dependencies)
 
     documents = [
         ("First document about AI and machine learning.", "doc1"),
@@ -172,14 +181,14 @@ def test_multiple_documents(test_vector_store):
 
 
 @pytest.mark.integration
-def test_strategy_properties(test_vector_store):
+def test_strategy_properties(test_dependencies):
     """Test strategy name and description."""
     config = {
         "model_name": EMBEDDING_MODEL,
 
     }
 
-    strategy = LateChunkingRAGStrategy(test_vector_store, config)
+    strategy = LateChunkingRAGStrategy(config, test_dependencies)
 
     assert strategy.name == "late_chunking"
     assert "embed" in strategy.description.lower()
@@ -187,7 +196,7 @@ def test_strategy_properties(test_vector_store):
 
 
 @pytest.mark.integration
-def test_coherence_scores_computed(test_vector_store):
+def test_coherence_scores_computed(test_dependencies, test_vector_store):
     """Test that coherence scores are computed when enabled."""
     config = {
         "model_name": EMBEDDING_MODEL,
@@ -196,7 +205,7 @@ def test_coherence_scores_computed(test_vector_store):
 
     }
 
-    strategy = LateChunkingRAGStrategy(test_vector_store, config)
+    strategy = LateChunkingRAGStrategy(config, test_dependencies)
 
     document = "Test document with multiple sentences. Each sentence adds more context."
 
@@ -209,14 +218,14 @@ def test_coherence_scores_computed(test_vector_store):
 
 
 @pytest.mark.integration
-def test_short_document(test_vector_store):
+def test_short_document(test_dependencies, test_vector_store):
     """Test handling of very short documents."""
     config = {
         "model_name": EMBEDDING_MODEL,
 
     }
 
-    strategy = LateChunkingRAGStrategy(test_vector_store, config)
+    strategy = LateChunkingRAGStrategy(config, test_dependencies)
 
     short_doc = "Short."
 
@@ -227,14 +236,14 @@ def test_short_document(test_vector_store):
 
 
 @pytest.mark.integration
-def test_chunk_embeddings_valid(test_vector_store):
+def test_chunk_embeddings_valid(test_dependencies, test_vector_store):
     """Test that chunk embeddings are valid vectors."""
     config = {
         "model_name": EMBEDDING_MODEL,
 
     }
 
-    strategy = LateChunkingRAGStrategy(test_vector_store, config)
+    strategy = LateChunkingRAGStrategy(config, test_dependencies)
 
     document = "Test document for embedding validation."
 
@@ -248,7 +257,7 @@ def test_chunk_embeddings_valid(test_vector_store):
 
 
 @pytest.mark.integration
-def test_embedding_quality(test_vector_store):
+def test_embedding_quality(test_dependencies, test_vector_store):
     """Test that ONNX embeddings are of good quality."""
     import numpy as np
     
@@ -257,7 +266,7 @@ def test_embedding_quality(test_vector_store):
 
     }
 
-    strategy = LateChunkingRAGStrategy(test_vector_store, config)
+    strategy = LateChunkingRAGStrategy(config, test_dependencies)
 
     # Test with sample text
     text = "The quick brown fox jumps over the lazy dog."

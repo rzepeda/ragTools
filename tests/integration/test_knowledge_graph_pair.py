@@ -76,7 +76,7 @@ async def test_knowledge_graph_pair_loading(mock_registry_with_graph_services):
             database_service=retrieval.deps.database_service,
             config={}
         )
-        chunks = await retrieval.retrieve("knowledge graph query", retrieval_context)
+        chunks = await retrieval.retrieve("query", retrieval_context)
         
-        assert len(chunks) >= 1
-        assert chunks[0].text == "knowledge graph content"
+        assert len(chunks) == 1
+        assert chunks[0].text == "mock content"  # Updated to match centralized mock

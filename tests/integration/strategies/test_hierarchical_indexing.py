@@ -18,6 +18,15 @@ def mock_database_service():
 
 
 @pytest.fixture
+def mock_embedding_service():
+    """Create mock embedding service."""
+    service = Mock()
+    service.embed_batch = AsyncMock(return_value=[[0.1] * 384])
+    service.get_dimension = Mock(return_value=384)
+    return service
+
+
+@pytest.fixture
 def indexing_context(mock_database_service):
     """Create indexing context with mock database."""
     return IndexingContext(
@@ -27,10 +36,13 @@ def indexing_context(mock_database_service):
 
 
 @pytest.fixture
-def hierarchical_strategy(mock_database_service):
+def hierarchical_strategy(mock_database_service, mock_embedding_service):
     """Create HierarchicalIndexing strategy instance."""
     config = {'max_depth': 2}
-    deps = StrategyDependencies(database_service=mock_database_service)
+    deps = StrategyDependencies(
+        database_service=mock_database_service,
+        embedding_service=mock_embedding_service
+    )
     return HierarchicalIndexing(config, deps)
 
 
@@ -43,15 +55,17 @@ class TestHierarchicalIndexing:
         
         assert IndexCapability.CHUNKS in capabilities
         assert IndexCapability.HIERARCHY in capabilities
+        assert IndexCapability.VECTORS in capabilities
         assert IndexCapability.DATABASE in capabilities
-        assert len(capabilities) == 3
+        assert len(capabilities) == 4
 
     def test_requires_services(self, hierarchical_strategy):
         """Test that strategy declares correct service dependencies."""
         services = hierarchical_strategy.requires_services()
         
         assert ServiceDependency.DATABASE in services
-        assert len(services) == 1
+        assert ServiceDependency.EMBEDDING in services
+        assert len(services) == 2
 
     @pytest.mark.asyncio
     async def test_process_basic_document(self, hierarchical_strategy, indexing_context):
@@ -143,11 +157,14 @@ This is a subsection.'''
                 assert chunk['parent_id'] is not None
 
     @pytest.mark.asyncio
-    async def test_max_depth_configuration(self, mock_database_service, indexing_context):
+    async def test_max_depth_configuration(self, mock_database_service, mock_embedding_service, indexing_context):
         """Test that max_depth configuration is respected."""
         # Create strategy with max_depth = 1
         config = {'max_depth': 1}
-        deps = StrategyDependencies(database_service=mock_database_service)
+        deps = StrategyDependencies(
+            database_service=mock_database_service,
+            embedding_service=mock_embedding_service
+        )
         strategy = HierarchicalIndexing(config, deps)
 
         documents = [

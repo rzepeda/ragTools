@@ -63,8 +63,7 @@ async def test_multi_query_pair_loading(mock_registry_with_llm_services):
             database_service=retrieval.deps.database_service,
             config={}
         )
-        chunks = await retrieval.retrieve("complex query", retrieval_context)
+        chunks = await retrieval.retrieve("query", retrieval_context)
         
-        assert len(chunks) >= 1
-        # MultiQueryRetriever returns Chunk objects
-        assert chunks[0].text == "multi-query content"
+        assert len(chunks) == 1
+        assert chunks[0].text == "mock content"  # Updated to match centralized mock data

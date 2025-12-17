@@ -101,9 +101,10 @@ def create_mock_database_service(
     service.get_chunks_for_documents = AsyncMock(return_value=get_chunks_return_value)
     service.search_chunks = AsyncMock(return_value=search_chunks_return_value)
     service.store_chunks = AsyncMock(return_value=store_chunks_return_value)
-    service.store_keyword_index = AsyncMock()
+    service.store_chunks_with_hierarchy = AsyncMock(return_value=store_chunks_return_value)  # For hierarchical indexing
+    service.store_keyword_index = AsyncMock(return_value=None)
     service.search_keyword = AsyncMock(return_value=search_chunks_return_value)
-    service.close = AsyncMock()
+    service.close = AsyncMock(return_value=None)
     service.asearch = AsyncMock(return_value=search_chunks_return_value)
     
     # Sync methods - get_context returns self for chaining

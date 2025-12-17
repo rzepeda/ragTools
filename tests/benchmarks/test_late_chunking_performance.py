@@ -32,21 +32,33 @@ class MockVectorStore:
         return []
 
 
+class MockDependencies:
+    """Mock dependencies for strategy."""
+    def __init__(self, database_service):
+        self.database_service = database_service
+
+
 @pytest.fixture
 def benchmark_vector_store():
     """Create mock vector store for benchmarks."""
     return MockVectorStore()
 
 
+@pytest.fixture
+def benchmark_dependencies(benchmark_vector_store):
+    """Create mock dependencies with vector store."""
+    return MockDependencies(benchmark_vector_store)
+
+
 @pytest.mark.benchmark
-def test_document_embedding_speed(benchmark_vector_store):
+def test_document_embedding_speed(benchmark_dependencies):
     """Benchmark document embedding speed."""
     config = {
         "model_name": EMBEDDING_MODEL,
         "device": "cpu"
     }
 
-    strategy = LateChunkingRAGStrategy(benchmark_vector_store, config)
+    strategy = LateChunkingRAGStrategy(config, benchmark_dependencies)
 
     # Generate document (~2K tokens)
     document = ". ".join([f"Sentence {i} with some content" for i in range(200)])
@@ -60,7 +72,7 @@ def test_document_embedding_speed(benchmark_vector_store):
 
 
 @pytest.mark.benchmark
-def test_embedding_chunking_speed(benchmark_vector_store):
+def test_embedding_chunking_speed(benchmark_dependencies):
     """Benchmark embedding chunking speed."""
     config = {
         "model_name": EMBEDDING_MODEL,
@@ -68,7 +80,7 @@ def test_embedding_chunking_speed(benchmark_vector_store):
         "device": "cpu"
     }
 
-    strategy = LateChunkingRAGStrategy(benchmark_vector_store, config)
+    strategy = LateChunkingRAGStrategy(config, benchmark_dependencies)
 
     document = ". ".join([f"Sentence {i}" for i in range(100)])
 
@@ -85,7 +97,7 @@ def test_embedding_chunking_speed(benchmark_vector_store):
 
 
 @pytest.mark.benchmark
-def test_semantic_boundary_speed(benchmark_vector_store):
+def test_semantic_boundary_speed(benchmark_dependencies):
     """Benchmark semantic boundary detection speed."""
     config = {
         "model_name": EMBEDDING_MODEL,
@@ -94,7 +106,7 @@ def test_semantic_boundary_speed(benchmark_vector_store):
         "device": "cpu"
     }
 
-    strategy = LateChunkingRAGStrategy(benchmark_vector_store, config)
+    strategy = LateChunkingRAGStrategy(config, benchmark_dependencies)
 
     document = ". ".join([f"Sentence {i} with content" for i in range(100)])
 
@@ -109,7 +121,7 @@ def test_semantic_boundary_speed(benchmark_vector_store):
 
 
 @pytest.mark.benchmark
-def test_end_to_end_latency(benchmark_vector_store):
+def test_end_to_end_latency(benchmark_dependencies):
     """Benchmark end-to-end late chunking latency."""
     config = {
         "model_name": EMBEDDING_MODEL,
@@ -117,7 +129,7 @@ def test_end_to_end_latency(benchmark_vector_store):
         "device": "cpu"
     }
 
-    strategy = LateChunkingRAGStrategy(benchmark_vector_store, config)
+    strategy = LateChunkingRAGStrategy(config, benchmark_dependencies)
 
     document = "Test document. " * 100
 
@@ -148,13 +160,15 @@ def test_coherence_analysis_overhead(benchmark_vector_store):
     document = "Test sentence. " * 50
 
     # Without coherence
-    strategy_without = LateChunkingRAGStrategy(MockVectorStore(), config_without)
+    mock_deps_without = MockDependencies(MockVectorStore())
+    strategy_without = LateChunkingRAGStrategy(config_without, mock_deps_without)
     start = time.time()
     strategy_without.index_document(document, "test1")
     time_without = time.time() - start
 
     # With coherence
-    strategy_with = LateChunkingRAGStrategy(MockVectorStore(), config_with)
+    mock_deps_with = MockDependencies(MockVectorStore())
+    strategy_with = LateChunkingRAGStrategy(config_with, mock_deps_with)
     start = time.time()
     strategy_with.index_document(document, "test2")
     time_with = time.time() - start
@@ -167,14 +181,14 @@ def test_coherence_analysis_overhead(benchmark_vector_store):
 
 
 @pytest.mark.benchmark
-def test_batch_processing_speed(benchmark_vector_store):
+def test_batch_processing_speed(benchmark_dependencies):
     """Benchmark batch processing of documents."""
     config = {
         "model_name": EMBEDDING_MODEL,
         "device": "cpu"
     }
 
-    strategy = LateChunkingRAGStrategy(benchmark_vector_store, config)
+    strategy = LateChunkingRAGStrategy(config, benchmark_dependencies)
 
     documents = [
         {"text": f"Document {i} with some content.", "document_id": f"doc_{i}"}
@@ -192,7 +206,7 @@ def test_batch_processing_speed(benchmark_vector_store):
 
 
 @pytest.mark.benchmark
-def test_adaptive_chunking_speed(benchmark_vector_store):
+def test_adaptive_chunking_speed(benchmark_dependencies):
     """Benchmark adaptive chunking speed."""
     config = {
         "model_name": EMBEDDING_MODEL,
@@ -202,7 +216,7 @@ def test_adaptive_chunking_speed(benchmark_vector_store):
         "device": "cpu"
     }
 
-    strategy = LateChunkingRAGStrategy(benchmark_vector_store, config)
+    strategy = LateChunkingRAGStrategy(config, benchmark_dependencies)
 
     document = ". ".join([f"Sentence {i}" for i in range(100)])
 
@@ -217,7 +231,7 @@ def test_adaptive_chunking_speed(benchmark_vector_store):
 
 
 @pytest.mark.benchmark
-def test_memory_efficiency(benchmark_vector_store):
+def test_memory_efficiency(benchmark_dependencies):
     """Test memory usage for large documents."""
     import sys
 
@@ -226,7 +240,7 @@ def test_memory_efficiency(benchmark_vector_store):
         "device": "cpu"
     }
 
-    strategy = LateChunkingRAGStrategy(benchmark_vector_store, config)
+    strategy = LateChunkingRAGStrategy(config, benchmark_dependencies)
 
     # Create a moderately large document
     document = ". ".join([f"Sentence {i} with content" for i in range(500)])

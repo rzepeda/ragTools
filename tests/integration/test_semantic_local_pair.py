@@ -82,7 +82,7 @@ async def test_semantic_local_pair_loading(mock_registry_with_services):
         chunks = await retrieval.retrieve("query", retrieval_context)
         
         assert len(chunks) == 1
-        assert chunks[0].text == "content"
+        assert chunks[0].text == "mock content"  # Updated to match centralized mock
         
         # Verify embedding call
         retrieval.deps.embedding_service.embed.assert_called_with("query")

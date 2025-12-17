@@ -1,8 +1,8 @@
 """Unit tests for MigrationValidator."""
 
 import pytest
-from unittest.mock import Mock, patch
-from tests.mocks import create_mock_engine, create_mock_connection, create_mock_migration_validator, PropertyMock
+from unittest.mock import Mock, patch, PropertyMock
+from tests.mocks import create_mock_engine, create_mock_connection, create_mock_migration_validator
 from pathlib import Path
 from alembic.script import ScriptDirectory, Script
 from alembic.runtime.migration import MigrationContext

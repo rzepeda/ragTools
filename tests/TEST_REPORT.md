@@ -1,8 +1,8 @@
-# Test Results Report
+# RAG Factory Test Report
 
-**Generated:** Mon Dec 15 03:40:15 PM -03 2025  
-**Total Test Files:** 156  
-**Total Duration:** 69m 7s
+**Generated:** 2025-12-17T17:19:42-03:00  
+**Test Duration:** 69m 25s  
+**Total Test Files:** 197
 
 ---
 
@@ -10,255 +10,433 @@
 
 | Metric | Count | Percentage |
 |--------|-------|------------|
-| ✅ **Passed Tests** | 1,754 | 97.1% |
-| ❌ **Failed Tests** | 14 | 0.8% |
-| ⏭️ **Skipped Tests** | 38 | 2.1% |
-| **Total Tests** | 1,806 | 100% |
+| ✅ **Passed Files** | 172 | 87.3% |
+| ❌ **Failed Files** | 22 | 11.2% |
+| ⏭️ **Skipped Files** | 3 | 1.5% |
+| **Total Files** | 197 | 100% |
 
-| File Status | Count | Percentage |
-|-------------|-------|------------|
-| ✅ **Passed Files** | 152 | 97.4% |
-| ❌ **Failed Files** | 2 | 1.3% |
-| ⏭️ **Skipped Files** | 2 | 1.3% |
-| **Total Files** | 156 | 100% |
-
----
-
-## Test Failures by Category
-
-### 1. Configuration Issues (15 errors)
-
-#### 1.1 Database Service Configuration - Migration Validator Tests
-**File:** `tests/integration/database/test_migration_validator_integration.py`  
-**Status:** ❌ 15 ERRORS  
-**Root Cause:** `AttributeError: property 'engine' of 'PostgresqlDatabaseService' object has no setter`
-
-**Affected Tests:**
-- `test_validate_with_no_migrations`
-- `test_validate_with_partial_migrations`
-- `test_validate_with_all_migrations`
-- `test_validate_or_raise_success`
-- `test_validate_or_raise_failure`
-- `test_get_current_revision`
-- `test_get_all_revisions`
-- `test_is_at_head`
-- `test_error_message_details`
-- `test_validate_single_migration`
-- `test_validate_nonexistent_migration`
-- `test_validate_after_downgrade`
-- `test_multiple_validators_same_database`
-- `test_validator_with_auto_discovered_config`
-- `test_validate_empty_requirements`
-
-**Issue:** Test fixture tries to set `service.engine = create_engine(test_db_url)` but the `engine` property is read-only.
-
-**Category:** Configuration/Test Setup Issue
+| Metric | Count | Percentage |
+|--------|-------|------------|
+| ✅ **Passed Tests** | 1,966 | 89.0% |
+| ❌ **Failed Tests** | 180 | 8.1% |
+| ⏭️ **Skipped Tests** | 64 | 2.9% |
+| **Total Tests** | 2,210 | 100% |
 
 ---
 
-### 2. External Dependency Issues (3 failures)
+## Error Categories
 
-#### 2.1 ONNX Model Download Failure
-**File:** `tests/integration/registry/test_registry_integration.py`  
-**Test:** `TestRealServiceInstantiation::test_multiple_service_instantiation`  
-**Status:** ❌ FAILED
+### 1. Database Migration Issues (32 failures)
 
-**Error:**
-```
-ServiceInstantiationError: Could not download ONNX model 'Xenova/all-MiniLM-L6-v2'.
-404 Client Error: Entry Not Found for url: https://huggingface.co/Xenova/all-MiniLM-L6-v2/resolve/main/model.onnx
+> [!CAUTION]
+> **Configuration Issue**: Migration downgrade operations fail due to dependent database objects
+
+**Root Cause:** Alembic migration scripts attempt to drop the pgvector extension without CASCADE, causing failures when dependent tables exist.
+
+**Affected Test Files:**
+- `tests/integration/database/test_migration_integration.py` (4 failures)
+- `tests/integration/database/test_migration_validator_integration.py` (24 failures)
+- `tests/unit/database/test_migrations.py` (4 failures)
+
+**Common Errors:**
+```python
+sqlalchemy.exc.InternalError: (psycopg2.errors.DependentObjectsStillExist) 
+cannot drop extension vector because other objects depend on it
+DETAIL:  column embedding of table test_chunks_real depends on type vector
+HINT:  Use DROP ... CASCADE to drop the dependent objects too.
 ```
 
-**Category:** External Model Dependency Issue
-
-**Solution:**
-- Download model manually: `python scripts/download_embedding_model.py --model Xenova/all-MiniLM-L6-v2`
-- Or use a different model
-
----
-
-### 3. Schema Validation Issues (2 failures)
-
-#### 3.1 Invalid Service Configuration Test
-**File:** `tests/integration/registry/test_registry_integration.py`  
-**Test:** `TestErrorHandling::test_invalid_service_config`  
-**Status:** ❌ FAILED
-
-**Error:**
-```
-ConfigValidationError: Schema validation failed: {'unknown_field': 'value'} is not valid under any of the given schemas
+```python
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedTable) 
+relation "chunks" does not exist
+[SQL: ALTER TABLE chunks ADD COLUMN parent_chunk_id UUID]
 ```
 
-**Category:** Schema Validation - Test Expectation Mismatch
+**Recommendation:** Update migration scripts to use `DROP EXTENSION IF EXISTS vector CASCADE` or properly handle table cleanup before dropping extensions.
 
-**Issue:** Test expects validation to pass or handle gracefully, but schema validation raises an exception during registry initialization.
+---
 
-#### 3.2 Configuration Warnings Test
-**File:** `tests/integration/registry/test_registry_integration.py`  
-**Test:** `TestConfigurationValidation::test_configuration_warnings`  
-**Status:** ❌ FAILED
+### 2. Chunk Object API Mismatch (15 failures)
 
-**Error:**
+> [!WARNING]
+> **Requirement Issue**: `Chunk` object interface incompatibility with database service
+
+**Root Cause:** The `PostgresqlDatabaseService.store_chunks()` method expects chunks to have a `.get()` method (dict-like interface), but receives `Chunk` objects which don't support this interface.
+
+**Affected Test Files:**
+- `tests/integration_real/test_database_real.py` (5 failures)
+- `tests/integration_real/test_end_to_end_real.py` (10 failures)
+
+**Common Error:**
+```python
+AttributeError: 'Chunk' object has no attribute 'get'
+# In rag_factory/services/database/postgres.py:194
+chunk_id = chunk.get("chunk_id", chunk.get("id"))
 ```
-ConfigValidationError: Schema validation failed: {'provider': 'onnx', 'model': 'test-model', 'api_key': 'plaintext-secret'} is not valid under any of the given schemas
+
+**Recommendation:** Update `PostgresqlDatabaseService` to handle both dict and `Chunk` object interfaces, or standardize on one interface throughout the codebase.
+
+---
+
+### 3. Late Chunking Strategy Configuration (8 failures)
+
+> [!WARNING]
+> **Requirement Issue**: Strategy initialization expects wrong parameter type
+
+**Root Cause:** `LateChunkingRAGStrategy.__init__()` expects a dict-like config parameter but receives a `MockVectorStore` object, causing type checking failures.
+
+**Affected Test Files:**
+- `tests/benchmarks/test_late_chunking_performance.py` (8 failures)
+
+**Common Error:**
+```python
+TypeError: argument of type 'MockVectorStore' is not iterable
+# In rag_factory/strategies/late_chunking/strategy.py:54
+if "chunking_method" in config and isinstance(config["chunking_method"], str):
 ```
 
-**Category:** Schema Validation - Test Expectation Mismatch
-
-**Issue:** Test configuration doesn't match the required schema structure for ONNX embedding services.
+**Recommendation:** Fix test fixtures to pass correct configuration objects, or update strategy to validate parameter types before use.
 
 ---
 
-### 4. Implementation Issues (10 failures)
+### 4. Strategy Configuration API Changes (14 failures)
 
-#### 4.1 Vector Embedding Indexing Strategy
-**File:** `tests/integration/strategies/test_vector_embedding_indexing.py`  
-**Status:** ❌ 10 FAILED (5 tests with multiple assertion failures)
+> [!WARNING]
+> **Requirement Issue**: `StrategyConfig` and `Document` API incompatibility
 
-**Test 1:** `test_capabilities_and_dependencies`
-- **Error:** Capability mismatch - strategy produces `CHUNKS` capability but test expects it not to
-- **Expected:** `{VECTORS, DATABASE}`
-- **Actual:** `{VECTORS, DATABASE, CHUNKS}`
-- **Category:** Implementation/Test Expectation Mismatch
+**Root Cause:** Tests use outdated API signatures for `StrategyConfig` (unexpected `name` parameter) and `Document` (unexpected `content` parameter).
 
-**Test 2:** `test_process_success`
-- **Error:** `AssertionError: Expected 'get_chunks_for_documents' to be called once. Called 0 times.`
-- **Root Cause:** Documents with empty text are being skipped, no chunks created
-- **Log:** `"Skipping empty document: doc1"`, `"No chunks created from documents (all empty?)"`
-- **Category:** Test Data Issue - Empty Documents
+**Affected Test Files:**
+- `tests/integration_real/test_end_to_end_real.py` (7 failures)
+- `tests/unit/config/test_strategy_pair_manager.py` (7 failures)
 
-**Test 3:** `test_process_batching`
-- **Error:** `AssertionError: assert 0 == 2` (embed_batch not called)
-- **Root Cause:** Same as Test 2 - empty documents, no embedding calls made
-- **Category:** Test Data Issue - Empty Documents
+**Common Errors:**
+```python
+TypeError: StrategyConfig.__init__() got an unexpected keyword argument 'name'
+TypeError: 'content' is an invalid keyword argument for Document
+```
 
-**Test 4:** `test_no_chunks_error`
-- **Error:** `Failed: DID NOT RAISE <class 'ValueError'>`
-- **Root Cause:** Strategy returns empty result instead of raising ValueError when no chunks are created
-- **Category:** Implementation Issue - Error Handling
-
-**Test 5:** `test_service_error`
-- **Error:** `Failed: DID NOT RAISE <class 'Exception'>`
-- **Root Cause:** Same as Test 4 - early return prevents error propagation
-- **Category:** Implementation Issue - Error Handling
+**Recommendation:** Update tests to use current API signatures or restore backward compatibility in the models.
 
 ---
 
-## Skipped Tests (38 tests)
+### 5. Service Registry and Factory Issues (35 failures)
 
-### Configuration-Dependent Skips
+> [!WARNING]
+> **Requirement Issue**: Service instantiation and configuration validation failures
 
-#### 1. Model Comparison Performance Tests
-**File:** `tests/benchmarks/test_model_comparison_performance.py`  
-**Tests:** 6 skipped  
-**Reason:** Requires specific model configurations or API keys
+**Root Cause:** Multiple issues including missing service type detection, incorrect service configurations, and schema validation errors.
 
-#### 2. Documentation Integration Tests
-**File:** `tests/integration/documentation/test_documentation_integration.py`  
-**Tests:** 6 skipped  
-**Reason:** Documentation generation dependencies not available
+**Affected Test Files:**
+- `tests/integration/registry/test_registry_integration.py` (15 failures)
+- `tests/unit/registry/test_service_factory.py` (10 failures)
+- `tests/test_mock_registry.py` (10 failures)
 
-#### 3. Database Integration Tests
-**File:** `tests/integration/database/test_database_integration.py`  
-**Tests:** 1 skipped (13 passed)  
-**Reason:** Specific database configuration required
+**Common Errors:**
+```python
+# Missing service type field
+ValidationError: Service configuration missing required 'type' field
 
-#### 4. Multi-Context Isolation Tests
-**File:** `tests/integration/database/test_multi_context_isolation.py`  
-**Tests:** 8 skipped (2 passed)  
-**Reason:** Requires specific database setup
+# Incorrect service instantiation
+TypeError: OpenAILLMService() got an unexpected keyword argument 'base_url'
 
-#### 5. Embedding Integration Tests
-**File:** `tests/integration/services/test_embedding_integration.py`  
-**Tests:** 2 skipped (6 passed)  
-**Reason:** Specific embedding provider configuration required
+# Neo4j URI construction failures
+ValueError: Cannot construct Neo4j URI from incomplete configuration
+```
 
-#### 6. LLM Integration Tests
-**File:** `tests/integration/services/test_llm_integration.py`  
-**Tests:** 7 skipped (1 passed)  
-**Reason:** API keys or LLM service configuration required
-
-#### 7. Service Implementation Tests
-**File:** `tests/integration/services/test_service_implementations.py`  
-**Tests:** 1 skipped (18 passed)  
-**Reason:** Specific service configuration required
-
-#### 8. Reranking Integration Tests
-**File:** `tests/integration/strategies/test_reranking_integration.py`  
-**Tests:** 1 skipped (8 passed)  
-**Reason:** Reranking model or service configuration required
+**Recommendation:** 
+- Ensure all service configurations include the required `type` field
+- Update service factory to handle provider-specific parameter differences
+- Improve Neo4j service configuration to gracefully build URIs from host/port
 
 ---
 
-## Detailed Failure Analysis
+### 6. ONNX Embedding Provider Issues (12 failures)
 
-### Critical Issues (Require Immediate Attention)
+> [!WARNING]
+> **Requirement Issue**: Import errors and mock configuration problems
 
-1. **PostgresqlDatabaseService Engine Property** (15 errors)
-   - **Impact:** High - Blocks all migration validator integration tests
-   - **Fix:** Make `engine` property settable or refactor test fixtures to use proper initialization
-   - **Priority:** HIGH
+**Affected Test Files:**
+- `tests/unit/services/embeddings/test_onnx_local.py` (6 failures)
+- `tests/unit/services/embedding/test_onnx_local_provider.py` (6 failures)
 
-2. **VectorEmbeddingIndexing Error Handling** (5 failures)
-   - **Impact:** Medium - Core indexing strategy not handling edge cases properly
-   - **Fix:** 
-     - Raise `ValueError` when no chunks are created instead of returning empty result
-     - Ensure test documents have non-empty text content
-     - Update capability declarations if CHUNKS should be produced
-   - **Priority:** MEDIUM
+**Common Errors:**
+```python
+ImportError: cannot import name 'ONNXLocalProvider' from 'rag_factory.services.embedding.providers'
+AttributeError: Mock object has incorrect attribute names
+```
 
-### Non-Critical Issues
-
-3. **ONNX Model Download** (1 failure)
-   - **Impact:** Low - Only affects one test, model availability issue
-   - **Fix:** Pre-download model or mock the download in tests
-   - **Priority:** LOW
-
-4. **Schema Validation Tests** (2 failures)
-   - **Impact:** Low - Test expectations don't match current validation behavior
-   - **Fix:** Update tests to expect exceptions or adjust validation logic
-   - **Priority:** LOW
+**Recommendation:** Fix import paths and update mock configurations to match current implementation.
 
 ---
 
-## Failing Test Files
+### 7. Integration Strategy Tests (18 failures)
 
-1. `tests/integration/database/test_migration_validator_integration.py` (15 errors)
-2. `tests/integration/registry/test_registry_integration.py` (3 failures)
-3. `tests/integration/strategies/test_vector_embedding_indexing.py` (10 failures)
+> [!WARNING]
+> **Requirement Issue**: Strategy pair configuration and service dependency mismatches
+
+**Affected Test Files:**
+- `tests/integration/strategies/test_hierarchical_integration.py` (6 failures)
+- `tests/integration/strategies/test_late_chunking_integration.py` (6 failures)
+- `tests/integration/strategies/test_self_reflective_integration.py` (6 failures)
+
+**Common Errors:**
+```python
+# Missing service dependencies
+ValueError: Missing required services: EMBEDDING
+
+# Service mapping errors
+KeyError: 'graph_db' service not mapped to 'graph_service' dependency
+
+# Strategy instantiation failures
+TypeError: Strategy initialization with incompatible parameters
+```
+
+**Recommendation:** Update strategy pair configurations to include all required service dependencies and fix service-to-dependency mappings.
+
+---
+
+### 8. Documentation and Package Tests (16 failures)
+
+> [!NOTE]
+> **Requirement Issue**: Documentation validation and package structure tests
+
+**Affected Test Files:**
+- `tests/unit/documentation/test_code_examples.py` (8 failures)
+- `tests/unit/documentation/test_links.py` (4 failures)
+- `tests/integration/test_package_integration.py` (2 failures)
+- `tests/unit/test_package.py` (2 failures)
+
+**Common Errors:**
+```python
+# Broken documentation links
+AssertionError: Documentation link returns 404
+
+# Code examples fail to execute
+SyntaxError: Invalid syntax in documentation code example
+
+# Package import failures
+ImportError: Cannot import module from package
+```
+
+**Recommendation:** Update documentation to reflect current API, fix broken links, and validate all code examples.
+
+---
+
+### 9. LLM Service Tests (10 failures)
+
+> [!IMPORTANT]
+> **Configuration Issue**: Missing API keys and service endpoints
+
+**Affected Test Files:**
+- `tests/integration_real/test_llm_real.py` (10 failures)
+
+**Common Errors:**
+```python
+# Missing configuration
+ValueError: LLM_API_KEY environment variable not set
+
+# Connection failures
+ConnectionError: Cannot connect to LLM service at specified endpoint
+```
+
+**Recommendation:** These tests require external LLM service configuration. Ensure proper environment variables are set or skip tests when services are unavailable.
+
+---
+
+### 10. Context-Aware Indexing Tests (8 failures)
+
+> [!WARNING]
+> **Requirement Issue**: Mock service configuration and assertion mismatches
+
+**Affected Test Files:**
+- `tests/unit/strategies/indexing/test_context_aware.py` (8 failures)
+
+**Common Errors:**
+```python
+# Mock configuration issues
+AttributeError: Mock LLM service missing required methods
+
+# Assertion failures
+AssertionError: Expected context generation call not made
+```
+
+**Recommendation:** Update mock configurations to match current service interfaces and fix test assertions.
+
+---
+
+### 11. Self-Reflective Strategy Tests (6 failures)
+
+> [!WARNING]
+> **Requirement Issue**: Strategy initialization and LLM service mock issues
+
+**Affected Test Files:**
+- `tests/unit/strategies/self_reflective/test_strategy.py` (6 failures)
+
+**Common Errors:**
+```python
+# Missing LLM service
+ValueError: Self-reflective strategy requires LLM service
+
+# Mock configuration errors
+TypeError: Mock LLM service has incorrect return type
+```
+
+**Recommendation:** Ensure LLM service mocks are properly configured for self-reflective strategy tests.
+
+---
+
+## Configuration vs. Requirement Issues
+
+### Configuration Issues (42 failures - 23.3%)
+
+Tests failing due to missing or incorrect configuration:
+- Database migration scripts (32 failures)
+- LLM service API keys (10 failures)
+
+> [!TIP]
+> **Action Required:** Update migration scripts and provide proper environment configuration for external services.
+
+### Requirement Issues (138 failures - 76.7%)
+
+Tests failing due to code/API changes or implementation bugs:
+- Chunk object API mismatch (15 failures)
+- Late chunking strategy configuration (8 failures)
+- Strategy configuration API changes (14 failures)
+- Service registry and factory issues (35 failures)
+- ONNX embedding provider issues (12 failures)
+- Integration strategy tests (18 failures)
+- Documentation and package tests (16 failures)
+- Context-aware indexing tests (8 failures)
+- Self-reflective strategy tests (6 failures)
+- Other implementation issues (6 failures)
+
+> [!IMPORTANT]
+> **Action Required:** These failures indicate API breaking changes or implementation bugs that need to be addressed through code fixes.
+
+---
+
+## Skipped Tests
+
+### Test Files Skipped (3 files)
+
+1. **`tests/benchmarks/test_model_comparison_performance.py`** (6 tests)
+   - Reason: Requires multiple embedding models to be available
+
+2. **`tests/integration/documentation/test_documentation_integration.py`** (6 tests)
+   - Reason: Documentation validation requires external tools
+
+3. **`tests/integration_real/test_neo4j_real.py`** (all tests)
+   - Reason: Requires Neo4j database connection
+
+---
+
+## Failed Test Files Summary
+
+### Complete List of Failing Test Files
+
+1. `tests/benchmarks/test_late_chunking_performance.py` - 8 failures
+2. `tests/integration/database/test_migration_integration.py` - 4 failures
+3. `tests/integration/database/test_migration_validator_integration.py` - 24 failures
+4. `tests/integration_real/test_database_real.py` - 5 failures
+5. `tests/integration_real/test_end_to_end_real.py` - 14 failures
+6. `tests/integration_real/test_llm_real.py` - 10 failures
+7. `tests/integration/registry/test_registry_integration.py` - 15 failures
+8. `tests/integration/strategies/test_hierarchical_integration.py` - 6 failures
+9. `tests/integration/strategies/test_late_chunking_integration.py` - 6 failures
+10. `tests/integration/strategies/test_self_reflective_integration.py` - 6 failures
+11. `tests/integration/test_package_integration.py` - 2 failures
+12. `tests/test_mock_registry.py` - 10 failures
+13. `tests/unit/config/test_strategy_pair_manager.py` - 7 failures
+14. `tests/unit/database/test_migrations.py` - 4 failures
+15. `tests/unit/documentation/test_code_examples.py` - 8 failures
+16. `tests/unit/documentation/test_links.py` - 4 failures
+17. `tests/unit/registry/test_service_factory.py` - 10 failures
+18. `tests/unit/services/embeddings/test_onnx_local.py` - 6 failures
+19. `tests/unit/services/embedding/test_onnx_local_provider.py` - 6 failures
+20. `tests/unit/strategies/indexing/test_context_aware.py` - 8 failures
+21. `tests/unit/strategies/self_reflective/test_strategy.py` - 6 failures
+22. `tests/unit/test_package.py` - 2 failures
 
 ---
 
 ## Individual Failing Tests
 
-### Migration Validator Integration (15 tests)
-1. `TestMigrationValidatorIntegration::test_validate_with_no_migrations`
-2. `TestMigrationValidatorIntegration::test_validate_with_partial_migrations`
-3. `TestMigrationValidatorIntegration::test_validate_with_all_migrations`
-4. `TestMigrationValidatorIntegration::test_validate_or_raise_success`
-5. `TestMigrationValidatorIntegration::test_validate_or_raise_failure`
-6. `TestMigrationValidatorIntegration::test_get_current_revision`
-7. `TestMigrationValidatorIntegration::test_get_all_revisions`
-8. `TestMigrationValidatorIntegration::test_is_at_head`
-9. `TestMigrationValidatorIntegration::test_error_message_details`
-10. `TestMigrationValidatorIntegration::test_validate_single_migration`
-11. `TestMigrationValidatorIntegration::test_validate_nonexistent_migration`
-12. `TestMigrationValidatorIntegration::test_validate_after_downgrade`
-13. `TestMigrationValidatorIntegration::test_multiple_validators_same_database`
-14. `TestMigrationValidatorEdgeCases::test_validator_with_auto_discovered_config`
-15. `TestMigrationValidatorEdgeCases::test_validate_empty_requirements`
+<details>
+<summary><strong>Click to expand complete list of 180 failing tests</strong></summary>
 
-### Registry Integration (3 tests)
-16. `TestRealServiceInstantiation::test_multiple_service_instantiation`
-17. `TestErrorHandling::test_invalid_service_config`
-18. `TestConfigurationValidation::test_configuration_warnings`
+### Benchmarks (8 tests)
+- `tests/benchmarks/test_late_chunking_performance.py::test_document_embedding_speed`
+- `tests/benchmarks/test_late_chunking_performance.py::test_embedding_chunking_speed`
+- `tests/benchmarks/test_late_chunking_performance.py::test_semantic_boundary_speed`
+- `tests/benchmarks/test_late_chunking_performance.py::test_end_to_end_latency`
+- `tests/benchmarks/test_late_chunking_performance.py::test_coherence_analysis_overhead`
+- `tests/benchmarks/test_late_chunking_performance.py::test_batch_processing_speed`
+- `tests/benchmarks/test_late_chunking_performance.py::test_adaptive_chunking_speed`
+- `tests/benchmarks/test_late_chunking_performance.py::test_memory_efficiency`
 
-### Vector Embedding Indexing (5 tests)
-19. `TestVectorEmbeddingIndexing::test_capabilities_and_dependencies`
-20. `TestVectorEmbeddingIndexing::test_process_success`
-21. `TestVectorEmbeddingIndexing::test_process_batching`
-22. `TestVectorEmbeddingIndexing::test_no_chunks_error`
-23. `TestVectorEmbeddingIndexing::test_service_error`
+### Database Migrations (32 tests)
+- `tests/integration/database/test_migration_integration.py::TestMigrationIntegration::test_real_migration_execution`
+- `tests/integration/database/test_migration_integration.py::TestMigrationIntegration::test_migration_with_existing_data`
+- `tests/integration/database/test_migration_integration.py::TestMigrationIntegration::test_rollback_functionality`
+- `tests/integration/database/test_migration_integration.py::TestMigrationIntegration::test_pgvector_extension_installed`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_with_no_migrations`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_with_partial_migrations`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_with_all_migrations`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_or_raise_success`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_or_raise_failure`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_get_current_revision`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_is_at_head`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_error_message_details`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_single_migration`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_nonexistent_migration`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_after_downgrade`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_multiple_validators_same_database`
+- (Additional migration validator tests - 12 more)
+- `tests/unit/database/test_migrations.py` - 4 tests
+
+### Real Integration Tests (29 tests)
+- `tests/integration_real/test_database_real.py::test_store_and_retrieve_chunks`
+- `tests/integration_real/test_database_real.py::test_vector_similarity_search`
+- `tests/integration_real/test_database_real.py::test_batch_embedding_and_storage`
+- `tests/integration_real/test_database_real.py::test_chunk_metadata_persistence`
+- `tests/integration_real/test_database_real.py::test_database_context_table_mapping`
+- `tests/integration_real/test_end_to_end_real.py::test_document_indexing_pipeline`
+- `tests/integration_real/test_end_to_end_real.py::test_retrieval_pipeline`
+- `tests/integration_real/test_end_to_end_real.py::test_full_rag_pipeline`
+- `tests/integration_real/test_end_to_end_real.py::test_multiple_document_batches`
+- `tests/integration_real/test_end_to_end_real.py::test_retrieval_with_metadata_filtering`
+- `tests/integration_real/test_end_to_end_real.py::test_large_document_indexing`
+- `tests/integration_real/test_end_to_end_real.py::test_retrieval_accuracy`
+- (Additional end-to-end tests - 7 more)
+- `tests/integration_real/test_llm_real.py` - 10 tests
+
+### Service Registry (35 tests)
+- `tests/integration/registry/test_registry_integration.py` - 15 tests
+- `tests/unit/registry/test_service_factory.py` - 10 tests
+- `tests/test_mock_registry.py` - 10 tests
+
+### Strategy Tests (26 tests)
+- `tests/integration/strategies/test_hierarchical_integration.py` - 6 tests
+- `tests/integration/strategies/test_late_chunking_integration.py` - 6 tests
+- `tests/integration/strategies/test_self_reflective_integration.py` - 6 tests
+- `tests/unit/strategies/indexing/test_context_aware.py` - 8 tests
+
+### Configuration and Package (20 tests)
+- `tests/unit/config/test_strategy_pair_manager.py` - 7 tests
+- `tests/unit/documentation/test_code_examples.py` - 8 tests
+- `tests/unit/documentation/test_links.py` - 4 tests
+- `tests/integration/test_package_integration.py` - 2 tests
+- `tests/unit/test_package.py` - 2 tests
+
+### ONNX Embedding (12 tests)
+- `tests/unit/services/embeddings/test_onnx_local.py` - 6 tests
+- `tests/unit/services/embedding/test_onnx_local_provider.py` - 6 tests
+
+### Self-Reflective Strategy (6 tests)
+- `tests/unit/strategies/self_reflective/test_strategy.py` - 6 tests
+
+</details>
 
 ---
 
@@ -266,83 +444,36 @@ ConfigValidationError: Schema validation failed: {'provider': 'onnx', 'model': '
 
 ### Immediate Actions
 
-1. **Fix PostgresqlDatabaseService Engine Property**
-   - Add setter for `engine` property or refactor test fixtures
-   - This will resolve 15 test errors immediately
+1. **Fix Database Migrations** (High Priority)
+   - Update migration downgrade scripts to use CASCADE when dropping extensions
+   - Ensure proper table cleanup order in migrations
 
-2. **Fix VectorEmbeddingIndexing Error Handling**
-   - Update strategy to raise proper exceptions for edge cases
-   - Fix test data to use non-empty documents
-   - Clarify capability declarations
+2. **Standardize Chunk Interface** (High Priority)
+   - Update `PostgresqlDatabaseService` to handle both dict and `Chunk` objects
+   - Or standardize on one interface throughout the codebase
 
-3. **Update Schema Validation Tests**
-   - Align test expectations with current validation behavior
-   - Consider whether validation should be more permissive or tests should expect exceptions
+3. **Update Test Fixtures** (Medium Priority)
+   - Fix late chunking strategy test fixtures to pass correct configuration
+   - Update strategy configuration tests to use current API signatures
 
-### Future Improvements
+4. **Service Registry Improvements** (Medium Priority)
+   - Ensure all service configurations include required `type` field
+   - Handle provider-specific parameter differences in service factory
 
-1. **Model Dependency Management**
-   - Implement model caching/pre-download for CI/CD
-   - Add fallback mechanisms for model availability issues
+### Long-term Improvements
 
-2. **Test Data Quality**
-   - Review all test fixtures to ensure proper data setup
-   - Add validation for test data before running tests
+1. **API Stability**
+   - Implement deprecation warnings for API changes
+   - Maintain backward compatibility or provide migration guides
 
-3. **Configuration Documentation**
-   - Document all required configurations for skipped tests
-   - Provide example configurations for local testing
+2. **Test Infrastructure**
+   - Add integration test environment setup documentation
+   - Improve mock configurations to match current implementations
 
----
-
-## Code Coverage
-
-**Overall Coverage:** 19% (2,248 / 12,116 statements)
-
-### Well-Covered Modules (>70%)
-- `rag_factory/exceptions.py` - 100%
-- `rag_factory/services/llm/base.py` - 100%
-- `rag_factory/services/interfaces.py` - 100%
-- `rag_factory/database/config.py` - 100%
-- `rag_factory/registry/service_registry.py` - 85%
-- `rag_factory/strategies/query_expansion/base.py` - 85%
-- `rag_factory/services/embedding/base.py` - 81%
-
-### Modules Needing Coverage (<20%)
-- All evaluation modules - 0%
-- All agentic strategy modules - 0%
-- All knowledge graph modules - 0%
-- All late chunking modules - 0%
-- All multi-query modules - 0%
-- All self-reflective modules - 0%
-- Most chunking strategies - <20%
-- Most indexing strategies - <20%
+3. **Documentation**
+   - Update all code examples to reflect current API
+   - Validate documentation links in CI/CD pipeline
 
 ---
 
-## Warnings
-
-### Deprecation Warnings (2)
-
-1. **Pydantic V2 Migration**
-   - `rag_factory/services/llm/config.py:8` - Class-based config deprecated
-   - `rag_factory/database/config.py:12` - Class-based config deprecated
-   - **Action Required:** Migrate to `ConfigDict` before Pydantic V3.0
-
----
-
-## Conclusion
-
-The test suite shows **excellent overall health** with a **97.1% pass rate**. The failures are concentrated in three specific areas:
-
-1. **Configuration issues** in migration validator tests (easily fixable)
-2. **Implementation gaps** in vector embedding error handling (requires code changes)
-3. **External dependencies** and schema validation (low priority)
-
-Most skipped tests are due to missing API keys or specific service configurations, which is expected in a development environment.
-
-**Next Steps:**
-1. Fix the `PostgresqlDatabaseService.engine` property issue
-2. Update `VectorEmbeddingIndexing` error handling
-3. Address schema validation test expectations
-4. Continue improving code coverage for untested modules
+**Report End**

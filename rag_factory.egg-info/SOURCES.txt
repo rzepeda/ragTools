@@ -241,3 +241,4 @@ rag_factory/strategies/self_reflective/strategy.py
 rag_factory/utils/__init__.py
 rag_factory/utils/token_counter.py
 rag_factory/utils/tokenization.py
+tests/test_mock_registry.py

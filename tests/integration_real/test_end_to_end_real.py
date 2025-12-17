@@ -16,8 +16,8 @@ from rag_factory.repositories.chunk import Chunk
 async def test_document_indexing_pipeline(real_db_service, real_embedding_service, sample_documents):
     """Test complete document indexing pipeline."""
     from rag_factory.strategies.indexing.vector_embedding import VectorEmbeddingIndexing
-    from rag_factory.config.strategy_config import StrategyConfig
-    from rag_factory.registry.strategy_dependencies import StrategyDependencies
+    from rag_factory.strategies.base import StrategyConfig
+    from rag_factory.services.dependencies import StrategyDependencies
     
     # Create indexing strategy
     config = StrategyConfig(
@@ -52,9 +52,9 @@ async def test_document_indexing_pipeline(real_db_service, real_embedding_servic
 @pytest.mark.asyncio
 async def test_retrieval_pipeline(real_db_service, real_embedding_service):
     """Test complete retrieval pipeline."""
-    from rag_factory.strategies.retrieval.semantic import SemanticRetriever
-    from rag_factory.config.strategy_config import StrategyConfig
-    from rag_factory.registry.strategy_dependencies import StrategyDependencies
+    from rag_factory.strategies.retrieval.semantic_retriever import SemanticRetriever
+    from rag_factory.strategies.base import StrategyConfig
+    from rag_factory.services.dependencies import StrategyDependencies
     
     # First, index some documents
     texts = [
@@ -108,9 +108,9 @@ async def test_retrieval_pipeline(real_db_service, real_embedding_service):
 async def test_full_rag_pipeline(real_db_service, real_embedding_service, real_llm_service):
     """Test complete RAG pipeline: indexing -> retrieval -> generation."""
     from rag_factory.strategies.indexing.vector_embedding import VectorEmbeddingIndexing
-    from rag_factory.strategies.retrieval.semantic import SemanticRetriever
-    from rag_factory.config.strategy_config import StrategyConfig
-    from rag_factory.registry.strategy_dependencies import StrategyDependencies
+    from rag_factory.strategies.retrieval.semantic_retriever import SemanticRetriever
+    from rag_factory.strategies.base import StrategyConfig
+    from rag_factory.services.dependencies import StrategyDependencies
     from rag_factory.services.llm.base import Message, MessageRole
     
     # Step 1: Index documents
@@ -174,8 +174,8 @@ async def test_full_rag_pipeline(real_db_service, real_embedding_service, real_l
 async def test_multiple_document_batches(real_db_service, real_embedding_service):
     """Test indexing multiple batches of documents."""
     from rag_factory.strategies.indexing.vector_embedding import VectorEmbeddingIndexing
-    from rag_factory.config.strategy_config import StrategyConfig
-    from rag_factory.registry.strategy_dependencies import StrategyDependencies
+    from rag_factory.strategies.base import StrategyConfig
+    from rag_factory.services.dependencies import StrategyDependencies
     
     config = StrategyConfig(name="batch_test", chunk_size=100, chunk_overlap=20)
     dependencies = StrategyDependencies(
@@ -244,8 +244,8 @@ async def test_retrieval_with_metadata_filtering(real_db_service, real_embedding
 async def test_large_document_indexing(real_db_service, real_embedding_service):
     """Test indexing a large document."""
     from rag_factory.strategies.indexing.vector_embedding import VectorEmbeddingIndexing
-    from rag_factory.config.strategy_config import StrategyConfig
-    from rag_factory.registry.strategy_dependencies import StrategyDependencies
+    from rag_factory.strategies.base import StrategyConfig
+    from rag_factory.services.dependencies import StrategyDependencies
     
     # Create a large document
     large_text = " ".join([f"This is sentence number {i}." for i in range(1000)])

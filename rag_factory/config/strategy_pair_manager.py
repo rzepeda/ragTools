@@ -144,12 +144,15 @@ class StrategyPairManager:
         """
         # Resolve service references
         # Config['services'] maps abstract service names (llm, db) to registry keys (openai_gpt4, postgres_main)
+        # Service references may have $ prefix (e.g., "$embedding_local") which needs to be stripped
         services_map = config.get('services', {})
         resolved_services = {}
         
         for service_type, service_ref in services_map.items():
             try:
-                resolved_services[service_type] = self.registry.get(service_ref)
+                # Strip $ prefix if present
+                clean_ref = service_ref.lstrip('$') if isinstance(service_ref, str) else service_ref
+                resolved_services[service_type] = self.registry.get(clean_ref)
             except Exception as e:
                  raise ConfigurationError(f"Failed to resolve service '{service_ref}' for type '{service_type}': {e}")
         

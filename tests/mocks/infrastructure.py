@@ -13,7 +13,8 @@ from .services import (
     create_mock_embedding_service,
     create_mock_database_service,
     create_mock_llm_service,
-    create_mock_neo4j_service
+    create_mock_neo4j_service,
+    create_mock_reranker_service
 )
 from .database import create_mock_migration_validator
 
@@ -67,6 +68,7 @@ def create_mock_registry_with_services(
     include_database: bool = True,
     include_llm: bool = False,
     include_neo4j: bool = False,
+    include_reranker: bool = False,
     embedding_dimension: int = 384,
     **kwargs
 ) -> Mock:
@@ -77,6 +79,7 @@ def create_mock_registry_with_services(
         include_database: Include database service
         include_llm: Include LLM service
         include_neo4j: Include Neo4j service
+        include_reranker: Include reranker service
         embedding_dimension: Dimension for embedding service
         **kwargs: Additional service configurations
         
@@ -93,8 +96,13 @@ def create_mock_registry_with_services(
     
     if include_embedding:
         embedding_service = create_mock_embedding_service(dimension=embedding_dimension)
+        # Add all common embedding service aliases used in YAML configs
         services["embedding_local"] = embedding_service
         services["local-onnx-minilm"] = embedding_service
+        services["embedding_finetuned"] = embedding_service  # For fine-tuned-embeddings-pair
+        services["embedding_api"] = embedding_service  # For semantic-api-pair
+        services["embedding_openai"] = embedding_service  # For hybrid-search-pair
+        services["embedding_cohere"] = embedding_service  # Alternative alias
     
     if include_database:
         db_service = create_mock_database_service()
@@ -111,6 +119,11 @@ def create_mock_registry_with_services(
         neo4j_service = create_mock_neo4j_service()
         services["db_neo4j"] = neo4j_service
         services["neo4j-graph"] = neo4j_service
+    
+    if include_reranker:
+        reranker_service = create_mock_reranker_service()
+        services["reranker_local"] = reranker_service
+        services["local-reranker"] = reranker_service
     
     return create_mock_registry(services=services)
 

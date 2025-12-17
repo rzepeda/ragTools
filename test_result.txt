@@ -1,0 +1,293 @@
+========================================
+Test Results - 2025-12-17 18:13:53
+========================================
+Environment Configuration:
+  EMBEDDING_MODEL_NAME: Xenova/all-MiniLM-L6-v2
+  EMBEDDING_MODEL_PATH: models/embeddings
+  LM_STUDIO_BASE_URL: http://192.168.56.1:1234/v1
+  LM_STUDIO_MODEL: phi-4-mini-instruct
+
+Command: pytest tests/unit/services/embeddings/test_onnx_local.py -v
+========================================
+
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.1, pluggy-1.6.0 -- /mnt/MCPProyects/ragTools/venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /mnt/MCPProyects/ragTools
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: anyio-4.12.0, cov-7.0.0, asyncio-1.3.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 14 items
+
+tests/unit/services/embeddings/test_onnx_local.py::TestONNXLocalProvider::test_initialization PASSED [  7%]
+tests/unit/services/embeddings/test_onnx_local.py::TestONNXLocalProvider::test_initialization_with_custom_config PASSED [ 14%]
+tests/unit/services/embeddings/test_onnx_local.py::TestONNXLocalProvider::test_get_embeddings_single_text PASSED [ 21%]
+tests/unit/services/embeddings/test_onnx_local.py::TestONNXLocalProvider::test_get_embeddings_multiple_texts PASSED [ 28%]
+tests/unit/services/embeddings/test_onnx_local.py::TestONNXLocalProvider::test_get_embeddings_empty_list PASSED [ 35%]
+tests/unit/services/embeddings/test_onnx_local.py::TestONNXLocalProvider::test_embedding_normalization PASSED [ 42%]
+tests/unit/services/embeddings/test_onnx_local.py::TestONNXLocalProvider::test_get_dimensions PASSED [ 50%]
+tests/unit/services/embeddings/test_onnx_local.py::TestONNXLocalProvider::test_get_max_batch_size PASSED [ 57%]
+tests/unit/services/embeddings/test_onnx_local.py::TestONNXLocalProvider::test_get_model_name PASSED [ 64%]
+tests/unit/services/embeddings/test_onnx_local.py::TestONNXLocalProvider::test_calculate_cost PASSED [ 71%]
+tests/unit/services/embeddings/test_onnx_local.py::TestONNXLocalProvider::test_known_models PASSED [ 78%]
+tests/unit/services/embeddings/test_onnx_local.py::TestONNXLocalProvider::test_missing_onnx_runtime PASSED [ 85%]
+tests/unit/services/embeddings/test_onnx_local.py::TestONNXLocalProvider::test_model_loading_failure PASSED [ 92%]
+tests/unit/services/embeddings/test_onnx_local.py::TestONNXLocalProvider::test_session_creation_failure PASSED [100%]
+
+=============================== warnings summary ===============================
+rag_factory/services/llm/config.py:8
+  /mnt/MCPProyects/ragTools/rag_factory/services/llm/config.py:8: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class LLMServiceConfig(BaseModel):
+
+rag_factory/database/config.py:12
+  /mnt/MCPProyects/ragTools/rag_factory/database/config.py:12: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class DatabaseConfig(BaseSettings):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.12.3-final-0 ________________
+
+Name                                                               Stmts   Miss  Cover   Missing
+------------------------------------------------------------------------------------------------
+rag_factory/__init__.py                                                3      0   100%
+rag_factory/__version__.py                                             1      0   100%
+rag_factory/cli/__init__.py                                            2      0   100%
+rag_factory/cli/commands/__init__.py                                   1      0   100%
+rag_factory/cli/commands/benchmark.py                                 96     81    16%   40-53, 64-84, 148-263
+rag_factory/cli/commands/check_consistency.py                         43     33    23%   64-120
+rag_factory/cli/commands/config.py                                    78     68    13%   26-64, 102-188
+rag_factory/cli/commands/index.py                                     65     52    20%   29-39, 93-185
+rag_factory/cli/commands/query.py                                     47     36    23%   73-149
+rag_factory/cli/commands/repl.py                                     152    130    14%   29-56, 63-108, 112-120, 124-133, 137-155, 159-172, 176-186, 190-207, 211-220, 253-260
+rag_factory/cli/commands/strategies.py                                45     36    20%   48-120
+rag_factory/cli/commands/validate_e2e.py                              91     69    24%   37-38, 42-142, 145-156
+rag_factory/cli/commands/validate_pipeline.py                         70     57    19%   57-156
+rag_factory/cli/formatters/__init__.py                                 4      0   100%
+rag_factory/cli/formatters/consistency.py                             61     55    10%   21-69, 79-103, 108-138
+rag_factory/cli/formatters/output.py                                  20      9    55%   23-24, 43-44, 63-64, 74, 79, 84
+rag_factory/cli/formatters/results.py                                 71     62    13%   28-55, 72-99, 116-144, 157-181
+rag_factory/cli/formatters/validation.py                              63     53    16%   25-43, 48-56, 65-77, 86-98, 103-129, 134-137
+rag_factory/cli/main.py                                               31     10    68%   25-28, 48-49, 76-78, 82
+rag_factory/cli/utils/__init__.py                                      3      0   100%
+rag_factory/cli/utils/progress.py                                     14      8    43%   34-47, 73-76
+rag_factory/cli/utils/validation.py                                   53     42    21%   30-41, 57-77, 93-118, 135
+rag_factory/config/__init__.py                                         4      0   100%
+rag_factory/config/env_resolver.py                                    52     37    29%   47-54, 70-90, 110, 129-147
+rag_factory/config/schemas/__init__.py                                 2      0   100%
+rag_factory/config/schemas/version.py                                 10      6    40%   29-38
+rag_factory/config/strategy_loader.py                                 54     36    33%   32-41, 45-60, 75-89, 101-104
+rag_factory/config/strategy_pair_manager.py                          105     83    21%   40-72, 92-132, 148-198, 210-215, 229, 259-282
+rag_factory/config/validator.py                                       93     76    18%   27-30, 34-39, 53-58, 62-74, 111-132, 177-198, 215-235, 247-249, 271-295, 333-354
+rag_factory/core/__init__.py                                           4      4     0%   7-23
+rag_factory/core/capabilities.py                                      61     16    74%   129, 155, 173-174, 239-253
+rag_factory/core/indexing_interface.py                                54     35    35%   55-57, 118-123, 144, 164, 208, 260, 272, 292-313, 341-364
+rag_factory/core/pipeline.py                                          49     35    29%   22-24, 33-40, 55-77, 95-96, 105-108, 117-120, 137-146
+rag_factory/core/retrieval_interface.py                               38     20    47%   56-58, 112-117, 138, 158, 196, 247, 259, 285-309
+rag_factory/database/__init__.py                                       4      0   100%
+rag_factory/database/config.py                                        17      0   100%
+rag_factory/database/connection.py                                    80     54    32%   40-48, 61-86, 96, 107, 126-137, 150-157, 165-170, 178-183, 196-197, 209-214, 218, 222
+rag_factory/database/env_validator.py                                 38     38     0%   7-139
+rag_factory/database/models.py                                        85     32    62%   31-34, 37-45, 48-54, 66-69, 72-77, 80-85, 181, 323-325
+rag_factory/database/vector_indexing.py                               38     38     0%   7-114
+rag_factory/evaluation/__init__.py                                     4      4     0%   29-41
+rag_factory/evaluation/analysis/__init__.py                            3      3     0%   8-11
+rag_factory/evaluation/analysis/comparison.py                        135    135     0%   8-323
+rag_factory/evaluation/analysis/statistics.py                         81     81     0%   8-320
+rag_factory/evaluation/benchmarks/__init__.py                          3      3     0%   8-14
+rag_factory/evaluation/benchmarks/config.py                           25     25     0%   7-64
+rag_factory/evaluation/benchmarks/runner.py                          155    155     0%   8-423
+rag_factory/evaluation/datasets/__init__.py                            3      3     0%   8-14
+rag_factory/evaluation/datasets/loader.py                             88     88     0%   8-281
+rag_factory/evaluation/datasets/schema.py                             52     52     0%   8-160
+rag_factory/evaluation/datasets/statistics.py                         65     65     0%   8-226
+rag_factory/evaluation/exporters/__init__.py                           4      4     0%   8-12
+rag_factory/evaluation/exporters/csv_exporter.py                      52     52     0%   3-124
+rag_factory/evaluation/exporters/html_exporter.py                     47     47     0%   3-293
+rag_factory/evaluation/exporters/json_exporter.py                     19     19     0%   3-68
+rag_factory/evaluation/metrics/__init__.py                             3      3     0%   12-25
+rag_factory/evaluation/metrics/base.py                                31     31     0%   8-115
+rag_factory/evaluation/metrics/cost.py                                65     65     0%   8-313
+rag_factory/evaluation/metrics/performance.py                         42     42     0%   8-202
+rag_factory/evaluation/metrics/quality.py                             84     84     0%   8-377
+rag_factory/evaluation/metrics/retrieval.py                           77     77     0%   9-401
+rag_factory/exceptions.py                                             13      0   100%
+rag_factory/factory.py                                               187    137    27%   109-116, 144, 165-170, 202-230, 256-270, 300-324, 347-348, 365, 384, 401, 418, 435, 451-460, 480-502, 528-545, 568-611, 644-699, 703-715
+rag_factory/legacy_config.py                                         155    155     0%   22-542
+rag_factory/models/__init__.py                                         6      6     0%   3-14
+rag_factory/models/embedding/__init__.py                               4      4     0%   3-12
+rag_factory/models/embedding/loader.py                               179    179     0%   3-367
+rag_factory/models/embedding/models.py                                47     47     0%   3-106
+rag_factory/models/embedding/registry.py                             128    128     0%   3-282
+rag_factory/models/evaluation/__init__.py                              3      3     0%   3-6
+rag_factory/models/evaluation/ab_testing.py                           98     98     0%   3-281
+rag_factory/models/evaluation/models.py                               29     29     0%   3-74
+rag_factory/observability/__init__.py                                  3      3     0%   3-10
+rag_factory/observability/integrations/__init__.py                     1      1     0%   3
+rag_factory/observability/integrations/prometheus.py                  47     47     0%   3-229
+rag_factory/observability/logging/__init__.py                          2      2     0%   3-5
+rag_factory/observability/logging/config.py                           16     16     0%   3-37
+rag_factory/observability/logging/filters.py                          41     41     0%   3-103
+rag_factory/observability/logging/logger.py                           86     86     0%   3-396
+rag_factory/observability/metrics/__init__.py                          2      2     0%   3-9
+rag_factory/observability/metrics/collector.py                       143    143     0%   3-459
+rag_factory/observability/metrics/cost.py                             39     39     0%   3-221
+rag_factory/observability/metrics/performance.py                      64     64     0%   3-196
+rag_factory/observability/monitoring/__init__.py                       1      1     0%   3
+rag_factory/observability/monitoring/api.py                          101    101     0%   3-328
+rag_factory/pipeline.py                                              156    156     0%   34-507
+rag_factory/registry/__init__.py                                       4      0   100%
+rag_factory/registry/exceptions.py                                     6      0   100%
+rag_factory/registry/service_factory.py                               62     49    21%   45-52, 60-63, 68-71, 76-78, 87-105, 118-147, 158-197
+rag_factory/registry/service_registry.py                              91     71    22%   43-51, 55-85, 103-156, 164, 178-203, 210-223, 227, 231-232
+rag_factory/repositories/__init__.py                                   5      5     0%   20-31
+rag_factory/repositories/base.py                                      42     42     0%   7-164
+rag_factory/repositories/chunk.py                                    206    206     0%   7-670
+rag_factory/repositories/document.py                                  93     93     0%   7-312
+rag_factory/repositories/exceptions.py                                18     18     0%   7-77
+rag_factory/services/__init__.py                                       4      0   100%
+rag_factory/services/api/__init__.py                                   4      4     0%   7-11
+rag_factory/services/api/anthropic.py                                 27     27     0%   7-141
+rag_factory/services/api/cohere.py                                    30     30     0%   7-113
+rag_factory/services/api/openai.py                                    46     46     0%   7-235
+rag_factory/services/consistency.py                                   32     24    25%   80-113, 144-170
+rag_factory/services/database/__init__.py                              5      0   100%
+rag_factory/services/database/database_context.py                    181    159    12%   58-64, 88-106, 123, 140-150, 179-200, 223-240, 256-266, 305-330, 338-339, 343-406, 414-415, 430-510, 516-517, 521-546
+rag_factory/services/database/migration_validator.py                  85     63    26%   29-30, 61-69, 81-88, 108-120, 137-141, 152-181, 192-204, 215-222, 234, 246-256, 268-271
+rag_factory/services/database/neo4j.py                                54     36    33%   14, 60-71, 79-84, 103-114, 134-150, 172-181, 188-191, 195, 199
+rag_factory/services/database/postgres.py                            144    113    22%   17-18, 26-27, 84-121, 131-145, 149-173, 186-219, 243-276, 290-305, 320-335, 367-385, 399-422, 427, 438, 475-493, 502-514, 518, 522
+rag_factory/services/dependencies.py                                  41     21    49%   96-109, 134-140, 176-180
+rag_factory/services/embedding/__init__.py                             4      0   100%
+rag_factory/services/embedding/base.py                                31      6    81%   44, 59, 68, 77, 86, 98
+rag_factory/services/embedding/cache.py                               43     33    23%   26-32, 43-58, 67-76, 80-82, 90-94
+rag_factory/services/embedding/config.py                              29     13    55%   37-43, 50-68, 80
+rag_factory/services/embedding/providers/__init__.py                   5      0   100%
+rag_factory/services/embedding/providers/cohere.py                    53     36    32%   10-20, 55-75, 90-117, 125, 133, 141, 152-153
+rag_factory/services/embedding/providers/local.py                     43     27    37%   8-9, 46-67, 83-109, 117, 125, 133, 146
+rag_factory/services/embedding/providers/onnx_local.py               114     33    71%   18-19, 114, 138, 143-147, 158, 170-175, 218-219, 248-250, 273, 289-308
+rag_factory/services/embedding/providers/openai.py                    51     34    33%   10-20, 53-72, 87-108, 116, 124, 132, 143-144
+rag_factory/services/embedding/rate_limiter.py                        20     14    30%   27-37, 45-53
+rag_factory/services/embedding/service.py                            100     83    17%   50-62, 79-93, 117-198, 220-222, 233-239, 248-266, 273-275
+rag_factory/services/interfaces.py                                    35      0   100%
+rag_factory/services/llm/__init__.py                                   5      0   100%
+rag_factory/services/llm/base.py                                      43      0   100%
+rag_factory/services/llm/config.py                                    23     11    52%   42-57
+rag_factory/services/llm/prompt_template.py                           43     24    44%   47-82, 97-100, 111-115
+rag_factory/services/llm/providers/__init__.py                        12     12     0%   5-22
+rag_factory/services/llm/providers/anthropic.py                       57     57     0%   3-205
+rag_factory/services/llm/providers/ollama.py                          55     55     0%   3-196
+rag_factory/services/llm/providers/openai.py                          57     57     0%   3-210
+rag_factory/services/llm/service.py                                   66     51    23%   32-39, 56-70, 93-129, 154-175, 186, 194-198, 215-216
+rag_factory/services/llm/token_counter.py                             27     27     0%   3-72
+rag_factory/services/local/__init__.py                                 2      2     0%   7-9
+rag_factory/services/local/reranker.py                                32     32     0%   7-116
+rag_factory/services/onnx/__init__.py                                  2      2     0%   7-9
+rag_factory/services/onnx/embedding.py                                29     29     0%   7-129
+rag_factory/services/utils/__init__.py                                 2      0   100%
+rag_factory/services/utils/model_converter.py                        104    104     0%   8-291
+rag_factory/services/utils/onnx_utils.py                             133     84    37%   22-23, 37, 77-84, 90-91, 96-97, 109-114, 142-146, 172-218, 240-274, 291-312, 361-362, 376, 392-404
+rag_factory/services/utils/reranker_selector.py                       68     68     0%   8-249
+rag_factory/strategies/__init__.py                                     2      0   100%
+rag_factory/strategies/agentic/__init__.py                             7      7     0%   8-20
+rag_factory/strategies/agentic/agent.py                              151    151     0%   8-420
+rag_factory/strategies/agentic/config.py                              12     12     0%   5-31
+rag_factory/strategies/agentic/frameworks/__init__.py                  1      1     0%   9
+rag_factory/strategies/agentic/query_analyzer.py                      89     89     0%   8-278
+rag_factory/strategies/agentic/strategy.py                            87     87     0%   8-284
+rag_factory/strategies/agentic/tool_implementations.py               135    135     0%   11-511
+rag_factory/strategies/agentic/tools.py                               40     40     0%   8-142
+rag_factory/strategies/base.py                                        55     13    76%   80-85, 169-178
+rag_factory/strategies/chunking/__init__.py                           15     15     0%   28-67
+rag_factory/strategies/chunking/base.py                               91     91     0%   3-256
+rag_factory/strategies/chunking/docling_chunker.py                    45     45     0%   13-188
+rag_factory/strategies/chunking/fixed_size_chunker.py                 74     74     0%   3-204
+rag_factory/strategies/chunking/hybrid_chunker.py                     70     70     0%   3-192
+rag_factory/strategies/chunking/semantic_chunker.py                  195    195     0%   3-534
+rag_factory/strategies/chunking/structural_chunker.py                147    147     0%   3-425
+rag_factory/strategies/chunking/utils.py                              89     89     0%   3-264
+rag_factory/strategies/contextual/__init__.py                          7      7     0%   8-19
+rag_factory/strategies/contextual/batch_processor.py                  91     91     0%   8-266
+rag_factory/strategies/contextual/config.py                           46     46     0%   8-195
+rag_factory/strategies/contextual/context_generator.py                84     84     0%   8-234
+rag_factory/strategies/contextual/cost_tracker.py                     32     32     0%   8-126
+rag_factory/strategies/contextual/prompts.py                          25     25     0%   8-119
+rag_factory/strategies/contextual/storage.py                          44     44     0%   8-118
+rag_factory/strategies/contextual/strategy.py                         78     78     0%   8-298
+rag_factory/strategies/fine_tuned/__init__.py                          4      4     0%   1-5
+rag_factory/strategies/fine_tuned/ab_testing.py                       78     78     0%   1-134
+rag_factory/strategies/fine_tuned/config.py                           11     11     0%   1-30
+rag_factory/strategies/fine_tuned/custom_loader.py                    40     40     0%   1-88
+rag_factory/strategies/fine_tuned/model_registry.py                  126    126     0%   1-303
+rag_factory/strategies/hierarchical/__init__.py                        5      5     0%   8-21
+rag_factory/strategies/hierarchical/hierarchy_builder.py              79     79     0%   8-335
+rag_factory/strategies/hierarchical/models.py                         58     58     0%   8-137
+rag_factory/strategies/hierarchical/parent_retriever.py               89     89     0%   8-278
+rag_factory/strategies/hierarchical/strategy.py                       76     76     0%   9-301
+rag_factory/strategies/indexing/__init__.py                            6      0   100%
+rag_factory/strategies/indexing/context_aware.py                     108     88    19%   31, 43, 63-134, 155-156, 160-170, 182-188, 192-198, 208-237, 241-242
+rag_factory/strategies/indexing/hierarchical.py                       90     73    19%   50, 63, 88-134, 156-185, 201-236, 253-278, 292-293
+rag_factory/strategies/indexing/in_memory.py                          41     25    39%   54, 65, 93-121, 143, 160, 173, 194-200
+rag_factory/strategies/indexing/keyword_indexing.py                   42     42     0%   8-157
+rag_factory/strategies/indexing/knowledge_graph_indexing.py           46     33    28%   18, 27, 48-89, 108-129
+rag_factory/strategies/indexing/vector_embedding.py                   98     85    13%   25, 35, 55-116, 137-221
+rag_factory/strategies/knowledge_graph/__init__.py                     4      4     0%   8-19
+rag_factory/strategies/knowledge_graph/config.py                      21     21     0%   8-129
+rag_factory/strategies/knowledge_graph/entity_extractor.py            70     70     0%   7-205
+rag_factory/strategies/knowledge_graph/graph_store.py                 31     31     0%   8-124
+rag_factory/strategies/knowledge_graph/hybrid_retriever.py            56     56     0%   8-164
+rag_factory/strategies/knowledge_graph/memory_graph_store.py          97     97     0%   8-196
+rag_factory/strategies/knowledge_graph/models.py                      53     53     0%   8-122
+rag_factory/strategies/knowledge_graph/relationship_extractor.py      62     62     0%   8-189
+rag_factory/strategies/knowledge_graph/strategy.py                    80     80     0%   8-256
+rag_factory/strategies/late_chunking/__init__.py                       6      6     0%   8-21
+rag_factory/strategies/late_chunking/coherence_analyzer.py            27     27     0%   7-96
+rag_factory/strategies/late_chunking/document_embedder.py            104    104     0%   8-318
+rag_factory/strategies/late_chunking/embedding_chunker.py            117    117     0%   7-300
+rag_factory/strategies/late_chunking/models.py                        62     62     0%   8-100
+rag_factory/strategies/late_chunking/strategy.py                      70     70     0%   8-215
+rag_factory/strategies/multi_query/__init__.py                         7      7     0%   8-19
+rag_factory/strategies/multi_query/config.py                          36     36     0%   3-138
+rag_factory/strategies/multi_query/deduplicator.py                    87     87     0%   3-197
+rag_factory/strategies/multi_query/parallel_executor.py               52     52     0%   3-163
+rag_factory/strategies/multi_query/prompts.py                         10     10     0%   3-84
+rag_factory/strategies/multi_query/ranker.py                          80     80     0%   3-201
+rag_factory/strategies/multi_query/strategy.py                        68     68     0%   3-184
+rag_factory/strategies/multi_query/variant_generator.py               62     62     0%   3-187
+rag_factory/strategies/query_expansion/__init__.py                     8      0   100%
+rag_factory/strategies/query_expansion/base.py                        66     10    85%   90, 103, 114-118, 130-133
+rag_factory/strategies/query_expansion/cache.py                       52     40    23%   20-22, 38-55, 64-66, 70-73, 81-97, 105-112
+rag_factory/strategies/query_expansion/expander_service.py            92     71    23%   36-40, 55-58, 75-148, 159-180, 204-215, 233-234, 242-246, 254, 265-273, 283-284
+rag_factory/strategies/query_expansion/hyde_expander.py               19     12    37%   25-27, 41-65
+rag_factory/strategies/query_expansion/llm_expander.py                25     16    36%   23-25, 39-71, 99
+rag_factory/strategies/query_expansion/metrics.py                     66     30    55%   44-45, 53-57, 76-109, 130, 134, 146-152, 160
+rag_factory/strategies/query_expansion/prompts.py                     13      7    46%   16, 28-56, 68-107
+rag_factory/strategies/reranking/__init__.py                           7      7     0%   8-21
+rag_factory/strategies/reranking/base.py                              68     68     0%   8-130
+rag_factory/strategies/reranking/bge_reranker.py                      51     51     0%   8-151
+rag_factory/strategies/reranking/cache.py                             48     48     0%   8-138
+rag_factory/strategies/reranking/cohere_reranker.py                   34     34     0%   8-119
+rag_factory/strategies/reranking/cosine_reranker.py                   62     62     0%   8-249
+rag_factory/strategies/reranking/cross_encoder_reranker.py            40     40     0%   8-124
+rag_factory/strategies/reranking/metrics.py                           67     67     0%   8-264
+rag_factory/strategies/reranking/reranker_service.py                 115    115     0%   8-310
+rag_factory/strategies/retrieval/__init__.py                           6      0   100%
+rag_factory/strategies/retrieval/keyword_retriever.py                 56     41    27%   41, 52, 71-113, 126-133, 153-172
+rag_factory/strategies/retrieval/knowledge_graph_retriever.py         22      9    59%   19, 27, 48-70
+rag_factory/strategies/retrieval/multi_query_retriever.py             22      9    59%   19, 26, 44-66
+rag_factory/strategies/retrieval/query_expansion_retriever.py         24      9    62%   20, 27, 45-67
+rag_factory/strategies/retrieval/semantic_retriever.py                20      9    55%   23, 32, 61-81
+rag_factory/strategies/self_reflective/__init__.py                     6      6     0%   3-16
+rag_factory/strategies/self_reflective/config.py                      20     20     0%   3-42
+rag_factory/strategies/self_reflective/grader.py                      80     80     0%   3-266
+rag_factory/strategies/self_reflective/models.py                      48     48     0%   3-109
+rag_factory/strategies/self_reflective/refiner.py                     69     69     0%   3-228
+rag_factory/strategies/self_reflective/strategy.py                    92     92     0%   3-269
+rag_factory/utils/__init__.py                                          3      0   100%
+rag_factory/utils/token_counter.py                                    45     30    33%   36-40, 52-62, 74-82, 86, 90, 105-106, 124-135, 153-158
+rag_factory/utils/tokenization.py                                     95     73    23%   36-40, 53-64, 87-114, 126-129, 141-144, 156, 175-190, 209-228, 241-243, 251-252, 270-271, 292-293, 314-315
+------------------------------------------------------------------------------------------------
+TOTAL                                                              12271  10753    12%
+======================== 14 passed, 2 warnings in 7.13s ========================
+
+========================================
+Test run completed at 2025-12-17 18:14:24
+========================================
