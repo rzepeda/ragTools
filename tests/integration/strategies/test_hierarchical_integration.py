@@ -10,6 +10,13 @@ from rag_factory.strategies.hierarchical import (
 )
 
 
+class MockDependencies:
+    """Mock dependencies for strategy."""
+    def __init__(self, embedding_service, database_service):
+        self.embedding_service = embedding_service
+        self.database_service = database_service
+
+
 @pytest.mark.integration
 class TestHierarchicalIntegration:
     """Integration tests for hierarchical RAG workflow."""
@@ -89,11 +96,9 @@ class TestHierarchicalIntegration:
     def test_end_to_end_workflow(self, mock_vector_store, mock_database):
         """Test complete hierarchical retrieval workflow."""
         # Create strategy
-        strategy = HierarchicalRAGStrategy(
-            vector_store_service=mock_vector_store,
-            database_service=mock_database,
-            config={"expansion_strategy": ExpansionStrategy.IMMEDIATE_PARENT}
-        )
+        config = {"expansion_strategy": ExpansionStrategy.IMMEDIATE_PARENT}
+        dependencies = MockDependencies(mock_vector_store, mock_database)
+        strategy = HierarchicalRAGStrategy(config, dependencies)
         
         # Index a document
         markdown_doc = """# Test Document
@@ -125,11 +130,9 @@ This section discusses deep learning and neural networks.
     
     def test_expansion_strategy_comparison(self, mock_vector_store, mock_database):
         """Test different expansion strategies produce different results."""
-        strategy = HierarchicalRAGStrategy(
-            vector_store_service=mock_vector_store,
-            database_service=mock_database,
-            config={"expansion_strategy": ExpansionStrategy.IMMEDIATE_PARENT}
-        )
+        config = {"expansion_strategy": ExpansionStrategy.IMMEDIATE_PARENT}
+        dependencies = MockDependencies(mock_vector_store, mock_database)
+        strategy = HierarchicalRAGStrategy(config, dependencies)
         
         doc = """# Title
 
@@ -162,10 +165,8 @@ Paragraph 2 with more content.
     
     def test_hierarchy_validation(self, mock_vector_store, mock_database):
         """Test hierarchy validation."""
-        strategy = HierarchicalRAGStrategy(
-            vector_store_service=mock_vector_store,
-            database_service=mock_database
-        )
+        dependencies = MockDependencies(mock_vector_store, mock_database)
+        strategy = HierarchicalRAGStrategy(None, dependencies)
         
         doc = "# Title\n\n## Section\n\nContent"
         strategy.index_document(doc, "test_doc")
@@ -180,10 +181,8 @@ Paragraph 2 with more content.
         """Test indexing multiple documents."""
         import uuid
         
-        strategy = HierarchicalRAGStrategy(
-            vector_store_service=mock_vector_store,
-            database_service=mock_database
-        )
+        dependencies = MockDependencies(mock_vector_store, mock_database)
+        strategy = HierarchicalRAGStrategy(None, dependencies)
         
         doc1 = "# Document 1\\n\\nContent about AI"
         doc2 = "# Document 2\\n\\nContent about ML"

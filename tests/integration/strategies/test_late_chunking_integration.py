@@ -102,7 +102,7 @@ def test_late_chunking_workflow(test_dependencies, test_vector_store):
 
 
 @pytest.mark.integration
-def test_fixed_size_chunking_integration(test_dependencies):
+def test_fixed_size_chunking_integration(test_dependencies, test_vector_store):
     """Test integration with fixed-size chunking."""
     config = {
         "model_name": EMBEDDING_MODEL,
