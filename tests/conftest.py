@@ -522,6 +522,186 @@ def cloud_llm_service():
 
 
 # =============================================================================
+# Centralized Mock Fixtures
+# =============================================================================
+
+# Import centralized mock builders
+from tests.mocks import (
+    create_mock_embedding_service,
+    create_mock_database_service,
+    create_mock_llm_service,
+    create_mock_neo4j_service,
+    create_mock_registry_with_services,
+    create_mock_migration_validator,
+    create_mock_onnx_environment,
+)
+
+
+@pytest.fixture
+def mock_embedding_service():
+    """Provide standard mock embedding service (384 dimensions).
+    
+    Returns:
+        Mock embedding service with standard configuration
+        
+    Example:
+        ```python
+        def test_with_embedding(mock_embedding_service):
+            result = await mock_embedding_service.embed("test")
+            assert len(result) == 384
+        ```
+    """
+    return create_mock_embedding_service(dimension=384)
+
+
+@pytest.fixture
+def mock_embedding_service_768():
+    """Provide mock embedding service with 768 dimensions.
+    
+    Returns:
+        Mock embedding service (768-dim)
+    """
+    return create_mock_embedding_service(dimension=768)
+
+
+@pytest.fixture
+def mock_database_service():
+    """Provide standard mock database service.
+    
+    Returns:
+        Mock database service with CRUD operations
+        
+    Example:
+        ```python
+        async def test_with_db(mock_database_service):
+            await mock_database_service.store_chunks(chunks)
+            results = await mock_database_service.search_chunks(embedding)
+        ```
+    """
+    return create_mock_database_service()
+
+
+@pytest.fixture
+def mock_llm_service():
+    """Provide standard mock LLM service.
+    
+    Returns:
+        Mock LLM service
+        
+    Example:
+        ```python
+        async def test_with_llm(mock_llm_service):
+            response = await mock_llm_service.agenerate("prompt")
+            assert response == "Mock LLM response"
+        ```
+    """
+    return create_mock_llm_service()
+
+
+@pytest.fixture
+def mock_neo4j_service():
+    """Provide standard mock Neo4j service.
+    
+    Returns:
+        Mock Neo4j graph database service
+    """
+    return create_mock_neo4j_service()
+
+
+@pytest.fixture
+def mock_registry_with_services():
+    """Provide mock registry with embedding and database services.
+    
+    This is the most commonly used fixture for integration tests.
+    Includes:
+    - Mock embedding service (384 dimensions)
+    - Mock database service
+    - Mock migration validator
+    
+    Returns:
+        Mock service registry
+        
+    Example:
+        ```python
+        def test_strategy_pair(mock_registry_with_services):
+            manager = StrategyPairManager(
+                service_registry=mock_registry_with_services,
+                config_dir=str(config_dir)
+            )
+            indexing, retrieval = manager.load_pair("semantic-local-pair")
+        ```
+    """
+    return create_mock_registry_with_services(
+        include_embedding=True,
+        include_database=True,
+        include_llm=False,
+        include_neo4j=False
+    )
+
+
+@pytest.fixture
+def mock_registry_with_llm_services():
+    """Provide mock registry with LLM, embedding, and database services.
+    
+    Use this for tests that require LLM functionality.
+    
+    Returns:
+        Mock service registry with LLM support
+    """
+    return create_mock_registry_with_services(
+        include_embedding=True,
+        include_database=True,
+        include_llm=True,
+        include_neo4j=False
+    )
+
+
+@pytest.fixture
+def mock_registry_with_graph_services():
+    """Provide mock registry with all services including Neo4j.
+    
+    Use this for knowledge graph tests.
+    
+    Returns:
+        Mock service registry with graph database support
+    """
+    return create_mock_registry_with_services(
+        include_embedding=True,
+        include_database=True,
+        include_llm=True,
+        include_neo4j=True
+    )
+
+
+@pytest.fixture
+def mock_migration_validator():
+    """Provide mock migration validator (always valid).
+    
+    Returns:
+        Mock migration validator
+    """
+    return create_mock_migration_validator(is_valid=True)
+
+
+@pytest.fixture
+def mock_onnx_env():
+    """Provide ONNX environment context manager.
+    
+    Returns:
+        Context manager for ONNX mocking
+        
+    Example:
+        ```python
+        def test_onnx_provider(mock_onnx_env):
+            with mock_onnx_env:
+                provider = ONNXLocalProvider(config)
+                embeddings = provider.get_embeddings(["text"])
+        ```
+    """
+    return create_mock_onnx_environment
+
+
+# =============================================================================
 # Pytest Configuration
 # =============================================================================
 

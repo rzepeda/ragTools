@@ -3,11 +3,10 @@ Integration tests for knowledge-graph-pair strategy configuration.
 Tests graph-based retrieval with entity relationships.
 """
 import pytest
-from unittest.mock import Mock, AsyncMock, patch
+from unittest.mock import patch
 from pathlib import Path
 
 from rag_factory.config.strategy_pair_manager import StrategyPairManager
-from rag_factory.registry.service_registry import ServiceRegistry
 from rag_factory.core.indexing_interface import IIndexingStrategy, IndexingContext
 from rag_factory.core.retrieval_interface import IRetrievalStrategy, RetrievalContext
 from rag_factory.core.capabilities import IndexingResult, IndexCapability
@@ -15,68 +14,27 @@ from rag_factory.core.capabilities import IndexingResult, IndexCapability
 # Import strategies
 import rag_factory.strategies.knowledge_graph.strategy
 
-
-@pytest.fixture
-def mock_registry():
-    """Create mock service registry for knowledge graph strategy."""
-    try:
-        registry = ServiceRegistry()
-    except Exception:
-        with patch('rag_factory.registry.service_registry.ServiceRegistry._load_config'):
-            registry = ServiceRegistry()
-            registry.config = {'services': {}}
-    
-    # Mock Embedding Service
-    embedding_service = Mock()
-    embedding_service.embed = AsyncMock(return_value=[0.1] * 384)
-    embedding_service.embed_batch = AsyncMock(return_value=[[0.1] * 384])
-    embedding_service.get_dimension.return_value = 384
-    
-    # Mock LLM Service
-    llm_service = Mock()
-    llm_service.generate = AsyncMock(return_value="Entity: Person, Relation: works_at, Entity: Company")
-    llm_service.agenerate = AsyncMock(return_value="Entity: Person, Relation: works_at, Entity: Company")
-    
-    # Mock Database Service
-    db_service = Mock()
-    db_service.get_chunks_for_documents = AsyncMock(return_value=[
-        {'id': 'chunk1', 'text': 'knowledge graph content', 'metadata': {}}
-    ])
-    db_service.store_chunks = AsyncMock()
-    db_service.search_chunks = AsyncMock(return_value=[
-        {'id': 'chunk1', 'text': 'knowledge graph content', 'score': 0.9, 'metadata': {}}
-    ])
-    db_service.get_context = Mock(return_value=db_service)
-    
-    # Mock Neo4j Service
-    neo4j_service = Mock()
-    neo4j_service.execute_query = AsyncMock(return_value=[])
-    neo4j_service.close = AsyncMock()
-    
-    # Support MigrationValidator
-    mock_engine = Mock()
-    mock_connection = Mock()
-    mock_connection.__enter__ = Mock(return_value=mock_connection)
-    mock_connection.__exit__ = Mock(return_value=None)
-    mock_engine.connect.return_value = mock_connection
-    db_service.get_engine.return_value = mock_engine
-    
-    # Inject into registry
-    registry._instances["embedding_local"] = embedding_service
-    registry._instances["llm_local"] = llm_service
-    registry._instances["db_main"] = db_service
-    registry._instances["db_neo4j"] = neo4j_service
-    registry._instances["local-onnx-minilm"] = embedding_service
-    registry._instances["local-llama"] = llm_service
-    registry._instances["main-postgres"] = db_service
-    registry._instances["neo4j-graph"] = neo4j_service
-    
-    return registry
+# Note: Using centralized mock_registry_with_graph_services fixture from conftest.py
+# This fixture includes: embedding, LLM, database, and Neo4j services
 
 
 @pytest.mark.asyncio
-async def test_knowledge_graph_pair_loading(mock_registry):
-    """Test loading and basic functionality of knowledge-graph-pair."""
+async def test_knowledge_graph_pair_loading(mock_registry_with_graph_services):
+    """Test loading and basic functionality of knowledge-graph-pair.
+    
+    Uses centralized mock_registry_with_graph_services fixture which provides:
+    - Mock embedding service (384 dimensions)
+    - Mock LLM service for entity extraction
+    - Mock database service
+    - Mock Neo4j graph database service
+    - Mock migration validator
+    
+    This test verifies:
+    1. Strategy pair loads correctly with all required services
+    2. Indexing strategy can process documents with graph extraction
+    3. Retrieval strategy can query the knowledge graph
+    4. All dependencies are properly injected
+    """
     with patch('rag_factory.config.strategy_pair_manager.MigrationValidator') as MockValidator:
         mock_validator_instance = MockValidator.return_value
         mock_validator_instance.validate.return_value = (True, [])
@@ -85,7 +43,7 @@ async def test_knowledge_graph_pair_loading(mock_registry):
         config_dir = project_root / "strategies"
         
         manager = StrategyPairManager(
-            service_registry=mock_registry,
+            service_registry=mock_registry_with_graph_services,
             config_dir=str(config_dir)
         )
         
