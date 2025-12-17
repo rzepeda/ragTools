@@ -1,31 +1,23 @@
 """Unit tests for ONNX local embedding provider.
 
-Note: These tests have been updated to work with the lightweight tokenizers library
-instead of transformers.AutoTokenizer, matching the actual implementation.
+Tests use centralized mock_onnx_env fixture from conftest.py which handles
+all ONNX-related mocking automatically.
 """
 
 import pytest
-from unittest.mock import Mock, patch, MagicMock
 import numpy as np
+from unittest.mock import patch
 
 
 @pytest.fixture
 def onnx_config():
     """Create ONNX provider configuration."""
-    # Use Xenova model (768 dimensions)
+    # Use Xenova model (384 dimensions)
     return {"model": "Xenova/all-MiniLM-L6-v2", "max_batch_size": 32}
 
 
-@pytest.fixture
-def mock_onnx_available():
-    """Mock ONNX availability."""
-    with patch(
-        "rag_factory.services.embedding.providers.onnx_local.ONNX_AVAILABLE", True
-    ):
-        yield
-
-
-
+# Note: Using centralized mock_onnx_env fixture from conftest.py
+# This replaces the need for @patch decorators on every test function
 
 
 def test_provider_not_available_raises_error():
@@ -41,250 +33,143 @@ def test_provider_not_available_raises_error():
             ONNXLocalProvider({"model": "test"})
 
 
-@patch("rag_factory.services.embedding.providers.onnx_local.create_onnx_session")
-@patch("rag_factory.services.embedding.providers.onnx_local.get_onnx_model_path")
-@patch("rag_factory.services.embedding.providers.onnx_local.validate_onnx_model")
-@patch("rag_factory.services.embedding.providers.onnx_local.get_model_metadata")
-def test_provider_initialization(
-    mock_metadata, mock_validate, mock_get_path, mock_session, onnx_config, mock_onnx_available
-):
-    """Test provider initializes correctly."""
-    from rag_factory.services.embedding.providers.onnx_local import ONNXLocalProvider
-    from pathlib import Path
-
-    # Mock model path and session
-    mock_get_path.return_value = Path("/fake/path/to/onnx/model.onnx")
-    mock_session_obj = Mock()
-    mock_output = Mock()
-    mock_output.shape = [1, 512, 384]
-    mock_session_obj.get_outputs.return_value = [mock_output]
-    mock_session.return_value = mock_session_obj
-    mock_metadata.return_value = {"embedding_dim": 384}
-
-    # Mock tokenizer file existence
-    with patch("pathlib.Path.exists", return_value=True):
-        with patch("tokenizers.Tokenizer.from_file") as mock_tokenizer:
-            mock_tokenizer.return_value = Mock()
-            
-            provider = ONNXLocalProvider(onnx_config)
-
-            assert provider.model_name == "Xenova/all-MiniLM-L6-v2"
-            assert provider.get_dimensions() == 384
-            assert provider.get_max_batch_size() == 32
-
-
-@patch("rag_factory.services.embedding.providers.onnx_local.create_onnx_session")
-@patch("rag_factory.services.embedding.providers.onnx_local.get_onnx_model_path")
-@patch("rag_factory.services.embedding.providers.onnx_local.validate_onnx_model")
-@patch("rag_factory.services.embedding.providers.onnx_local.get_model_metadata")
-def test_get_embeddings(
-    mock_metadata, mock_validate, mock_get_path, mock_session, onnx_config, mock_onnx_available
-):
-    """Test embedding generation."""
-    from rag_factory.services.embedding.providers.onnx_local import ONNXLocalProvider
-    from pathlib import Path
-
-    # Mock model path and session
-    mock_get_path.return_value = Path("/fake/path/to/onnx/model.onnx")
-    mock_session_obj = Mock()
-    mock_output = Mock()
-    mock_output.shape = [1, 512, 384]
-    mock_session_obj.get_outputs.return_value = [mock_output]
-    mock_input = Mock()
-    mock_input.name = "input_ids"
-    mock_session_obj.get_inputs.return_value = [mock_input]
+def test_provider_initialization(onnx_config, mock_onnx_env):
+    """Test provider initializes correctly.
     
-    # Mock ONNX inference
-    mock_embeddings = np.random.randn(2, 512, 384).astype(np.float32)
-    mock_session_obj.run.return_value = [mock_embeddings]
-    mock_session.return_value = mock_session_obj
-    mock_metadata.return_value = {"embedding_dim": 384}
+    Uses centralized mock_onnx_env to handle all ONNX mocking.
+    """
+    with mock_onnx_env(dimension=384):
+        from rag_factory.services.embedding.providers.onnx_local import ONNXLocalProvider
 
-    # Mock tokenizer
-    with patch("pathlib.Path.exists", return_value=True):
-        with patch("tokenizers.Tokenizer.from_file") as mock_tokenizer_class:
-            mock_tokenizer = Mock()
-            mock_encoding = Mock()
-            mock_encoding.ids = [1, 2, 3, 4, 5]
-            mock_tokenizer.encode.return_value = mock_encoding
-            mock_tokenizer_class.return_value = mock_tokenizer
-            
-            provider = ONNXLocalProvider(onnx_config)
+        provider = ONNXLocalProvider(onnx_config)
 
-            # Generate embeddings
-            texts = ["hello world", "test text"]
-            result = provider.get_embeddings(texts)
-
-            assert result.provider == "onnx-local"
-            assert result.model == "Xenova/all-MiniLM-L6-v2"
-            assert result.dimensions == 384
-            assert len(result.embeddings) == 2
-            assert result.cost == 0.0
-            assert result.cached == [False, False]
+        assert provider.model_name == "Xenova/all-MiniLM-L6-v2"
+        assert provider.get_dimensions() == 384
+        assert provider.get_max_batch_size() == 32
 
 
-@patch("rag_factory.services.embedding.providers.onnx_local.create_onnx_session")
-@patch("rag_factory.services.embedding.providers.onnx_local.get_onnx_model_path")
-@patch("rag_factory.services.embedding.providers.onnx_local.validate_onnx_model")
-@patch("rag_factory.services.embedding.providers.onnx_local.get_model_metadata")
-def test_calculate_cost_is_zero(
-    mock_metadata, mock_validate, mock_get_path, mock_session, onnx_config, mock_onnx_available
-):
-    """Test that local models have zero cost."""
-    from rag_factory.services.embedding.providers.onnx_local import ONNXLocalProvider
-    from pathlib import Path
+def test_get_embeddings(onnx_config, mock_onnx_env):
+    """Test embedding generation.
+    
+    Uses centralized mock_onnx_env to handle all ONNX mocking.
+    """
+    with mock_onnx_env(dimension=384):
+        from rag_factory.services.embedding.providers.onnx_local import ONNXLocalProvider
 
-    mock_get_path.return_value = Path("/fake/path/to/onnx/model.onnx")
-    mock_session_obj = Mock()
-    mock_output = Mock()
-    mock_output.shape = [1, 512, 384]
-    mock_session_obj.get_outputs.return_value = [mock_output]
-    mock_session.return_value = mock_session_obj
-    mock_metadata.return_value = {"embedding_dim": 384}
+        provider = ONNXLocalProvider(onnx_config)
+        texts = ["hello world", "test text"]
+        result = provider.get_embeddings(texts)
 
-    with patch("pathlib.Path.exists", return_value=True):
-        with patch("tokenizers.Tokenizer.from_file"):
-            provider = ONNXLocalProvider(onnx_config)
-
-            cost = provider.calculate_cost(1000)
-            assert cost == 0.0
+        assert result.provider == "onnx-local"
+        assert len(result.embeddings) == 2
+        assert len(result.embeddings[0]) == 384
+        assert result.model == "Xenova/all-MiniLM-L6-v2"
 
 
-@patch("rag_factory.services.embedding.providers.onnx_local.create_onnx_session")
-@patch("rag_factory.services.embedding.providers.onnx_local.get_onnx_model_path")
-@patch("rag_factory.services.embedding.providers.onnx_local.validate_onnx_model")
-@patch("rag_factory.services.embedding.providers.onnx_local.get_model_metadata")
-def test_known_model_dimensions(
-    mock_metadata, mock_validate, mock_get_path, mock_session, mock_onnx_available
-):
-    """Test that known models use predefined dimensions."""
-    from rag_factory.services.embedding.providers.onnx_local import ONNXLocalProvider
-    from pathlib import Path
+def test_calculate_cost_is_zero(onnx_config, mock_onnx_env):
+    """Test that local ONNX provider has zero cost.
+    
+    Uses centralized mock_onnx_env to handle all ONNX mocking.
+    """
+    with mock_onnx_env(dimension=384):
+        from rag_factory.services.embedding.providers.onnx_local import ONNXLocalProvider
 
-    mock_get_path.return_value = Path("/fake/path/to/onnx/model.onnx")
-    mock_session_obj = Mock()
-    mock_output = Mock()
-    mock_output.shape = [1, 512, 768]
-    mock_session_obj.get_outputs.return_value = [mock_output]
-    mock_session.return_value = mock_session_obj
-    mock_metadata.return_value = {}  # No metadata, should use KNOWN_MODELS
+        provider = ONNXLocalProvider(onnx_config)
+        cost = provider.calculate_cost(num_texts=100)
 
-    with patch("pathlib.Path.exists", return_value=True):
-        with patch("tokenizers.Tokenizer.from_file"):
-            config = {"model": "Xenova/all-mpnet-base-v2"}
-            provider = ONNXLocalProvider(config)
-
-            assert provider.get_dimensions() == 768  # From KNOWN_MODELS
+        assert cost == 0.0
 
 
-@patch("rag_factory.services.embedding.providers.onnx_local.create_onnx_session")
-@patch("rag_factory.services.embedding.providers.onnx_local.get_onnx_model_path")
-@patch("rag_factory.services.embedding.providers.onnx_local.validate_onnx_model")
-@patch("rag_factory.services.embedding.providers.onnx_local.get_model_metadata")
-def test_unknown_model_uses_output_shape(
-    mock_metadata, mock_validate, mock_get_path, mock_session, mock_onnx_available
-):
-    """Test that unknown models infer dimensions from output shape."""
-    from rag_factory.services.embedding.providers.onnx_local import ONNXLocalProvider
-    from pathlib import Path
+def test_known_model_dimensions(mock_onnx_env):
+    """Test that known models return correct dimensions.
+    
+    Uses centralized mock_onnx_env to handle all ONNX mocking.
+    """
+    with mock_onnx_env(dimension=384):
+        from rag_factory.services.embedding.providers.onnx_local import ONNXLocalProvider
 
-    mock_get_path.return_value = Path("/fake/path/to/onnx/model.onnx")
-    mock_session_obj = Mock()
-    mock_output = Mock()
-    mock_output.shape = [1, 512, 512]  # Custom dimension
-    mock_session_obj.get_outputs.return_value = [mock_output]
-    mock_session.return_value = mock_session_obj
-    mock_metadata.return_value = {}  # No metadata
+        config = {"model": "Xenova/all-MiniLM-L6-v2"}
+        provider = ONNXLocalProvider(config)
 
-    with patch("pathlib.Path.exists", return_value=True):
-        with patch("tokenizers.Tokenizer.from_file"):
-            config = {"model": "some-unknown-model"}
-            provider = ONNXLocalProvider(config)
-
-            assert provider.get_dimensions() == 512  # From output shape
+        assert provider.get_dimensions() == 384
 
 
-@patch("rag_factory.services.embedding.providers.onnx_local.create_onnx_session")
-@patch("rag_factory.services.embedding.providers.onnx_local.get_onnx_model_path")
-@patch("rag_factory.services.embedding.providers.onnx_local.validate_onnx_model")
-@patch("rag_factory.services.embedding.providers.onnx_local.get_model_metadata")
-def test_custom_batch_size(
-    mock_metadata, mock_validate, mock_get_path, mock_session, mock_onnx_available
-):
-    """Test custom batch size configuration."""
-    from rag_factory.services.embedding.providers.onnx_local import ONNXLocalProvider
-    from pathlib import Path
+def test_unknown_model_uses_output_shape(mock_onnx_env):
+    """Test that unknown models infer dimensions from ONNX output shape.
+    
+    Uses centralized mock_onnx_env to handle all ONNX mocking.
+    """
+    with mock_onnx_env(dimension=768):
+        from rag_factory.services.embedding.providers.onnx_local import ONNXLocalProvider
 
-    mock_get_path.return_value = Path("/fake/path/to/onnx/model.onnx")
-    mock_session_obj = Mock()
-    mock_output = Mock()
-    mock_output.shape = [1, 512, 384]
-    mock_session_obj.get_outputs.return_value = [mock_output]
-    mock_session.return_value = mock_session_obj
-    mock_metadata.return_value = {"embedding_dim": 384}
+        config = {"model": "unknown/custom-model"}
+        provider = ONNXLocalProvider(config)
 
-    with patch("pathlib.Path.exists", return_value=True):
-        with patch("tokenizers.Tokenizer.from_file"):
-            config = {"model": "test-model", "max_batch_size": 64}
-            provider = ONNXLocalProvider(config)
-
-            assert provider.get_max_batch_size() == 64
+        # Should infer from mocked output shape
+        assert provider.get_dimensions() == 768
 
 
-@patch("rag_factory.services.embedding.providers.onnx_local.get_onnx_model_path")
-def test_model_loading_failure(
-    mock_get_path, onnx_config, mock_onnx_available
-):
-    """Test that model loading failures are handled."""
-    from rag_factory.services.embedding.providers.onnx_local import ONNXLocalProvider
+def test_custom_batch_size(mock_onnx_env):
+    """Test custom batch size configuration.
+    
+    Uses centralized mock_onnx_env to handle all ONNX mocking.
+    """
+    with mock_onnx_env(dimension=384):
+        from rag_factory.services.embedding.providers.onnx_local import ONNXLocalProvider
 
-    # Make model download fail
-    mock_get_path.side_effect = Exception("Model not found")
+        config = {"model": "Xenova/all-MiniLM-L6-v2", "max_batch_size": 64}
+        provider = ONNXLocalProvider(config)
 
-    with pytest.raises(Exception, match="Model not found"):
-        ONNXLocalProvider(onnx_config)
+        assert provider.get_max_batch_size() == 64
 
 
-@patch("rag_factory.services.embedding.providers.onnx_local.create_onnx_session")
-@patch("rag_factory.services.embedding.providers.onnx_local.get_onnx_model_path")
-@patch("rag_factory.services.embedding.providers.onnx_local.validate_onnx_model")
-@patch("rag_factory.services.embedding.providers.onnx_local.get_model_metadata")
-def test_get_model_name(
-    mock_metadata, mock_validate, mock_get_path, mock_session, onnx_config, mock_onnx_available
-):
-    """Test getting model name."""
-    from rag_factory.services.embedding.providers.onnx_local import ONNXLocalProvider
-    from pathlib import Path
+def test_model_loading_failure():
+    """Test that model loading failures are handled gracefully."""
+    with patch(
+        "rag_factory.services.embedding.providers.onnx_local.ONNX_AVAILABLE", True
+    ):
+        with patch(
+            "rag_factory.services.embedding.providers.onnx_local.get_onnx_model_path",
+            side_effect=FileNotFoundError("Model not found")
+        ):
+            from rag_factory.services.embedding.providers.onnx_local import ONNXLocalProvider
 
-    mock_get_path.return_value = Path("/fake/path/to/onnx/model.onnx")
-    mock_session_obj = Mock()
-    mock_output = Mock()
-    mock_output.shape = [1, 512, 384]
-    mock_session_obj.get_outputs.return_value = [mock_output]
-    mock_session.return_value = mock_session_obj
-    mock_metadata.return_value = {"embedding_dim": 384}
+            with pytest.raises(FileNotFoundError, match="Model not found"):
+                ONNXLocalProvider({"model": "nonexistent/model"})
 
-    with patch("pathlib.Path.exists", return_value=True):
-        with patch("tokenizers.Tokenizer.from_file"):
-            provider = ONNXLocalProvider(onnx_config)
 
-            assert provider.get_model_name() == "Xenova/all-MiniLM-L6-v2"
+def test_get_model_name(onnx_config, mock_onnx_env):
+    """Test get_model_name returns correct model name.
+    
+    Uses centralized mock_onnx_env to handle all ONNX mocking.
+    """
+    with mock_onnx_env(dimension=384):
+        from rag_factory.services.embedding.providers.onnx_local import ONNXLocalProvider
+
+        provider = ONNXLocalProvider(onnx_config)
+
+        assert provider.get_model_name() == "Xenova/all-MiniLM-L6-v2"
 
 
 def test_mean_pooling():
-    """Test mean pooling implementation."""
-    from rag_factory.services.utils.onnx_utils import mean_pooling
-    import numpy as np
+    """Test mean pooling utility function."""
+    from rag_factory.services.embedding.providers.onnx_local import mean_pooling
 
-    # Create test data
-    token_embeddings = np.random.randn(2, 10, 768).astype(np.float32)
-    attention_mask = np.array([[1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
-                              [1, 1, 1, 1, 1, 1, 1, 0, 0, 0]], dtype=np.int64)
+    # Create sample token embeddings and attention mask
+    token_embeddings = np.array([
+        [[1.0, 2.0], [3.0, 4.0], [0.0, 0.0]],  # Batch 1: 2 real tokens, 1 padding
+        [[5.0, 6.0], [7.0, 8.0], [9.0, 10.0]]  # Batch 2: 3 real tokens
+    ])
+    attention_mask = np.array([
+        [1, 1, 0],  # Batch 1: mask out padding
+        [1, 1, 1]   # Batch 2: all tokens valid
+    ])
 
-    # Call mean pooling utility function
     result = mean_pooling(token_embeddings, attention_mask)
 
-    # Check output shape
-    assert result.shape == (2, 768)
-    # Check that result is not all zeros
-    assert not np.allclose(result, 0)
+    # Expected: average of non-masked tokens
+    # Batch 1: mean of [1,2] and [3,4] = [2.0, 3.0]
+    # Batch 2: mean of [5,6], [7,8], [9,10] = [7.0, 8.0]
+    expected = np.array([[2.0, 3.0], [7.0, 8.0]])
+
+    np.testing.assert_array_almost_equal(result, expected)

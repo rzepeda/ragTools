@@ -1,12 +1,18 @@
-"""Unit tests for validate-pipeline command."""
+"""Unit tests for validate-pipeline command.
+
+Uses centralized mock builders from tests.mocks for consistent mocking.
+"""
 
 import pytest
 from typer.testing import CliRunner
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 
 from rag_factory.cli.main import app
 from rag_factory.core.capabilities import IndexCapability, ValidationResult
 from rag_factory.services.dependencies import ServiceDependency
+
+# Import centralized mock builders
+from tests.mocks import create_mock_indexing_strategy, create_mock_retrieval_strategy
 
 
 @pytest.fixture
@@ -29,17 +35,16 @@ def mock_factory():
 
 @pytest.fixture
 def mock_indexing_strategy():
-    """Create mock indexing strategy."""
-    strategy = Mock()
-    strategy.produces = Mock(return_value={IndexCapability.VECTORS, IndexCapability.DATABASE})
-    strategy.requires_services = Mock(return_value={ServiceDependency.EMBEDDING, ServiceDependency.DATABASE})
-    return strategy
+    """Create mock indexing strategy using centralized builder."""
+    return create_mock_indexing_strategy(
+        capabilities=[IndexCapability.VECTORS, IndexCapability.DATABASE]
+    )
 
 
 @pytest.fixture
 def mock_retrieval_strategy():
-    """Create mock retrieval strategy."""
-    strategy = Mock()
+    """Create mock retrieval strategy using centralized builder."""
+    strategy = create_mock_retrieval_strategy()
     strategy.requires = Mock(return_value={IndexCapability.VECTORS})
     strategy.requires_services = Mock(return_value={ServiceDependency.EMBEDDING, ServiceDependency.DATABASE})
     return strategy

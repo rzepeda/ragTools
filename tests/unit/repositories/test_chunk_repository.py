@@ -2,7 +2,8 @@
 
 import pytest
 from uuid import uuid4
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import Mock, patch
+from tests.mocks import create_mock_session, create_mock_database_service
 from sqlalchemy.exc import SQLAlchemyError
 import numpy as np
 
