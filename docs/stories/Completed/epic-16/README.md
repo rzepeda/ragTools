@@ -167,13 +167,13 @@ The stories must be implemented in order due to dependencies:
 
 ## Migration Guide
 
-See [Epic 16 Documentation](../../epics/epic-16-database-consolidation.md) for complete migration guide and user-facing documentation.
+See [Epic 16 Documentation](../../../epics/epic-16-database-consolidation.md) for complete migration guide and user-facing documentation.
 
 ## Related Documentation
 
-- [Epic 16: Database Migration System Consolidation](../../epics/epic-16-database-consolidation.md)
-- [Database README](../../database/README.md)
-- [Getting Started Guide](../../getting-started/installation.md)
+- [Epic 16: Database Migration System Consolidation](../../../epics/epic-16-database-consolidation.md)
+- [Database README](../../../database/README.md)
+- [Getting Started Guide](../../../getting-started/installation.md)
 - [Epic 15: Test Coverage Improvements](../epic-15/)
 
 ## Timeline

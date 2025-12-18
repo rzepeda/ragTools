@@ -165,7 +165,15 @@ async def test_embedding_database_consistency(embedding_service, database_servic
     
     # Verify database received correct dimension vector
     call_args = db_conn.execute.call_args
-    embedding_str = call_args[0][3] # 4th argument is embedding_str
+    sql_query = call_args[0][0]  # SQL query is the first argument
+    
+    # Extract embedding from SQL string (format: '[0.1,0.1,0.1]'::vector)
+    import re
+    embedding_match = re.search(r'\[([0-9.,]+)\]', sql_query)
+    assert embedding_match, "Embedding not found in SQL query"
+    
+    embedding_str = embedding_match.group(1)
     stored_dim = embedding_str.count(",") + 1
     
     assert stored_dim == dim
+

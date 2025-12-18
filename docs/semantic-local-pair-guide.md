@@ -61,20 +61,23 @@ registry = ServiceRegistry("config/services.yaml")
 manager = StrategyPairManager(registry, "strategies")
 indexing, retrieval = manager.load_pair("semantic-local-pair")
 
-# 3. Index Documents
-docs = [{"id": "doc1", "text": "RAG is Retrieval Augmented Generation."}]
-context = IndexingContext(indexing.deps.database_service)
+async def run_indexing():
+    # 3. Index Documents
+    docs = [{"id": "doc1", "text": "RAG is Retrieval Augmented Generation."}]
+    context = IndexingContext(indexing.deps.database_service)
+    
+    # You might need a pre-chunking step if raw docs are passed, 
+    # but this strategy expects chunks or handles simple chunking?
+    # The VectorEmbeddingIndexer normally expects chunks in DB or input?
+    # (Check strategy implementation details)
+    await indexing.process(docs, context)
 
-# You might need a pre-chunking step if raw docs are passed, 
-# but this strategy expects chunks or handles simple chunking?
-# The VectorEmbeddingIndexer normally expects chunks in DB or input?
-# (Check strategy implementation details)
-await indexing.process(docs, context)
 
-# 4. Retrieve
-ret_context = RetrievalContext(retrieval.deps.database_service)
-chunks = await retrieval.retrieve("What is RAG?", ret_context)
-print(chunks)
+async def run_retrieval():
+    # 4. Retrieve
+    ret_context = RetrievalContext(retrieval.deps.database_service)
+    chunks = await retrieval.retrieve("What is RAG?", ret_context)
+    print(chunks)
 ```
 
 ## Troubleshooting

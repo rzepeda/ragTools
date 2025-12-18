@@ -1,3 +1,2 @@
 tests/benchmarks/test_model_comparison_performance.py
 tests/integration/documentation/test_documentation_integration.py
-tests/integration_real/test_neo4j_real.py

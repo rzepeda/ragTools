@@ -32,6 +32,7 @@ def test_capabilities(strategy):
     """Test produces capabilities."""
     assert strategy.produces() == {
         IndexCapability.CHUNKS,
+        IndexCapability.VECTORS,
         IndexCapability.DATABASE
     }
 

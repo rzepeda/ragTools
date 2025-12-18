@@ -44,7 +44,9 @@ services:
     type: "embedding"
     provider: "onnx"
     model: "Xenova/all-MiniLM-L6-v2"
-    cache_dir: "${MODELS_DIR:-./models}"
+    model: "Xenova/all-MiniLM-L6-v2"
+    cache_dir: "${MODELS_DIR:-./models/embeddings}"
+    batch_size: 32
     batch_size: 32
 """
     services_file = tmp_path / "services.yaml"
@@ -135,7 +137,7 @@ class TestEnvironmentVariableResolution:
         assert llm_config['model'] == "test-model"
 
         embedding_config = registry.config['services']['embedding_local']
-        assert embedding_config['cache_dir'] == "./models"
+        assert embedding_config['cache_dir'] == "./models/embeddings"
 
 
 @pytest.mark.integration
@@ -227,10 +229,9 @@ services:
         services_file = tmp_path / "services.yaml"
         services_file.write_text(content)
 
-        registry = ServiceRegistry(str(services_file))
-
         # Should raise error when trying to instantiate
         with pytest.raises(Exception):  # ServiceInstantiationError or similar
+            registry = ServiceRegistry(str(services_file))
             registry.get("invalid_service")
 
     def test_missing_service_file(self):
@@ -322,7 +323,10 @@ class TestConfigurationValidation:
         content = """
 services:
   test_service:
-    provider: "onnx"
+    name: "test-service"
+    type: "llm"
+    provider: "openai"
+    url: "https://api.openai.com/v1"
     model: "test-model"
     api_key: "plaintext-secret"  # Should trigger warning
 """

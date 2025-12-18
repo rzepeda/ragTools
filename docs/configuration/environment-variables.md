@@ -60,7 +60,7 @@ services:
     name: "PostgreSQL Database"
     type: "postgres"
     host: "${DB_HOST:-localhost}"
-    port: ${DB_PORT:-5432}
+    port: "${DB_PORT:-5432}"
     database: "${DB_NAME:-rag_factory}"
     user: "${DB_USER:-postgres}"
     password: "${DB_PASSWORD}"
@@ -321,7 +321,7 @@ config = {
     'connection': 'postgresql://${DB_HOST}:${DB_PORT}/db',
     'settings': {
         'host': '${DB_HOST}',
-        'port': ${DB_PORT:-5432}
+        'port': '${DB_PORT:-5432}'
     }
 }
 

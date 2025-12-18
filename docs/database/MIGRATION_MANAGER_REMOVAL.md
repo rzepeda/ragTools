@@ -124,4 +124,4 @@ See:
 - [Alembic Documentation](https://alembic.sqlalchemy.org/)
 - [docs/database/README.md](README.md)
 - [docs/epics/epic-16-database-consolidation.md](../epics/epic-16-database-consolidation.md)
-- [Story 16.5 Documentation](../stories/epic-16/story-16.5-remove-migration-manager.md)
+- [Story 16.5 Documentation](../stories/Completed/epic-16/story-16.5-remove-migration-manager.md)

@@ -57,8 +57,10 @@ class TestSmokeTest:
 
     def test_basic_usage_smoke_test(self) -> None:
         """Test basic usage works after import."""
-        from rag_factory import RAGFactory, StrategyPipeline, ConfigManager
-        from rag_factory.strategies import IRAGStrategy, Chunk, StrategyConfig
+        from rag_factory.factory import RAGFactory
+        from rag_factory.pipeline import StrategyPipeline
+        from rag_factory.legacy_config import ConfigManager
+        from rag_factory.strategies.base import IRAGStrategy, Chunk, StrategyConfig
 
         # Can instantiate basic objects
         factory = RAGFactory()
@@ -87,8 +89,9 @@ class TestFullWorkflow:
 
     def test_full_workflow_with_installed_package(self) -> None:
         """Test complete workflow using installed package."""
-        from rag_factory import RAGFactory, StrategyPipeline
-        from rag_factory.strategies import IRAGStrategy, Chunk
+        from rag_factory.factory import RAGFactory
+        from rag_factory.pipeline import StrategyPipeline
+        from rag_factory.strategies.base import IRAGStrategy, Chunk
         from typing import List, Any, Optional
 
         # Define a test strategy

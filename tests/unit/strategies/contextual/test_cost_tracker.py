@@ -73,7 +73,9 @@ def test_cost_summary(cost_tracker):
 def test_budget_alert(cost_tracker, caplog):
     """Test budget alert threshold."""
     import logging
-    caplog.set_level(logging.WARNING)
+    # Capture logs from the specific module
+    logger_name = "rag_factory.strategies.contextual.cost_tracker"
+    caplog.set_level(logging.WARNING, logger=logger_name)
     
     # Exceed budget threshold
     for i in range(100):

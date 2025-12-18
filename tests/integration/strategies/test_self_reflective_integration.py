@@ -3,6 +3,7 @@
 import pytest
 from unittest.mock import Mock
 from rag_factory.strategies.self_reflective import SelfReflectiveRAGStrategy
+from rag_factory.services.dependencies import StrategyDependencies
 
 
 @pytest.mark.integration
@@ -76,11 +77,15 @@ Reasoning: Good match
 
     def test_end_to_end_workflow(self, mock_base_strategy, mock_llm_service):
         """Test complete self-reflective retrieval workflow."""
+        # Create dependencies
+        deps = Mock(spec=StrategyDependencies)
+        deps.llm_service = mock_llm_service
+        deps.database_service = mock_base_strategy  # Used as base strategy
+        
         # Create strategy
         strategy = SelfReflectiveRAGStrategy(
-            base_retrieval_strategy=mock_base_strategy,
-            llm_service=mock_llm_service,
-            config={"grade_threshold": 4.0, "max_retries": 2}
+            config={"grade_threshold": 4.0, "max_retries": 2},
+            dependencies=deps
         )
 
         # Retrieve with self-reflection
@@ -97,10 +102,14 @@ Reasoning: Good match
 
     def test_retry_with_poor_results(self, mock_base_strategy, mock_llm_service):
         """Test that retry is triggered for poor results."""
+        # Create dependencies
+        deps = Mock(spec=StrategyDependencies)
+        deps.llm_service = mock_llm_service
+        deps.database_service = mock_base_strategy
+        
         strategy = SelfReflectiveRAGStrategy(
-            base_retrieval_strategy=mock_base_strategy,
-            llm_service=mock_llm_service,
-            config={"grade_threshold": 4.0, "max_retries": 2}
+            config={"grade_threshold": 4.0, "max_retries": 2},
+            dependencies=deps
         )
 
         results = strategy.retrieve("test query", top_k=3)
@@ -116,10 +125,14 @@ Reasoning: Good match
         """Test that self-reflective retrieval completes within timeout."""
         import time
         
+        # Create dependencies
+        deps = Mock(spec=StrategyDependencies)
+        deps.llm_service = mock_llm_service
+        deps.database_service = mock_base_strategy
+        
         strategy = SelfReflectiveRAGStrategy(
-            base_retrieval_strategy=mock_base_strategy,
-            llm_service=mock_llm_service,
-            config={"grade_threshold": 4.0, "max_retries": 2, "timeout_seconds": 10}
+            config={"grade_threshold": 4.0, "max_retries": 2, "timeout_seconds": 10},
+            dependencies=deps
         )
 
         start = time.time()
@@ -145,11 +158,15 @@ class TestSelfReflectiveWithLMStudio:
             {"chunk_id": "c1", "text": "Sample result", "score": 0.9}
         ]
 
+        # Create dependencies
+        deps = Mock(spec=StrategyDependencies)
+        deps.llm_service = llm_service_from_env
+        deps.database_service = base_strategy
+
         # Create self-reflective strategy
         strategy = SelfReflectiveRAGStrategy(
-            base_retrieval_strategy=base_strategy,
-            llm_service=llm_service_from_env,
-            config={"grade_threshold": 4.0, "max_retries": 1}
+            config={"grade_threshold": 4.0, "max_retries": 1},
+            dependencies=deps
         )
 
         # Test retrieval

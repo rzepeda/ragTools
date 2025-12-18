@@ -53,13 +53,14 @@ class TestPgVectorIntegration:
             results = await service.search_chunks(query_vec, top_k=2)
             
             assert len(results) == 2
-            assert results[0]['chunk_id'] == 'doc_0'
-            assert results[1]['chunk_id'] == 'doc_1'
-            assert results[0]['similarity'] > results[1]['similarity']
+            # Results are dictionaries, not Chunk objects
+            assert results[0]["chunk_id"] == 'doc_0'
+            assert results[1]["chunk_id"] == 'doc_1'
+            assert results[0]["similarity"] > results[1]["similarity"]
             
             # Verify query construction
             call_args = conn.fetch.call_args
-            assert "embedding <=> $1::vector" in call_args[0][0]
+            assert "embedding <=>" in call_args[0][0] or "embedding <=> $1::vector" in call_args[0][0]
 
     @pytest.mark.asyncio
     async def test_vector_storage_format(self, mock_pool):

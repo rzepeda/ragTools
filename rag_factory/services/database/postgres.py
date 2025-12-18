@@ -296,16 +296,15 @@ class PostgresqlDatabaseService(IDatabaseService):
                 logger.error(f"Embedding string length: {len(embedding_str)}")
                 raise
 
-        # Convert rows to Chunk-like objects
+        # Convert rows to dictionaries
         results = []
         for row in rows:
-            # Create a simple object that mimics the Chunk interface
-            chunk = type('Chunk', (), {
+            chunk = {
                 'chunk_id': row["chunk_id"],
                 'text': row["text"],
                 'metadata': json.loads(row["metadata"]) if row["metadata"] else {},
                 'similarity': float(row["similarity"])
-            })()
+            }
             results.append(chunk)
 
         logger.debug(f"Found {len(results)} similar chunks")
@@ -365,16 +364,15 @@ class PostgresqlDatabaseService(IDatabaseService):
                 """
             )
 
-        # Convert rows to Chunk ORM-like objects
+        # Convert rows to dictionaries
         chunks = []
         for row in rows:
-            # Create a simple object that mimics the Chunk ORM interface
-            chunk = type('Chunk', (), {
+            chunk = {
                 'chunk_id': row["chunk_id"],
                 'text': row["text"],
                 'metadata': json.loads(row["metadata"]) if row["metadata"] else {},
                 'embedding': row["embedding"]
-            })()
+            }
             chunks.append(chunk)
 
         logger.debug(f"Retrieved {len(chunks)} chunks")

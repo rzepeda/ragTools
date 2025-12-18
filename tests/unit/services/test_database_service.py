@@ -102,10 +102,10 @@ async def test_store_chunks(service, mock_pool):
     conn.execute.assert_called()
     call_args = conn.execute.call_args
     assert "INSERT INTO chunks" in call_args[0][0]
-    assert call_args[0][1] == "1"
-    assert call_args[0][2] == "Hello"
-    assert call_args[0][3] == "[0.1,0.2,0.3]"
-    assert call_args[0][4] == '{"source": "doc1"}'
+    assert "[0.1,0.2,0.3]" in call_args[0][0]  # Embedding is embedded in SQL string
+    assert call_args[0][1] == "1"  # chunk_id
+    assert call_args[0][2] == "Hello"  # text
+    assert call_args[0][3] == '{"source": "doc1"}'  # metadata
 
 @pytest.mark.asyncio
 async def test_store_empty_chunks(service, mock_pool):
@@ -139,8 +139,8 @@ async def test_search_chunks(service, mock_pool):
     conn.fetch.assert_called_once()
     call_args = conn.fetch.call_args
     assert "SELECT" in call_args[0][0]
-    assert call_args[0][1] == "[0.1,0.2,0.3]"
-    assert call_args[0][2] == 5
+    assert "[0.1,0.2,0.3]" in call_args[0][0]  # Embedding is embedded in SQL string
+    assert call_args[0][1] == 5  # top_k is the only parameter
 
 @pytest.mark.asyncio
 async def test_get_chunk(service, mock_pool):

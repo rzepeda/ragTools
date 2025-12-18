@@ -21,7 +21,7 @@ This epic implements a configuration system that bundles compatible indexing and
 
 ### Story 17.1: Design Service Registry and Configuration Schema (8 points)
 **Status:** Planned
-**File:** [story-17.1-service-registry-configuration-schema.md](./story-17.1-service-registry-configuration-schema.md)
+**File:** [story-17.1-service-registry-config-schema.md](./story-17.1-service-registry-config-schema.md)
 
 **Description:** Define well-structured YAML schemas for service registry and strategy pair configurations with environment variable support.
 
@@ -44,7 +44,7 @@ This epic implements a configuration system that bundles compatible indexing and
 
 ### Story 17.2: Implement Service Registry (13 points)
 **Status:** Planned
-**File:** [story-17.2-service-registry-implementation.md](./story-17.2-service-registry-implementation.md)
+**File:** [story-17.2-implement-service-registry.md](./story-17.2-implement-service-registry.md)
 
 **Description:** Create a service registry that loads service configurations from YAML and creates/caches service instances for sharing across strategies.
 
@@ -93,7 +93,7 @@ This epic implements a configuration system that bundles compatible indexing and
 
 ### Story 17.4: Implement Migration Validator (5 points)
 **Status:** Planned
-**File:** [story-17.4-migration-validator-alembic.md](./story-17.4-migration-validator-alembic.md)
+**File:** [story-17.4-migration-validator.md](./story-17.4-migration-validator.md)
 
 **Description:** Create a migration validator that checks if required Alembic migrations are applied before loading strategy pairs.
 
@@ -140,7 +140,7 @@ This epic implements a configuration system that bundles compatible indexing and
 
 ### Story 17.6: Create First Strategy Pair Configuration (5 points)
 **Status:** Planned
-**File:** [story-17.6-first-strategy-pair-testing.md](./story-17.6-first-strategy-pair-testing.md)
+**File:** [story-17.6-first-strategy-pair-configuration.md](./story-17.6-first-strategy-pair-configuration.md)
 
 **Description:** Create one complete, tested strategy pair configuration (semantic-local-pair) to validate the entire Epic 17 implementation.
 
@@ -165,7 +165,7 @@ This epic implements a configuration system that bundles compatible indexing and
 
 ### Story 17.7: Create Remaining Strategy Pair Configurations (8 points)
 **Status:** Planned
-**File:** [story-17.7-remaining-strategy-pairs.md](./story-17.7-remaining-strategy-pairs.md)
+**File:** [story-17.7-remaining-strategy-pair-configurations.md](./story-17.7-remaining-strategy-pair-configurations.md)
 
 **Description:** Create strategy pair configurations for all RAG strategies from Epics 4-7, 12-13.
 
@@ -198,7 +198,7 @@ This epic implements a configuration system that bundles compatible indexing and
 
 ### Story 17.8: End-to-End CLI Validation (5 points)
 **Status:** Planned
-**File:** [story-17.8-cli-validation-sample-docs.md](./story-17.8-cli-validation-sample-docs.md)
+**File:** [story-17.8-end-to-end-cli-validation.md](./story-17.8-end-to-end-cli-validation.md)
 
 **Description:** Create end-to-end validation by indexing 3 sample documents and performing queries via CLI to prove complete system integration.
 

@@ -15,19 +15,19 @@ class TestImports:
 
     def test_import_factory(self) -> None:
         """Test RAGFactory can be imported."""
-        from rag_factory import RAGFactory
+        from rag_factory.factory import RAGFactory
 
         assert RAGFactory is not None
 
     def test_import_pipeline(self) -> None:
         """Test StrategyPipeline can be imported."""
-        from rag_factory import StrategyPipeline
+        from rag_factory.pipeline import StrategyPipeline
 
         assert StrategyPipeline is not None
 
     def test_import_config(self) -> None:
         """Test ConfigManager can be imported."""
-        from rag_factory import ConfigManager
+        from rag_factory.legacy_config import ConfigManager
 
         assert ConfigManager is not None
 
@@ -78,9 +78,9 @@ class TestPackageStructure:
     def test_no_circular_imports(self) -> None:
         """Test importing doesn't cause circular import errors."""
         try:
-            from rag_factory import RAGFactory
-            from rag_factory import StrategyPipeline
-            from rag_factory import ConfigManager
+            from rag_factory.factory import RAGFactory
+            from rag_factory.pipeline import StrategyPipeline
+            from rag_factory.legacy_config import ConfigManager
             from rag_factory.strategies import IRAGStrategy
 
             # If we get here, no circular imports
@@ -108,6 +108,6 @@ class TestDependencies:
     def test_optional_dependencies_handled(self) -> None:
         """Test package works without optional dependencies."""
         # Should not fail if optional dependencies missing
-        from rag_factory import RAGFactory
+        from rag_factory.factory import RAGFactory
 
         assert RAGFactory is not None

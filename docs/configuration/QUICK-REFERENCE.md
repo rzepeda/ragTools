@@ -270,7 +270,7 @@ services:
     name: "Dev Database"
     type: "postgres"
     host: "${DB_HOST:-localhost}"
-    port: ${DB_PORT:-5432}
+    port: "${DB_PORT:-5432}"
     database: "${DB_NAME:-rag_factory_dev}"
     user: "${DB_USER:-postgres}"
     password: "${DB_PASSWORD}"
@@ -405,13 +405,15 @@ Detailed guides:
    ```
 
 3. **Load and use**:
-   ```python
-   from dotenv import load_dotenv
-   from rag_factory.config import load_yaml_with_validation, EnvResolver
-   
-   load_dotenv()
-   config = load_yaml_with_validation("config/services.yaml", "service_registry")
-   config = EnvResolver.resolve(config)
+
+```python
+from dotenv import load_dotenv
+from rag_factory.config import load_yaml_with_validation, EnvResolver
+
+
+load_dotenv()
+config = load_yaml_with_validation("config/services.yaml", "service_registry")
+config = EnvResolver.resolve(config)
    ```
 
 ## Support
