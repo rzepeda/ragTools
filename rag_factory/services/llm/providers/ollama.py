@@ -1,6 +1,6 @@
 """Ollama local provider implementation."""
 
-from typing import List, Dict, Any, Iterator
+from typing import List, Dict, Any, Iterator, AsyncIterator
 import time
 import httpx
 
@@ -79,7 +79,7 @@ class OllamaProvider(ILLMProvider):
             },
         )
 
-    def stream(self, messages: List[Message], **kwargs) -> Iterator[StreamChunk]:
+    async def stream(self, messages: List[Message], **kwargs) -> AsyncIterator[StreamChunk]:
         """Generate streaming completion.
 
         Args:

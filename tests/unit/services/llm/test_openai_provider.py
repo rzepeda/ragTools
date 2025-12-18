@@ -117,8 +117,9 @@ def test_get_max_tokens(openai_config):
     assert provider.get_max_tokens() == 128000
 
 
+@pytest.mark.asyncio
 @patch("rag_factory.services.llm.providers.openai.OpenAI")
-def test_stream(mock_openai_class, openai_config):
+async def test_stream(mock_openai_class, openai_config):
     """Test streaming completion."""
     mock_client = Mock()
 
@@ -144,7 +145,9 @@ def test_stream(mock_openai_class, openai_config):
     provider = OpenAIProvider(openai_config)
 
     messages = [Message(role=MessageRole.USER, content="Hello")]
-    chunks = list(provider.stream(messages))
+    chunks = []
+    async for chunk in provider.stream(messages):
+        chunks.append(chunk)
 
     assert len(chunks) == 3
     assert chunks[0].content == "Hello"

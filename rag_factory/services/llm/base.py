@@ -1,7 +1,7 @@
 """Base LLM provider interface."""
 
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any, Iterator
+from typing import List, Dict, Any, Iterator, AsyncIterator
 from dataclasses import dataclass
 from enum import Enum
 
@@ -100,7 +100,7 @@ class ILLMProvider(ABC):
         """
 
     @abstractmethod
-    def stream(self, messages: List[Message], **kwargs) -> Iterator[StreamChunk]:
+    async def stream(self, messages: List[Message], **kwargs) -> AsyncIterator[StreamChunk]:
         """Generate streaming completion.
 
         Args:

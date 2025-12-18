@@ -1,0 +1,123 @@
+================================================================================
+ERROR CATEGORIZATION SUMMARY
+================================================================================
+
+## CONFIGURATION ISSUES
+
+### Missing Model Files (1 occurrences)
+  - tests/integration/registry/test_registry_integration.py
+
+### Import Errors (2 occurrences)
+  - tests/integration/test_package_integration.py
+  - tests/unit/test_package.py
+
+## REQUIREMENT ISSUES
+
+### Database Migration - Vector Extension (3 occurrences)
+  - tests/integration/database/test_migration_integration.py
+  - tests/integration/database/test_migration_validator_integration.py
+  - tests/unit/database/test_migrations.py
+
+### Database Migration - Missing Tables (2 occurrences)
+  - tests/integration/database/test_migration_integration.py
+  - tests/integration/database/test_migration_validator_integration.py
+
+## CODE ISSUES
+
+### Attribute Errors (1 occurrences)
+  - tests/unit/registry/test_service_factory.py
+
+### Type Errors (9 occurrences)
+  - tests/integration/services/test_service_integration.py
+  - tests/integration/strategies/test_self_reflective_integration.py
+  - tests/unit/database/test_pgvector.py
+  - tests/unit/services/embedding/test_onnx_local_provider.py
+  - tests/unit/services/llm/test_anthropic_provider.py
+  - tests/unit/services/llm/test_ollama_provider.py
+  - tests/unit/services/llm/test_openai_provider.py
+  - tests/unit/services/llm/test_service.py
+  - tests/unit/services/test_database_service.py
+
+### Assertion Errors (3 occurrences)
+  - tests/unit/config/test_strategy_pair_manager.py
+  - tests/unit/documentation/test_code_examples.py
+  - tests/unit/documentation/test_links.py
+
+## FAILING TEST FILES
+
+- tests/integration/database/test_migration_integration.py
+- tests/integration/database/test_migration_validator_integration.py
+- tests/integration/registry/test_registry_integration.py
+- tests/integration/services/test_service_integration.py
+- tests/integration/strategies/test_self_reflective_integration.py
+- tests/integration/test_package_integration.py
+- tests/test_mock_registry.py
+- tests/unit/config/test_strategy_pair_manager.py
+- tests/unit/database/test_batch_operations.py
+- tests/unit/database/test_migrations.py
+- tests/unit/database/test_pgvector.py
+- tests/unit/documentation/test_code_examples.py
+- tests/unit/documentation/test_links.py
+- tests/unit/registry/test_service_factory.py
+- tests/unit/services/embedding/test_onnx_local_provider.py
+- tests/unit/services/llm/test_anthropic_provider.py
+- tests/unit/services/llm/test_ollama_provider.py
+- tests/unit/services/llm/test_openai_provider.py
+- tests/unit/services/llm/test_service.py
+- tests/unit/services/test_database_service.py
+- tests/unit/strategies/indexing/test_context_aware.py
+- tests/unit/test_package.py
+
+## FAILING TESTS (Individual)
+
+- tests/integration/database/test_migration_integration.py::TestMigrationIntegration::test_migration_with_existing_data
+- tests/integration/database/test_migration_integration.py::TestMigrationIntegration::test_pgvector_extension_installed
+- tests/integration/database/test_migration_integration.py::TestMigrationIntegration::test_real_migration_execution
+- tests/integration/database/test_migration_integration.py::TestMigrationIntegration::test_rollback_functionality
+- tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_error_message_details
+- tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_get_current_revision
+- tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_is_at_head
+- tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_multiple_validators_same_database
+- tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_after_downgrade
+- tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_nonexistent_migration
+- tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_or_raise_failure
+- tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_or_raise_success
+- tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_single_migration
+- tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_with_all_migrations
+- tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_with_no_migrations
+- tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_with_partial_migrations
+- tests/integration/registry/test_registry_integration.py::TestConfigurationValidation::test_configuration_warnings
+- tests/integration/registry/test_registry_integration.py::TestErrorHandling::test_invalid_service_config
+- tests/integration/registry/test_registry_integration.py::TestRealServiceInstantiation::test_multiple_service_instantiation
+- tests/integration/services/test_service_integration.py::test_embedding_database_consistency
+- tests/integration/services/test_service_integration.py::test_rag_workflow
+- tests/integration/strategies/test_self_reflective_integration.py::TestSelfReflectiveIntegration::test_end_to_end_workflow
+- tests/integration/strategies/test_self_reflective_integration.py::TestSelfReflectiveIntegration::test_performance_within_limits
+- tests/integration/strategies/test_self_reflective_integration.py::TestSelfReflectiveIntegration::test_retry_with_poor_results
+- tests/integration/strategies/test_self_reflective_integration.py::TestSelfReflectiveWithLMStudio::test_with_real_llm
+- tests/integration/test_package_integration.py::TestFullWorkflow::test_full_workflow_with_installed_package
+- tests/integration/test_package_integration.py::TestSmokeTest::test_basic_usage_smoke_test
+- tests/unit/config/test_strategy_pair_manager.py::test_db_context_creation
+- tests/unit/config/test_strategy_pair_manager.py::test_load_pair_success
+- tests/unit/database/test_batch_operations.py::TestBatchOperations::test_store_chunks_with_hierarchy
+- tests/unit/database/test_migrations.py::TestAlembicMigrations::test_get_current_version
+- tests/unit/database/test_migrations.py::TestAlembicMigrations::test_migration_creates_indexes
+- tests/unit/database/test_migrations.py::TestAlembicMigrations::test_migration_creates_tables
+- tests/unit/database/test_migrations.py::TestAlembicMigrations::test_migration_downgrade
+- tests/unit/database/test_migrations.py::TestAlembicMigrations::test_migration_idempotency
+- tests/unit/database/test_migrations.py::TestAlembicMigrations::test_migration_upgrade_to_head
+- tests/unit/database/test_pgvector.py::TestPgVectorIntegration::test_cosine_similarity_search
+- tests/unit/documentation/test_code_examples.py::TestCodeExamples::test_all_code_examples_have_valid_syntax
+- tests/unit/documentation/test_links.py::TestDocumentationLinks::test_no_broken_internal_links
+- tests/unit/registry/test_service_factory.py::TestDatabaseServiceCreation::test_create_database_service_neo4j
+- tests/unit/registry/test_service_factory.py::TestDatabaseServiceCreation::test_create_database_service_neo4j_with_defaults
+- tests/unit/registry/test_service_factory.py::TestDatabaseServiceCreation::test_create_database_service_postgres_with_components
+- tests/unit/registry/test_service_factory.py::TestDatabaseServiceCreation::test_create_database_service_postgres_with_connection_string
+- tests/unit/registry/test_service_factory.py::TestDatabaseServiceCreation::test_create_database_service_postgres_with_defaults
+- tests/unit/registry/test_service_factory.py::TestEmbeddingServiceCreation::test_create_embedding_service_onnx
+- tests/unit/registry/test_service_factory.py::TestEmbeddingServiceCreation::test_create_embedding_service_onnx_with_defaults
+- tests/unit/registry/test_service_factory.py::TestEmbeddingServiceCreation::test_create_embedding_service_openai
+- tests/unit/registry/test_service_factory.py::TestLLMServiceCreation::test_create_llm_service_openai
+- tests/unit/services/embedding/test_onnx_local_provider.py::test_calculate_cost_is_zero
+- tests/unit/services/llm/test_anthropic_provider.py::test_stream
+... and 13 more

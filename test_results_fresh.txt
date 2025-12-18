@@ -14746,3 +14746,5 @@ FAILED tests/unit/test_package.py::TestImports::test_import_config - ImportEr...
 FAILED tests/unit/test_package.py::TestPackageStructure::test_no_circular_imports
 FAILED tests/unit/test_package.py::TestDependencies::test_optional_dependencies_handled
 === 78 failed, 1993 passed, 64 skipped, 4965 warnings in 1188.34s (0:19:48) ====
+
+✓ Results saved to: test_result.txt

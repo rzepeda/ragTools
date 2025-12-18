@@ -128,8 +128,9 @@ def test_messages_to_prompt(ollama_config):
     assert prompt.endswith("Assistant:")
 
 
+@pytest.mark.asyncio
 @patch("httpx.Client")
-def test_stream(mock_client_class, ollama_config):
+async def test_stream(mock_client_class, ollama_config):
     """Test streaming completion."""
     mock_client = Mock()
     mock_stream = Mock()
@@ -149,7 +150,9 @@ def test_stream(mock_client_class, ollama_config):
     provider = OllamaProvider(ollama_config)
 
     messages = [Message(role=MessageRole.USER, content="Hello")]
-    chunks = list(provider.stream(messages))
+    chunks = []
+    async for chunk in provider.stream(messages):
+        chunks.append(chunk)
 
     assert len(chunks) == 3
     assert chunks[0].content == "Hello"

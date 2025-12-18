@@ -1,6 +1,6 @@
 """Main LLM service implementation."""
 
-from typing import List, Dict, Any, Optional, Iterator, Callable
+from typing import List, Dict, Any, Optional, Iterator, AsyncIterator, Callable
 import time
 import logging
 
@@ -128,14 +128,14 @@ class LLMService:
             logger.error(f"Error in LLM completion: {e}")
             raise
 
-    def stream(
+    async def stream(
         self,
         messages: List[Message],
         temperature: float = 0.7,
         max_tokens: int = 1000,
         callback: Optional[Callable[[str], None]] = None,
         **kwargs,
-    ) -> Iterator[StreamChunk]:
+    ) -> AsyncIterator[StreamChunk]:
         """Generate streaming completion.
 
         Args:
@@ -162,7 +162,7 @@ class LLMService:
 
         # Stream completion
         try:
-            for chunk in self.provider.stream(
+            async for chunk in self.provider.stream(
                 messages, temperature=temperature, max_tokens=max_tokens, **kwargs
             ):
                 if callback:

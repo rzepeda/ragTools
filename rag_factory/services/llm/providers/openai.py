@@ -1,6 +1,6 @@
 """OpenAI provider implementation."""
 
-from typing import List, Dict, Any, Iterator
+from typing import List, Dict, Any, Iterator, AsyncIterator
 import time
 from openai import OpenAI
 from tenacity import retry, stop_after_attempt, wait_exponential
@@ -119,7 +119,7 @@ class OpenAIProvider(ILLMProvider):
             metadata={"finish_reason": response.choices[0].finish_reason},
         )
 
-    def stream(self, messages: List[Message], **kwargs) -> Iterator[StreamChunk]:
+    async def stream(self, messages: List[Message], **kwargs) -> AsyncIterator[StreamChunk]:
         """Generate streaming completion.
 
         Args:

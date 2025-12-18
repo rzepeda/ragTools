@@ -70,7 +70,7 @@ class TestLLMServiceCreation:
             "max_tokens": 2000
         }
 
-        with patch('rag_factory.registry.service_factory.OpenAILLMService') as mock_class:
+        with patch('rag_factory.services.api.OpenAILLMService') as mock_class:
             mock_instance = Mock()
             mock_class.return_value = mock_instance
 
@@ -125,7 +125,7 @@ class TestEmbeddingServiceCreation:
             "batch_size": 32
         }
 
-        with patch('rag_factory.registry.service_factory.ONNXEmbeddingService') as mock_class:
+        with patch('rag_factory.services.onnx.ONNXEmbeddingService') as mock_class:
             mock_instance = Mock()
             mock_class.return_value = mock_instance
 
@@ -133,9 +133,9 @@ class TestEmbeddingServiceCreation:
 
             assert service is mock_instance
             mock_class.assert_called_once_with(
-                model_name="Xenova/all-MiniLM-L6-v2",
+                model="Xenova/all-MiniLM-L6-v2",
                 cache_dir="./models",
-                batch_size=32
+                max_batch_size=32
             )
 
     def test_create_embedding_service_onnx_with_defaults(self, factory):
@@ -145,7 +145,7 @@ class TestEmbeddingServiceCreation:
             "model": "Xenova/all-MiniLM-L6-v2"
         }
 
-        with patch('rag_factory.registry.service_factory.ONNXEmbeddingService') as mock_class:
+        with patch('rag_factory.services.onnx.ONNXEmbeddingService') as mock_class:
             mock_instance = Mock()
             mock_class.return_value = mock_instance
 
@@ -154,7 +154,7 @@ class TestEmbeddingServiceCreation:
             assert service is mock_instance
             call_kwargs = mock_class.call_args[1]
             assert call_kwargs['cache_dir'] == './models'
-            assert call_kwargs['batch_size'] == 32
+            assert call_kwargs['max_batch_size'] == 32
 
     def test_create_embedding_service_openai(self, factory):
         """Test creating OpenAI embedding service."""
@@ -164,7 +164,7 @@ class TestEmbeddingServiceCreation:
             "model": "text-embedding-ada-002"
         }
 
-        with patch('rag_factory.registry.service_factory.OpenAIEmbeddingService') as mock_class:
+        with patch('rag_factory.services.api.OpenAIEmbeddingService') as mock_class:
             mock_instance = Mock()
             mock_class.return_value = mock_instance
 
@@ -215,7 +215,7 @@ class TestDatabaseServiceCreation:
             "max_overflow": 20
         }
 
-        with patch('rag_factory.registry.service_factory.PostgresqlDatabaseService') as mock_class:
+        with patch('rag_factory.services.database.PostgresqlDatabaseService') as mock_class:
             mock_instance = Mock()
             mock_class.return_value = mock_instance
 
@@ -240,7 +240,7 @@ class TestDatabaseServiceCreation:
             "pool_size": 5
         }
 
-        with patch('rag_factory.registry.service_factory.PostgresqlDatabaseService') as mock_class:
+        with patch('rag_factory.services.database.PostgresqlDatabaseService') as mock_class:
             mock_instance = Mock()
             mock_class.return_value = mock_instance
 
@@ -261,7 +261,7 @@ class TestDatabaseServiceCreation:
             "database": "testdb"
         }
 
-        with patch('rag_factory.registry.service_factory.PostgresqlDatabaseService') as mock_class:
+        with patch('rag_factory.services.database.PostgresqlDatabaseService') as mock_class:
             mock_instance = Mock()
             mock_class.return_value = mock_instance
 
@@ -284,7 +284,7 @@ class TestDatabaseServiceCreation:
             "password": "testpass"
         }
 
-        with patch('rag_factory.registry.service_factory.Neo4jGraphService') as mock_class:
+        with patch('rag_factory.services.database.Neo4jGraphService') as mock_class:
             mock_instance = Mock()
             mock_class.return_value = mock_instance
 
@@ -307,7 +307,7 @@ class TestDatabaseServiceCreation:
             "password": "testpass"
         }
 
-        with patch('rag_factory.registry.service_factory.Neo4jGraphService') as mock_class:
+        with patch('rag_factory.services.database.Neo4jGraphService') as mock_class:
             mock_instance = Mock()
             mock_class.return_value = mock_instance
 

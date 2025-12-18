@@ -125,5 +125,5 @@ def downgrade() -> None:
     op.execute("DROP TABLE IF EXISTS chunks CASCADE")
     op.execute("DROP TABLE IF EXISTS documents CASCADE")
 
-    # Drop extension
-    op.execute("DROP EXTENSION IF EXISTS vector")
+    # Drop extension (CASCADE to drop dependent objects like vector columns)
+    op.execute("DROP EXTENSION IF EXISTS vector CASCADE")

@@ -66,7 +66,8 @@ class TestBatchOperations:
             
             # Verify metadata enrichment
             call_args = conn.execute.call_args
-            # Query is 0, chunk_id is 1, text is 2, embedding is 3, metadata is 4
-            metadata_json = call_args[0][4]
+            # Query is 0, chunk_id is 1, text is 2, metadata is 3
+            # (embedding is embedded in the SQL string, not a parameter)
+            metadata_json = call_args[0][3]
             assert '"level": 1' in metadata_json
             assert '"parent_id": "root_1"' in metadata_json

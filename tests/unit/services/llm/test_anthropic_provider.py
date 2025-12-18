@@ -112,8 +112,9 @@ def test_get_max_tokens(anthropic_config):
     assert provider.get_max_tokens() == 200000
 
 
+@pytest.mark.asyncio
 @patch("rag_factory.services.llm.providers.anthropic.Anthropic")
-def test_stream(mock_anthropic_class, anthropic_config):
+async def test_stream(mock_anthropic_class, anthropic_config):
     """Test streaming completion."""
     mock_client = Mock()
     mock_stream = Mock()
@@ -137,7 +138,9 @@ def test_stream(mock_anthropic_class, anthropic_config):
     provider = AnthropicProvider(anthropic_config)
 
     messages = [Message(role=MessageRole.USER, content="Hello")]
-    chunks = list(provider.stream(messages))
+    chunks = []
+    async for chunk in provider.stream(messages):
+        chunks.append(chunk)
 
     assert len(chunks) == 4  # 3 content chunks + 1 final
     assert chunks[0].content == "Hello"

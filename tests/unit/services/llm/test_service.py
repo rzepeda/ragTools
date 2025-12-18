@@ -145,43 +145,52 @@ def test_estimate_cost(mock_config, mock_provider, monkeypatch):
     mock_provider.calculate_cost.assert_called_once()
 
 
-def test_stream_messages(mock_config, mock_provider, monkeypatch):
+@pytest.mark.asyncio
+async def test_stream_messages(mock_config, mock_provider, monkeypatch):
     """Test streaming completion."""
     from rag_factory.services.llm.base import StreamChunk
 
     service = LLMService(mock_config)
     monkeypatch.setattr(service, "provider", mock_provider)
 
-    # Mock streaming
-    mock_provider.stream.return_value = iter(
-        [
+    # Mock streaming - create async generator
+    async def mock_stream(*args, **kwargs):
+        for chunk in [
             StreamChunk(content="Hello", is_final=False, metadata={}),
             StreamChunk(content=" world", is_final=False, metadata={}),
             StreamChunk(content="", is_final=True, metadata={}),
-        ]
-    )
+        ]:
+            yield chunk
+    
+    mock_provider.stream = mock_stream
 
     messages = [Message(role=MessageRole.USER, content="Hello")]
-    chunks = list(service.stream(messages))
+    chunks = []
+    async for chunk in service.stream(messages):
+        chunks.append(chunk)
 
     assert len(chunks) == 3
     assert chunks[0].content == "Hello"
     assert chunks[2].is_final is True
 
 
-def test_stream_with_callback(mock_config, mock_provider, monkeypatch):
+@pytest.mark.asyncio
+async def test_stream_with_callback(mock_config, mock_provider, monkeypatch):
     """Test streaming with callback function."""
     from rag_factory.services.llm.base import StreamChunk
 
     service = LLMService(mock_config)
     monkeypatch.setattr(service, "provider", mock_provider)
 
-    mock_provider.stream.return_value = iter(
-        [
+    # Mock streaming - create async generator
+    async def mock_stream(*args, **kwargs):
+        for chunk in [
             StreamChunk(content="Hello", is_final=False, metadata={}),
             StreamChunk(content=" world", is_final=False, metadata={}),
-        ]
-    )
+        ]:
+            yield chunk
+    
+    mock_provider.stream = mock_stream
 
     collected = []
 
@@ -189,17 +198,20 @@ def test_stream_with_callback(mock_config, mock_provider, monkeypatch):
         collected.append(content)
 
     messages = [Message(role=MessageRole.USER, content="Hello")]
-    list(service.stream(messages, callback=callback))
+    async for _ in service.stream(messages, callback=callback):
+        pass
 
     assert collected == ["Hello", " world"]
 
 
-def test_stream_empty_messages_raises_error(mock_config):
+@pytest.mark.asyncio
+async def test_stream_empty_messages_raises_error(mock_config):
     """Test streaming with empty messages raises error."""
     service = LLMService(mock_config)
 
     with pytest.raises(ValueError, match="messages cannot be empty"):
-        list(service.stream([]))
+        async for _ in service.stream([]):
+            pass
 
 
 def test_provider_error_handling(mock_config, mock_provider, monkeypatch):

@@ -75,7 +75,7 @@ def test_calculate_cost_is_zero(onnx_config, mock_onnx_env):
         from rag_factory.services.embedding.providers.onnx_local import ONNXLocalProvider
 
         provider = ONNXLocalProvider(onnx_config)
-        cost = provider.calculate_cost(num_texts=100)
+        cost = provider.calculate_cost(token_count=100)
 
         assert cost == 0.0
 

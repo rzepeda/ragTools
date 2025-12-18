@@ -96,10 +96,10 @@ def test_load_pair_success(manager, mock_loader, mock_registry):
         # Verify Migration Validation
         manager.migration_validator.validate.assert_called_with(["1234"])
         
-        # Verify Service Resolution
-        mock_registry.get.assert_any_call("$gpt4")
-        mock_registry.get.assert_any_call("$db1")
-        mock_registry.get.assert_any_call("$embed1")
+        # Verify Service Resolution ($ prefix is stripped by manager)
+        mock_registry.get.assert_any_call("gpt4")
+        mock_registry.get.assert_any_call("db1")
+        mock_registry.get.assert_any_call("embed1")
 
 def test_load_pair_compatibility_error(manager, mock_loader):
     mock_config = {
@@ -157,9 +157,9 @@ def test_db_context_creation(manager, mock_loader, mock_registry):
     mock_context = MagicMock()
     mock_db.get_context.return_value = mock_context
     
-    # Configure registry to return mock_db
+    # Configure registry to return mock_db ($ prefix is stripped by manager)
     def get_service(ref):
-        if ref == "$db1": return mock_db
+        if ref == "db1": return mock_db
         return MagicMock()
     mock_registry.get.side_effect = get_service
 

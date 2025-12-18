@@ -1,6 +1,6 @@
 """Anthropic Claude provider implementation."""
 
-from typing import List, Dict, Any, Iterator
+from typing import List, Dict, Any, Iterator, AsyncIterator
 import time
 from anthropic import Anthropic
 from tenacity import retry, stop_after_attempt, wait_exponential
@@ -106,7 +106,7 @@ class AnthropicProvider(ILLMProvider):
             metadata={"stop_reason": response.stop_reason},
         )
 
-    def stream(self, messages: List[Message], **kwargs) -> Iterator[StreamChunk]:
+    async def stream(self, messages: List[Message], **kwargs) -> AsyncIterator[StreamChunk]:
         """Generate streaming completion.
 
         Args:
