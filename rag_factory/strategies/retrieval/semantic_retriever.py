@@ -57,25 +57,38 @@ class SemanticRetriever(IRetrievalStrategy):
         # IRetrievalStrategy docstring says context.config is "Configuration dictionary for retrieval parameters"
         # I will merge them or prefer context.
         
+        # Get top_k from config if available, otherwise use parameter default
+        effective_top_k = getattr(self.config, 'top_k', top_k)
+        
         # Embed the query
         query_embedding = await self.deps.embedding_service.embed(query)
         
         # Search the database
         results = await context.database.search_chunks(
             query_embedding=query_embedding,
-            top_k=top_k
+            top_k=effective_top_k
         )
         
-        # Convert dict results to Chunk objects
+        # Convert results to Chunk objects
         chunks = []
         for res in results:
-            chunk = Chunk(
-                text=res.get('text', ''),
-                score=res.get('score', 0.0),
-                metadata=res.get('metadata', {}),
-                chunk_id=str(res.get('id', '')),
-                source_id=str(res.get('document_id', ''))
-            )
+            # Handle both dict (from mocks) and object responses (from real services)
+            if isinstance(res, dict):
+                chunk = Chunk(
+                    text=res.get('text', ''),
+                    score=res.get('score', res.get('similarity', 0.0)),
+                    metadata=res.get('metadata', {}),
+                    chunk_id=str(res.get('id', res.get('chunk_id', ''))),
+                    source_id=str(res.get('document_id', res.get('source_id', '')))
+                )
+            else:
+                chunk = Chunk(
+                    text=getattr(res, 'text', ''),
+                    score=getattr(res, 'similarity', 0.0),
+                    metadata=getattr(res, 'metadata', {}),
+                    chunk_id=str(getattr(res, 'chunk_id', '')),
+                    source_id=str(getattr(res, 'source_id', ''))
+                )
             chunks.append(chunk)
             
         return chunks

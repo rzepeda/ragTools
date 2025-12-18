@@ -214,7 +214,7 @@ def real_embedding_service(require_embeddings):
         
         def get_dimension(self):
             """Get embedding dimension."""
-            return self.provider.get_dimension()
+            return self.provider.get_dimensions()
     
     return AsyncEmbeddingWrapper(provider)
 

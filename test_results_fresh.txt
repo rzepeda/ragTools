@@ -1,14 +1,10 @@
-========================================
-Test Results - 2025-12-18 00:00:30
-========================================
-Environment Configuration:
+✓ Virtual environment activated
+✓ Environment variables loaded from .env
   EMBEDDING_MODEL_NAME: Xenova/all-MiniLM-L6-v2
   EMBEDDING_MODEL_PATH: models/embeddings
-  LM_STUDIO_BASE_URL: http://192.168.56.1:1234/v1
-  LM_STUDIO_MODEL: phi-4-mini-instruct
 
-Command: pytest 
-========================================
+Running tests...
+Output will be saved to: test_result.txt
 
 ============================= test session starts ==============================
 platform linux -- Python 3.12.3, pytest-9.0.1, pluggy-1.6.0 -- /mnt/MCPProyects/ragTools/venv/bin/python3

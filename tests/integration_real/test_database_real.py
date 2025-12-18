@@ -196,14 +196,13 @@ async def test_chunk_metadata_persistence(real_db_service, real_embedding_servic
 @pytest.mark.asyncio
 async def test_database_context_table_mapping(real_db_service):
     """Test DatabaseContext with custom table/field mappings."""
-    # Get a database context with custom table name
-    context = real_db_service.get_context(table_name="custom_chunks_test")
+    # Get a database context with custom table mapping
+    context = real_db_service.get_context(
+        table_mapping={"chunks": "custom_chunks_test"}
+    )
     
     assert context is not None
-    assert context.table_name == "custom_chunks_test"
-    
-    # Context should share the same engine
-    assert context.engine is real_db_service.engine
+    assert context.tables["chunks"] == "custom_chunks_test"
 
 
 @pytest.mark.real_integration

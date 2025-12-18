@@ -59,6 +59,7 @@ async def test_retrieval_pipeline(real_db_service, real_embedding_service):
     from rag_factory.strategies.retrieval.semantic_retriever import SemanticRetriever
     from rag_factory.strategies.base import StrategyConfig
     from rag_factory.services.dependencies import StrategyDependencies
+    from rag_factory.core.retrieval_interface import RetrievalContext
     
     # First, index some documents
     texts = [
@@ -93,9 +94,12 @@ async def test_retrieval_pipeline(real_db_service, real_embedding_service):
     
     strategy = SemanticRetriever(config=config, dependencies=dependencies)
     
+    # Create retrieval context
+    retrieval_context = RetrievalContext(database_service=real_db_service, config={})
+    
     # Retrieve relevant chunks
     query = "What is Python?"
-    results = await strategy.retrieve(query)
+    results = await strategy.retrieve(query, retrieval_context)
     
     assert len(results) > 0
     assert len(results) <= 2  # top_k=2
@@ -153,8 +157,12 @@ async def test_full_rag_pipeline(real_db_service, real_embedding_service, real_l
     )
     retrieval_strategy = SemanticRetriever(config=retrieval_config, dependencies=retrieval_deps)
     
+    # Create retrieval context
+    from rag_factory.core.retrieval_interface import RetrievalContext
+    retrieval_context = RetrievalContext(database_service=real_db_service, config={})
+    
     query = "When was the Eiffel Tower built?"
-    retrieved_chunks = await retrieval_strategy.retrieve(query)
+    retrieved_chunks = await retrieval_strategy.retrieve(query, retrieval_context)
     
     assert len(retrieved_chunks) > 0
     
