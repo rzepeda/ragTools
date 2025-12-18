@@ -146,11 +146,16 @@ class PostgresqlDatabaseService(IDatabaseService):
 
     async def _ensure_table(self):
         """Ensure the chunks table exists with pgvector extension."""
+        logger.info(f"[_ensure_table] Starting table setup for {self.table_name}")
+        logger.info(f"[_ensure_table] Acquiring connection from pool")
         async with self._pool.acquire() as conn:
+            logger.info(f"[_ensure_table] Connection acquired, enabling pgvector extension")
             # Enable pgvector extension
             await conn.execute("CREATE EXTENSION IF NOT EXISTS vector")
+            logger.info(f"[_ensure_table] pgvector extension enabled")
 
             # Create chunks table
+            logger.info(f"[_ensure_table] Creating table {self.table_name}")
             await conn.execute(f"""
                 CREATE TABLE IF NOT EXISTS {self.table_name} (
                     id SERIAL PRIMARY KEY,
@@ -161,14 +166,37 @@ class PostgresqlDatabaseService(IDatabaseService):
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """)
+            logger.info(f"[_ensure_table] Table created/verified")
+
+            # Check if embedding column exists (validation for existing tables)
+            logger.info(f"[_ensure_table] Checking if embedding column exists")
+            column_exists = await conn.fetchval(
+                """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM information_schema.columns 
+                    WHERE table_name = $1 
+                    AND column_name = 'embedding'
+                )
+                """,
+                self.table_name
+            )
+            logger.info(f"[_ensure_table] Embedding column exists: {column_exists}")
+
+            if not column_exists:
+                logger.info(f"Adding missing 'embedding' column to table {self.table_name}")
+                await conn.execute(f"ALTER TABLE {self.table_name} ADD COLUMN embedding vector({self.vector_dimensions})")
+                logger.info(f"[_ensure_table] Embedding column added")
 
             # Create index for vector similarity search
+            logger.info(f"[_ensure_table] Creating ivfflat index")
             await conn.execute(f"""
                 CREATE INDEX IF NOT EXISTS {self.table_name}_embedding_idx
                 ON {self.table_name}
                 USING ivfflat (embedding vector_cosine_ops)
                 WITH (lists = 100)
             """)
+            logger.info(f"[_ensure_table] Index created/verified")
 
             logger.info(f"Ensured table {self.table_name} exists")
 
@@ -255,13 +283,13 @@ class PostgresqlDatabaseService(IDatabaseService):
             top_k: Maximum number of results to return
 
         Returns:
-            List of chunk dictionaries, sorted by similarity score in
-            descending order. Each chunk should contain at minimum the
-            text content and similarity score.
+            List of Chunk objects, sorted by similarity score in
+            descending order.
 
         Raises:
             Exception: If search fails
         """
+        from rag_factory.repositories.chunk import Chunk
         pool = await self._get_pool()
 
         # Convert embedding to string format for pgvector
@@ -296,15 +324,17 @@ class PostgresqlDatabaseService(IDatabaseService):
                 logger.error(f"Embedding string length: {len(embedding_str)}")
                 raise
 
-        # Convert rows to dictionaries
+        # Convert rows to Chunk objects
         results = []
         for row in rows:
-            chunk = {
-                'chunk_id': row["chunk_id"],
-                'text': row["text"],
-                'metadata': json.loads(row["metadata"]) if row["metadata"] else {},
-                'similarity': float(row["similarity"])
-            }
+            chunk = Chunk(
+                chunk_id=row["chunk_id"],
+                text=row["text"],
+                metadata=json.loads(row["metadata"]) if row["metadata"] else {},
+                embedding=[]  # Don't return embeddings in search results to save memory
+            )
+            # Add similarity as metadata for convenience
+            chunk.metadata['similarity'] = float(row["similarity"])
             results.append(chunk)
 
         logger.debug(f"Found {len(results)} similar chunks")
@@ -347,12 +377,12 @@ class PostgresqlDatabaseService(IDatabaseService):
         """Retrieve all chunks from the database.
 
         Returns:
-            List of Chunk ORM objects
+            List of Chunk objects
 
         Raises:
             Exception: If retrieval fails
         """
-        from rag_factory.database.models import Chunk
+        from rag_factory.repositories.chunk import Chunk
         pool = await self._get_pool()
 
         async with pool.acquire() as conn:
@@ -364,15 +394,15 @@ class PostgresqlDatabaseService(IDatabaseService):
                 """
             )
 
-        # Convert rows to dictionaries
+        # Convert rows to Chunk objects
         chunks = []
         for row in rows:
-            chunk = {
-                'chunk_id': row["chunk_id"],
-                'text': row["text"],
-                'metadata': json.loads(row["metadata"]) if row["metadata"] else {},
-                'embedding': row["embedding"]
-            }
+            chunk = Chunk(
+                chunk_id=row["chunk_id"],
+                text=row["text"],
+                metadata=json.loads(row["metadata"]) if row["metadata"] else {},
+                embedding=list(row["embedding"]) if row["embedding"] else []
+            )
             chunks.append(chunk)
 
         logger.debug(f"Retrieved {len(chunks)} chunks")

@@ -153,6 +153,8 @@ def require_embeddings():
 async def real_db_service(require_postgres) -> AsyncGenerator:
     """Provide real PostgreSQL service."""
     from rag_factory.services.database.postgres import PostgresqlDatabaseService
+    import logging
+    logger = logging.getLogger(__name__)
     
     url = os.getenv("DB_TEST_DATABASE_URL") or os.getenv("TEST_DATABASE_URL")
     
@@ -161,6 +163,7 @@ async def real_db_service(require_postgres) -> AsyncGenerator:
     from urllib.parse import urlparse
     parsed = urlparse(url)
     
+    logger.info("[FIXTURE] Creating PostgresqlDatabaseService")
     service = PostgresqlDatabaseService(
         host=parsed.hostname,
         port=parsed.port or 5432,
@@ -170,16 +173,41 @@ async def real_db_service(require_postgres) -> AsyncGenerator:
         table_name="test_chunks_real"
     )
     
-    yield service
-    
-    # Cleanup: drop test table and close connections
+    # Cleanup BEFORE test: ensure clean state
+    # First ensure table exists by getting pool (which calls _ensure_table)
     try:
-        async with service.engine.begin() as conn:
-            await conn.execute(text(f"DROP TABLE IF EXISTS test_chunks_real CASCADE"))
-    except Exception:
+        logger.info("[FIXTURE] Getting pool for cleanup")
+        pool = await service._get_pool()
+        logger.info("[FIXTURE] Pool acquired, truncating table")
+        # Now truncate to clean any existing data
+        async with pool.acquire() as conn:
+            await conn.execute(f"TRUNCATE TABLE {service.table_name} CASCADE")
+        logger.info("[FIXTURE] Table truncated successfully")
+    except Exception as e:
+        # Table might not exist yet or other issue, that's okay
+        # The _get_pool() call will create it if needed
+        logger.info(f"[FIXTURE] Cleanup failed (expected on first run): {e}")
         pass
     
+    logger.info("[FIXTURE] Yielding service to test")
+    yield service
+    
+    # Cleanup AFTER test: drop test table and close connections
+    logger.info("[FIXTURE] Test completed, starting cleanup")
+    try:
+        pool = await service._get_pool()
+        logger.info("[FIXTURE] Pool acquired for cleanup")
+        async with pool.acquire() as conn:
+            await conn.execute(f"DROP TABLE IF EXISTS {service.table_name} CASCADE")
+        logger.info("[FIXTURE] Table dropped successfully")
+    except Exception as e:
+        logger.info(f"[FIXTURE] Cleanup failed: {e}")
+        pass
+    
+    logger.info("[FIXTURE] Closing service")
     await service.close()
+    logger.info("[FIXTURE] Service closed")
+
 
 
 @pytest.fixture

@@ -1,0 +1,45 @@
+✓ Virtual environment activated
+✓ Environment variables loaded from .env
+  EMBEDDING_MODEL_NAME: Xenova/all-MiniLM-L6-v2
+  EMBEDDING_MODEL_PATH: models/embeddings
+
+Running tests...
+Output will be saved to: test_result.txt
+
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.1, pluggy-1.6.0 -- /mnt/MCPProyects/ragTools/venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /mnt/MCPProyects/ragTools
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: anyio-4.12.0, cov-7.0.0, asyncio-1.3.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 2 items
+
+tests/integration_real/test_database_real.py::test_postgres_connection 
+-------------------------------- live log setup --------------------------------
+INFO     tests.integration_real.conftest:conftest.py:166 [FIXTURE] Creating PostgresqlDatabaseService
+INFO     rag_factory.services.database.postgres:postgres.py:121 Initialized PostgreSQL service for 192.168.56.1:5432/rag_test
+INFO     tests.integration_real.conftest:conftest.py:179 [FIXTURE] Getting pool for cleanup
+INFO     rag_factory.services.database.postgres:postgres.py:149 [_ensure_table] Starting table setup for test_chunks_real
+INFO     rag_factory.services.database.postgres:postgres.py:150 [_ensure_table] Acquiring connection from pool
+INFO     rag_factory.services.database.postgres:postgres.py:152 [_ensure_table] Connection acquired, enabling pgvector extension
+INFO     rag_factory.services.database.postgres:postgres.py:155 [_ensure_table] pgvector extension enabled
+INFO     rag_factory.services.database.postgres:postgres.py:158 [_ensure_table] Creating table test_chunks_real
+INFO     rag_factory.services.database.postgres:postgres.py:169 [_ensure_table] Table created/verified
+INFO     rag_factory.services.database.postgres:postgres.py:172 [_ensure_table] Checking if embedding column exists
+INFO     rag_factory.services.database.postgres:postgres.py:184 [_ensure_table] Embedding column exists: True
+INFO     rag_factory.services.database.postgres:postgres.py:192 [_ensure_table] Creating ivfflat index
+INFO     rag_factory.services.database.postgres:postgres.py:199 [_ensure_table] Index created/verified
+INFO     rag_factory.services.database.postgres:postgres.py:201 Ensured table test_chunks_real exists
+INFO     tests.integration_real.conftest:conftest.py:181 [FIXTURE] Pool acquired, truncating table
+INFO     tests.integration_real.conftest:conftest.py:189 [FIXTURE] Cleanup failed (expected on first run): Expected str, got TextClause
+INFO     tests.integration_real.conftest:conftest.py:192 [FIXTURE] Yielding service to test
+PASSED                                                                   [ 50%]
+------------------------------ live log teardown -------------------------------
+INFO     tests.integration_real.conftest:conftest.py:196 [FIXTURE] Test completed, starting cleanup
+INFO     tests.integration_real.conftest:conftest.py:199 [FIXTURE] Pool acquired for cleanup
+INFO     tests.integration_real.conftest:conftest.py:204 [FIXTURE] Cleanup failed: Expected str, got TextClause
+INFO     tests.integration_real.conftest:conftest.py:207 [FIXTURE] Closing service
+WARNING  asyncpg.pool:pool.py:985 Pool.close() is taking over 60 seconds to complete. Check if you have any unreleased connections left. Use asyncio.wait_for() to set a timeout for Pool.close().
+
+✓ Results saved to: test_result.txt
