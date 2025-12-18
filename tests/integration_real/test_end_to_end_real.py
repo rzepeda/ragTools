@@ -5,7 +5,6 @@ Tests complete RAG workflows with real services configured via .env.
 """
 
 import pytest
-from rag_factory.repositories.document import Document
 from rag_factory.repositories.chunk import Chunk
 
 
@@ -18,10 +17,12 @@ async def test_document_indexing_pipeline(real_db_service, real_embedding_servic
     from rag_factory.strategies.indexing.vector_embedding import VectorEmbeddingIndexing
     from rag_factory.strategies.base import StrategyConfig
     from rag_factory.services.dependencies import StrategyDependencies
+    from rag_factory.core.indexing_interface import IndexingContext
+    from dataclasses import asdict
     
     # Create indexing strategy
     config = StrategyConfig(
-        name="test_indexing",
+        strategy_name="test_indexing",
         chunk_size=200,
         chunk_overlap=50
     )
@@ -31,10 +32,13 @@ async def test_document_indexing_pipeline(real_db_service, real_embedding_servic
         database_service=real_db_service
     )
     
-    strategy = VectorEmbeddingIndexing(config=config, dependencies=dependencies)
+    strategy = VectorEmbeddingIndexing(config=asdict(config), dependencies=dependencies)
+    
+    # Create indexing context
+    context = IndexingContext(database_service=real_db_service, config=asdict(config))
     
     # Index documents
-    await strategy.index(sample_documents)
+    await strategy.process(sample_documents, context)
     
     # Verify chunks were stored
     chunks = await real_db_service.get_all_chunks()
@@ -78,7 +82,7 @@ async def test_retrieval_pipeline(real_db_service, real_embedding_service):
     
     # Create retrieval strategy
     config = StrategyConfig(
-        name="test_retrieval",
+        strategy_name="test_retrieval",
         top_k=2
     )
     
@@ -112,30 +116,37 @@ async def test_full_rag_pipeline(real_db_service, real_embedding_service, real_l
     from rag_factory.strategies.base import StrategyConfig
     from rag_factory.services.dependencies import StrategyDependencies
     from rag_factory.services.llm.base import Message, MessageRole
+    from rag_factory.core.indexing_interface import IndexingContext
+    from dataclasses import asdict
     
     # Step 1: Index documents
     documents = [
-        Document(
-            content="The Eiffel Tower was built in 1889 by Gustave Eiffel. It is located in Paris, France and stands 330 meters tall.",
-            metadata={"source": "eiffel.txt"}
-        ),
-        Document(
-            content="Python is a high-level programming language created by Guido van Rossum in 1991. It is known for its simplicity and readability.",
-            metadata={"source": "python.txt"}
-        )
+        {
+            "text": "The Eiffel Tower was built in 1889 by Gustave Eiffel. It is located in Paris, France and stands 330 meters tall.",
+            "id": "eiffel_doc",
+            "metadata": {"source": "eiffel.txt"}
+        },
+        {
+            "text": "Python is a high-level programming language created by Guido van Rossum in 1991. It is known for its simplicity and readability.",
+            "id": "python_doc",
+            "metadata": {"source": "python.txt"}
+        }
     ]
     
-    indexing_config = StrategyConfig(name="indexing", chunk_size=200, chunk_overlap=50)
+    indexing_config = StrategyConfig(strategy_name="indexing", chunk_size=200, chunk_overlap=50)
     indexing_deps = StrategyDependencies(
         embedding_service=real_embedding_service,
         database_service=real_db_service
     )
-    indexing_strategy = VectorEmbeddingIndexing(config=indexing_config, dependencies=indexing_deps)
+    indexing_strategy = VectorEmbeddingIndexing(config=asdict(indexing_config), dependencies=indexing_deps)
     
-    await indexing_strategy.index(documents)
+    # Create indexing context
+    indexing_context = IndexingContext(database_service=real_db_service, config=asdict(indexing_config))
+    
+    await indexing_strategy.process(documents, indexing_context)
     
     # Step 2: Retrieve relevant chunks
-    retrieval_config = StrategyConfig(name="retrieval", top_k=2)
+    retrieval_config = StrategyConfig(strategy_name="retrieval", top_k=2)
     retrieval_deps = StrategyDependencies(
         embedding_service=real_embedding_service,
         database_service=real_db_service
@@ -176,27 +187,32 @@ async def test_multiple_document_batches(real_db_service, real_embedding_service
     from rag_factory.strategies.indexing.vector_embedding import VectorEmbeddingIndexing
     from rag_factory.strategies.base import StrategyConfig
     from rag_factory.services.dependencies import StrategyDependencies
+    from rag_factory.core.indexing_interface import IndexingContext
+    from dataclasses import asdict
     
-    config = StrategyConfig(name="batch_test", chunk_size=100, chunk_overlap=20)
+    config = StrategyConfig(strategy_name="batch_test", chunk_size=100, chunk_overlap=20)
     dependencies = StrategyDependencies(
         embedding_service=real_embedding_service,
         database_service=real_db_service
     )
-    strategy = VectorEmbeddingIndexing(config=config, dependencies=dependencies)
+    strategy = VectorEmbeddingIndexing(config=asdict(config), dependencies=dependencies)
+    
+    # Create indexing context
+    context = IndexingContext(database_service=real_db_service, config=asdict(config))
     
     # Index first batch
     batch1 = [
-        Document(content=f"Document {i} from batch 1", metadata={"batch": 1})
+        {"text": f"Document {i} from batch 1", "id": f"batch1_doc{i}", "metadata": {"batch": 1}}
         for i in range(5)
     ]
-    await strategy.index(batch1)
+    await strategy.process(batch1, context)
     
     # Index second batch
     batch2 = [
-        Document(content=f"Document {i} from batch 2", metadata={"batch": 2})
+        {"text": f"Document {i} from batch 2", "id": f"batch2_doc{i}", "metadata": {"batch": 2}}
         for i in range(5)
     ]
-    await strategy.index(batch2)
+    await strategy.process(batch2, context)
     
     # Verify all chunks are stored
     chunks = await real_db_service.get_all_chunks()
@@ -246,24 +262,30 @@ async def test_large_document_indexing(real_db_service, real_embedding_service):
     from rag_factory.strategies.indexing.vector_embedding import VectorEmbeddingIndexing
     from rag_factory.strategies.base import StrategyConfig
     from rag_factory.services.dependencies import StrategyDependencies
+    from rag_factory.core.indexing_interface import IndexingContext
+    from dataclasses import asdict
     
     # Create a large document
     large_text = " ".join([f"This is sentence number {i}." for i in range(1000)])
     
-    document = Document(
-        content=large_text,
-        metadata={"source": "large_doc.txt", "size": "large"}
-    )
+    document = {
+        "text": large_text,
+        "id": "large_doc",
+        "metadata": {"source": "large_doc.txt", "size": "large"}
+    }
     
-    config = StrategyConfig(name="large_doc_test", chunk_size=200, chunk_overlap=50)
+    config = StrategyConfig(strategy_name="large_doc_test", chunk_size=200, chunk_overlap=50)
     dependencies = StrategyDependencies(
         embedding_service=real_embedding_service,
         database_service=real_db_service
     )
-    strategy = VectorEmbeddingIndexing(config=config, dependencies=dependencies)
+    strategy = VectorEmbeddingIndexing(config=asdict(config), dependencies=dependencies)
+    
+    # Create indexing context
+    context = IndexingContext(database_service=real_db_service, config=asdict(config))
     
     # Index the large document
-    await strategy.index([document])
+    await strategy.process([document], context)
     
     # Verify chunks were created
     chunks = await real_db_service.get_all_chunks()

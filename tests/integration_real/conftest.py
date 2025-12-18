@@ -211,6 +211,10 @@ def real_embedding_service(require_embeddings):
             """Async wrapper for batch embedding."""
             result = self.provider.get_embeddings(texts)
             return result.embeddings
+        
+        def get_dimension(self):
+            """Get embedding dimension."""
+            return self.provider.get_dimension()
     
     return AsyncEmbeddingWrapper(provider)
 
@@ -328,15 +332,15 @@ def sample_documents():
     # Return simple dictionaries for testing, not database models
     return [
         {
-            "content": "The quick brown fox jumps over the lazy dog",
+            "text": "The quick brown fox jumps over the lazy dog",
             "metadata": {"source": "test1.txt", "category": "animals"}
         },
         {
-            "content": "Python is a high-level programming language used for web development, data science, and automation",
+            "text": "Python is a high-level programming language used for web development, data science, and automation",
             "metadata": {"source": "test2.txt", "category": "programming"}
         },
         {
-            "content": "Machine learning algorithms can learn from data and make predictions without being explicitly programmed",
+            "text": "Machine learning algorithms can learn from data and make predictions without being explicitly programmed",
             "metadata": {"source": "test3.txt", "category": "ai"}
         }
     ]

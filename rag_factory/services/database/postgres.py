@@ -191,28 +191,42 @@ class PostgresqlDatabaseService(IDatabaseService):
         async with pool.acquire() as conn:
             # Prepare data for insertion
             for chunk in chunks:
-                # Handle both Chunk objects and dictionaries
-                if hasattr(chunk, '__dataclass_fields__'):
-                    # It's a Chunk dataclass object
-                    chunk_id = getattr(chunk, 'chunk_id', getattr(chunk, 'id', None))
-                    text = getattr(chunk, 'text', '')
-                    embedding = getattr(chunk, 'embedding', [])
-                    metadata = getattr(chunk, 'metadata', {})
-                else:
+                # Handle Chunk objects (dataclass or SQLAlchemy ORM) and dictionaries
+                if isinstance(chunk, dict):
                     # It's a dictionary
                     chunk_id = chunk.get("chunk_id", chunk.get("id"))
                     text = chunk.get("text", "")
                     embedding = chunk.get("embedding", [])
                     metadata = chunk.get("metadata", {})
+                else:
+                    # It's a Chunk object (dataclass or ORM)
+                    chunk_id = getattr(chunk, 'chunk_id', getattr(chunk, 'id', None))
+                    text = getattr(chunk, 'text', '')
+                    embedding = getattr(chunk, 'embedding', [])
+                    # Handle both 'metadata' and 'metadata_' attributes (ORM uses metadata_)
+                    metadata = getattr(chunk, 'metadata', getattr(chunk, 'metadata_', {}))
+
+                # Convert embedding to list if it's a numpy array or similar
+                if hasattr(embedding, 'tolist'):
+                    embedding = embedding.tolist()
+                elif not isinstance(embedding, list):
+                    embedding = list(embedding) if embedding else []
+
+                # Skip chunks without embeddings
+                if not embedding:
+                    logger.warning(f"Skipping chunk {chunk_id} - no embedding provided")
+                    continue
 
                 # Convert embedding to string format for pgvector
                 embedding_str = "[" + ",".join(str(x) for x in embedding) + "]"
+                
+                logger.debug(f"Storing chunk {chunk_id}: embedding dims={len(embedding)}, first 3 values={embedding[:3]}")
 
                 # Insert or update chunk
                 await conn.execute(
                     f"""
                     INSERT INTO {self.table_name} (chunk_id, text, embedding, metadata)
-                    VALUES ($1, $2, $3::vector, $4)
+                    VALUES ($1, $2, '{embedding_str}'::vector, $3)
                     ON CONFLICT (chunk_id)
                     DO UPDATE SET
                         text = EXCLUDED.text,
@@ -221,7 +235,6 @@ class PostgresqlDatabaseService(IDatabaseService):
                     """,
                     chunk_id,
                     text,
-                    embedding_str,
                     json.dumps(metadata)
                 )
 
@@ -253,33 +266,47 @@ class PostgresqlDatabaseService(IDatabaseService):
 
         # Convert embedding to string format for pgvector
         embedding_str = "[" + ",".join(str(x) for x in query_embedding) + "]"
+        
+        logger.debug(f"Searching with embedding dims={len(query_embedding)}, first 3 values={query_embedding[:3]}")
 
         async with pool.acquire() as conn:
-            rows = await conn.fetch(
-                f"""
-                SELECT
-                    chunk_id,
-                    text,
-                    metadata,
-                    1 - (embedding <=> $1::vector) as similarity
-                FROM {self.table_name}
-                WHERE embedding IS NOT NULL
-                ORDER BY embedding <=> $1::vector
-                LIMIT $2
-                """,
-                embedding_str,
-                top_k
-            )
+            # Debug: count chunks with embeddings
+            count = await conn.fetchval(f"SELECT COUNT(*) FROM {self.table_name} WHERE embedding IS NOT NULL")
+            logger.debug(f"Found {count} chunks with embeddings in database")
+            
+            try:
+                # Note: We embed the vector string directly in the SQL because
+                # pgvector may not properly handle parameterized vector values
+                rows = await conn.fetch(
+                    f"""
+                    SELECT
+                        chunk_id,
+                        text,
+                        metadata,
+                        1 - (embedding <=> '{embedding_str}'::vector) as similarity
+                    FROM {self.table_name}
+                    WHERE embedding IS NOT NULL
+                    ORDER BY embedding <=> '{embedding_str}'::vector
+                    LIMIT $1
+                    """,
+                    top_k
+                )
+            except Exception as e:
+                logger.error(f"Vector search query failed: {e}")
+                logger.error(f"Embedding string length: {len(embedding_str)}")
+                raise
 
-        # Convert rows to dictionaries
+        # Convert rows to Chunk-like objects
         results = []
         for row in rows:
-            results.append({
-                "chunk_id": row["chunk_id"],
-                "text": row["text"],
-                "metadata": json.loads(row["metadata"]) if row["metadata"] else {},
-                "similarity": float(row["similarity"])
-            })
+            # Create a simple object that mimics the Chunk interface
+            chunk = type('Chunk', (), {
+                'chunk_id': row["chunk_id"],
+                'text': row["text"],
+                'metadata': json.loads(row["metadata"]) if row["metadata"] else {},
+                'similarity': float(row["similarity"])
+            })()
+            results.append(chunk)
 
         logger.debug(f"Found {len(results)} similar chunks")
         return results
@@ -316,6 +343,42 @@ class PostgresqlDatabaseService(IDatabaseService):
             "text": row["text"],
             "metadata": json.loads(row["metadata"]) if row["metadata"] else {}
         }
+
+    async def get_all_chunks(self) -> List[Any]:
+        """Retrieve all chunks from the database.
+
+        Returns:
+            List of Chunk ORM objects
+
+        Raises:
+            Exception: If retrieval fails
+        """
+        from rag_factory.database.models import Chunk
+        pool = await self._get_pool()
+
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(
+                f"""
+                SELECT chunk_id, text, metadata, embedding
+                FROM {self.table_name}
+                ORDER BY created_at
+                """
+            )
+
+        # Convert rows to Chunk ORM-like objects
+        chunks = []
+        for row in rows:
+            # Create a simple object that mimics the Chunk ORM interface
+            chunk = type('Chunk', (), {
+                'chunk_id': row["chunk_id"],
+                'text': row["text"],
+                'metadata': json.loads(row["metadata"]) if row["metadata"] else {},
+                'embedding': row["embedding"]
+            })()
+            chunks.append(chunk)
+
+        logger.debug(f"Retrieved {len(chunks)} chunks")
+        return chunks
 
     async def get_chunks_for_documents(self, document_ids: List[str]) -> List[Dict[str, Any]]:
         """Retrieve all chunks for a list of documents.
