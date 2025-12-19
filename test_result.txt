@@ -1,5 +1,5 @@
 ========================================
-Test Results - 2025-12-18 20:49:41
+Test Results - 2025-12-18 20:50:33
 ========================================
 Environment Configuration:
   EMBEDDING_MODEL_NAME: Xenova/all-MiniLM-L6-v2
@@ -7,7 +7,7 @@ Environment Configuration:
   LM_STUDIO_BASE_URL: http://192.168.56.1:1234/v1
   LM_STUDIO_MODEL: phi-4-mini-instruct
 
-Command: pytest tests/integration_real/test_end_to_end_real.py::test_full_rag_pipeline -v
+Command: pytest tests/integration_real/test_database_real.py tests/integration_real/test_end_to_end_real.py
 ========================================
 
 ============================= test session starts ==============================
@@ -17,9 +17,23 @@ rootdir: /mnt/MCPProyects/ragTools
 configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
 plugins: anyio-4.12.0, cov-7.0.0, asyncio-1.3.0
 asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
-collecting ... collected 1 item
+collecting ... collected 15 items
 
-tests/integration_real/test_end_to_end_real.py::test_full_rag_pipeline PASSED [100%]
+tests/integration_real/test_database_real.py::test_postgres_connection PASSED [  6%]
+tests/integration_real/test_database_real.py::test_table_creation PASSED [ 13%]
+tests/integration_real/test_database_real.py::test_store_and_retrieve_chunks PASSED [ 20%]
+tests/integration_real/test_database_real.py::test_vector_similarity_search PASSED [ 26%]
+tests/integration_real/test_database_real.py::test_batch_embedding_and_storage PASSED [ 33%]
+tests/integration_real/test_database_real.py::test_chunk_metadata_persistence PASSED [ 40%]
+tests/integration_real/test_database_real.py::test_database_context_table_mapping PASSED [ 46%]
+tests/integration_real/test_database_real.py::test_connection_pooling PASSED [ 53%]
+tests/integration_real/test_end_to_end_real.py::test_document_indexing_pipeline PASSED [ 60%]
+tests/integration_real/test_end_to_end_real.py::test_retrieval_pipeline PASSED [ 66%]
+tests/integration_real/test_end_to_end_real.py::test_full_rag_pipeline PASSED [ 73%]
+tests/integration_real/test_end_to_end_real.py::test_multiple_document_batches PASSED [ 80%]
+tests/integration_real/test_end_to_end_real.py::test_retrieval_with_metadata_filtering PASSED [ 86%]
+tests/integration_real/test_end_to_end_real.py::test_large_document_indexing PASSED [ 93%]
+tests/integration_real/test_end_to_end_real.py::test_retrieval_accuracy PASSED [100%]
 
 =============================== warnings summary ===============================
 rag_factory/services/llm/config.py:8
@@ -138,10 +152,10 @@ rag_factory/services/api/cohere.py                                    30     30 
 rag_factory/services/api/openai.py                                    46     46     0%   7-235
 rag_factory/services/consistency.py                                   32     24    25%   80-113, 144-170
 rag_factory/services/database/__init__.py                              5      0   100%
-rag_factory/services/database/database_context.py                    181    159    12%   58-64, 88-106, 123, 140-150, 179-200, 223-240, 256-266, 305-330, 338-339, 343-406, 414-415, 430-510, 516-517, 521-546
+rag_factory/services/database/database_context.py                    181    153    15%   88-106, 123, 140-150, 179-200, 223-240, 256-266, 305-330, 338-339, 343-406, 414-415, 430-510, 516-517, 521-546
 rag_factory/services/database/migration_validator.py                  85     63    26%   29-30, 61-69, 81-88, 108-120, 137-141, 152-181, 192-204, 215-222, 234, 246-256, 268-271
 rag_factory/services/database/neo4j.py                                54     36    33%   14, 60-71, 79-84, 103-114, 134-150, 172-181, 188-191, 195, 199
-rag_factory/services/database/postgres.py                            194     87    55%   17-18, 26-27, 85, 91-103, 187-189, 215, 231-235, 239, 241, 245-246, 322-325, 355-370, 385-409, 420-435, 467-485, 499-522, 527, 538, 575-593, 609-611, 618, 622
+rag_factory/services/database/postgres.py                            194     55    72%   17-18, 26-27, 85, 91-103, 187-189, 215, 239, 241, 245-246, 322-325, 355-370, 420-435, 467-485, 500, 527, 538, 591, 618, 622
 rag_factory/services/dependencies.py                                  41     12    71%   99, 101, 103, 105, 107, 134-140, 179-180
 rag_factory/services/embedding/__init__.py                             4      0   100%
 rag_factory/services/embedding/base.py                                31      6    81%   44, 59, 68, 77, 86, 98
@@ -215,7 +229,7 @@ rag_factory/strategies/indexing/hierarchical.py                       90     73 
 rag_factory/strategies/indexing/in_memory.py                          41     25    39%   54, 65, 93-121, 143, 160, 173, 194-200
 rag_factory/strategies/indexing/keyword_indexing.py                   42     42     0%   8-157
 rag_factory/strategies/indexing/knowledge_graph_indexing.py           46     33    28%   18, 27, 48-89, 108-129
-rag_factory/strategies/indexing/vector_embedding.py                   98     34    65%   64-65, 76-77, 149-150, 167-218
+rag_factory/strategies/indexing/vector_embedding.py                   98      9    91%   64-65, 76-77, 149-150, 174-175, 213
 rag_factory/strategies/knowledge_graph/__init__.py                     4      4     0%   8-19
 rag_factory/strategies/knowledge_graph/config.py                      21     21     0%   8-129
 rag_factory/strategies/knowledge_graph/entity_extractor.py            70     70     0%   7-205
@@ -272,11 +286,11 @@ rag_factory/utils/__init__.py                                          3      0 
 rag_factory/utils/token_counter.py                                    45     30    33%   36-40, 52-62, 74-82, 86, 90, 105-106, 124-135, 153-158
 rag_factory/utils/tokenization.py                                     95     73    23%   36-40, 53-64, 87-114, 126-129, 141-144, 156, 175-190, 209-228, 241-243, 251-252, 270-271, 292-293, 314-315
 ------------------------------------------------------------------------------------------------
-TOTAL                                                              12324  10392    16%
+TOTAL                                                              12324  10329    16%
 DEBUG:httpcore.connection:close.started
 DEBUG:httpcore.connection:close.complete
-======================== 1 passed, 2 warnings in 18.97s ========================
+================== 15 passed, 2 warnings in 316.62s (0:05:16) ==================
 
 ========================================
-Test run completed at 2025-12-18 20:50:18
+Test run completed at 2025-12-18 20:56:19
 ========================================

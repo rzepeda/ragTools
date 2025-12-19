@@ -1,3 +1,7 @@
+tests/benchmarks/test_contextual_performance.py
 tests/integration_real/test_database_real.py
 tests/integration_real/test_end_to_end_real.py
+tests/integration/services/test_service_integration.py
 tests/test_mock_registry.py
+tests/unit/database/test_pgvector.py
+tests/unit/services/test_database_service.py
