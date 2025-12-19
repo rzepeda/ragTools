@@ -1,0 +1,8 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/strategies/late_chunking/models.py
+test_files:
+- tests/integration/strategies/test_late_chunking_integration.py
+- tests/unit/strategies/late_chunking/test_coherence_analyzer.py
+- tests/unit/strategies/late_chunking/test_document_embedder.py
+- tests/unit/strategies/late_chunking/test_embedding_chunker.py
+mocks: []

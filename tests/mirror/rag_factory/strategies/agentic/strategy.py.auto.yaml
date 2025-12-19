@@ -1,0 +1,6 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/strategies/agentic/strategy.py
+test_files:
+- tests/integration/test_agentic_rag_pair.py
+- tests/unit/strategies/agentic/test_strategy.py
+mocks: []

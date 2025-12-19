@@ -1,0 +1,6 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/strategies/contextual/batch_processor.py
+test_files:
+- tests/benchmarks/test_contextual_performance.py
+- tests/unit/strategies/contextual/test_batch_processor.py
+mocks: []

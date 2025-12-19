@@ -1,0 +1,5 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/cli/commands/index.py
+test_files:
+- tests/unit/cli/test_index_command.py
+mocks: []

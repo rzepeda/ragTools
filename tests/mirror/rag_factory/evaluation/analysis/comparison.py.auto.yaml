@@ -1,0 +1,6 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/evaluation/analysis/comparison.py
+test_files:
+- tests/integration/evaluation/test_evaluation_integration.py
+- tests/unit/evaluation/test_comparison.py
+mocks: []

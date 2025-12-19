@@ -1,0 +1,5 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/strategies/reranking/cosine_reranker.py
+test_files:
+- tests/unit/strategies/reranking/test_cosine_reranker.py
+mocks: []

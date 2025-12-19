@@ -1,0 +1,5 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/strategies/hierarchical/strategy.py
+test_files:
+- tests/integration/test_hierarchical_rag_pair.py
+mocks: []

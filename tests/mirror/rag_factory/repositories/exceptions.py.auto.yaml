@@ -1,0 +1,7 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/repositories/exceptions.py
+test_files:
+- tests/unit/repositories/test_chunk_repository.py
+- tests/unit/repositories/test_document_repository.py
+- tests/unit/repositories/test_exceptions.py
+mocks: []

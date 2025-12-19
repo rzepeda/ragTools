@@ -1,0 +1,5 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/cli/formatters/consistency.py
+test_files:
+- tests/unit/cli/test_consistency_formatter.py
+mocks: []

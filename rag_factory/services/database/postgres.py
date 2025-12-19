@@ -298,6 +298,11 @@ class PostgresqlDatabaseService(IDatabaseService):
         logger.debug(f"Searching with embedding dims={len(query_embedding)}, first 3 values={query_embedding[:3]}")
 
         async with pool.acquire() as conn:
+            # Set probes for better recall with IVFFlat index
+            # With lists=100 (set in _ensure_table), probes=10 searches 10% of clusters
+            # This significantly improves recall while maintaining good query performance
+            await conn.execute("SET ivfflat.probes = 10")
+            
             # Debug: count chunks with embeddings
             count = await conn.fetchval(f"SELECT COUNT(*) FROM {self.table_name} WHERE embedding IS NOT NULL")
             logger.debug(f"Found {count} chunks with embeddings in database")

@@ -1,0 +1,6 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/strategies/indexing/context_aware.py
+test_files:
+- tests/integration/test_context_aware_chunking_pair.py
+- tests/unit/strategies/indexing/test_context_aware.py
+mocks: []

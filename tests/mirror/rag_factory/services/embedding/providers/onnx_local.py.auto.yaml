@@ -1,0 +1,9 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/services/embedding/providers/onnx_local.py
+test_files:
+- tests/integration/services/test_onnx_embeddings_integration.py
+- tests/integration_real/conftest.py
+- tests/performance/benchmark_onnx_embeddings.py
+- tests/unit/services/embedding/test_onnx_local_provider.py
+- tests/unit/services/embeddings/test_onnx_local.py
+mocks: []

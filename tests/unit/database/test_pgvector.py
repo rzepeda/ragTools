@@ -53,10 +53,10 @@ class TestPgVectorIntegration:
             results = await service.search_chunks(query_vec, top_k=2)
             
             assert len(results) == 2
-            # Results are dictionaries, not Chunk objects
-            assert results[0]["chunk_id"] == 'doc_0'
-            assert results[1]["chunk_id"] == 'doc_1'
-            assert results[0]["similarity"] > results[1]["similarity"]
+            # Results are now Chunk objects
+            assert results[0].chunk_id == 'doc_0'
+            assert results[1].chunk_id == 'doc_1'
+            assert results[0].metadata['similarity'] > results[1].metadata['similarity']
             
             # Verify query construction
             call_args = conn.fetch.call_args

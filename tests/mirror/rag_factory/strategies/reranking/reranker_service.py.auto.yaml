@@ -1,0 +1,6 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/strategies/reranking/reranker_service.py
+test_files:
+- tests/integration/strategies/test_reranking_integration.py
+- tests/unit/strategies/reranking/test_reranker_service.py
+mocks: []

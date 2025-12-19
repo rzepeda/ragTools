@@ -1,0 +1,5 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/strategies/self_reflective/grader.py
+test_files:
+- tests/unit/strategies/self_reflective/test_grader.py
+mocks: []

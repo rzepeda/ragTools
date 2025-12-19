@@ -1,0 +1,6 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/strategies/indexing/keyword_indexing.py
+test_files:
+- tests/integration/strategies/test_keyword_indexing.py
+- tests/integration/test_keyword_pair.py
+mocks: []

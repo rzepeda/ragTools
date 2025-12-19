@@ -1,0 +1,6 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/services/embedding/providers/openai.py
+test_files:
+- tests/integration_real/conftest.py
+- tests/unit/services/embedding/test_openai_provider.py
+mocks: []

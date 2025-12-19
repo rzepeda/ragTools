@@ -1,0 +1,4 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/evaluation/metrics/performance.py
+test_files: []
+mocks: []

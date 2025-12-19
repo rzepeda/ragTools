@@ -1,0 +1,6 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/services/database/migration_validator.py
+test_files:
+- tests/integration/database/test_migration_validator_integration.py
+- tests/unit/services/database/test_migration_validator.py
+mocks: []

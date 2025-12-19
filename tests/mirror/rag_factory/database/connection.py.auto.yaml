@@ -1,0 +1,7 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/database/connection.py
+test_files:
+- tests/conftest.py
+- tests/integration/database/test_database_integration.py
+- tests/unit/database/test_connection.py
+mocks: []

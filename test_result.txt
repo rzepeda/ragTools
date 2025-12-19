@@ -1,5 +1,5 @@
 ========================================
-Test Results - 2025-12-18 20:50:33
+Test Results - 2025-12-18 23:22:20
 ========================================
 Environment Configuration:
   EMBEDDING_MODEL_NAME: Xenova/all-MiniLM-L6-v2
@@ -7,7 +7,7 @@ Environment Configuration:
   LM_STUDIO_BASE_URL: http://192.168.56.1:1234/v1
   LM_STUDIO_MODEL: phi-4-mini-instruct
 
-Command: pytest tests/integration_real/test_database_real.py tests/integration_real/test_end_to_end_real.py
+Command: pytest tests/integration_real/test_database_real.py::test_vector_similarity_search tests/integration_real/test_end_to_end_real.py::test_full_rag_pipeline -v
 ========================================
 
 ============================= test session starts ==============================
@@ -17,24 +17,270 @@ rootdir: /mnt/MCPProyects/ragTools
 configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
 plugins: anyio-4.12.0, cov-7.0.0, asyncio-1.3.0
 asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
-collecting ... collected 15 items
+collecting ... collected 2 items
 
-tests/integration_real/test_database_real.py::test_postgres_connection PASSED [  6%]
-tests/integration_real/test_database_real.py::test_table_creation PASSED [ 13%]
-tests/integration_real/test_database_real.py::test_store_and_retrieve_chunks PASSED [ 20%]
-tests/integration_real/test_database_real.py::test_vector_similarity_search PASSED [ 26%]
-tests/integration_real/test_database_real.py::test_batch_embedding_and_storage PASSED [ 33%]
-tests/integration_real/test_database_real.py::test_chunk_metadata_persistence PASSED [ 40%]
-tests/integration_real/test_database_real.py::test_database_context_table_mapping PASSED [ 46%]
-tests/integration_real/test_database_real.py::test_connection_pooling PASSED [ 53%]
-tests/integration_real/test_end_to_end_real.py::test_document_indexing_pipeline PASSED [ 60%]
-tests/integration_real/test_end_to_end_real.py::test_retrieval_pipeline PASSED [ 66%]
-tests/integration_real/test_end_to_end_real.py::test_full_rag_pipeline PASSED [ 73%]
-tests/integration_real/test_end_to_end_real.py::test_multiple_document_batches PASSED [ 80%]
-tests/integration_real/test_end_to_end_real.py::test_retrieval_with_metadata_filtering PASSED [ 86%]
-tests/integration_real/test_end_to_end_real.py::test_large_document_indexing PASSED [ 93%]
-tests/integration_real/test_end_to_end_real.py::test_retrieval_accuracy PASSED [100%]
+tests/integration_real/test_database_real.py::test_vector_similarity_search PASSED [ 50%]
+tests/integration_real/test_end_to_end_real.py::test_full_rag_pipeline FAILED [100%]
 
+=================================== FAILURES ===================================
+____________________________ test_full_rag_pipeline ____________________________
+
+real_db_service = <rag_factory.services.database.postgres.PostgresqlDatabaseService object at 0x7eff9db555b0>
+real_embedding_service = <tests.integration_real.conftest.real_embedding_service.<locals>.AsyncEmbeddingWrapper object at 0x7eff9db55f10>
+real_llm_service = <rag_factory.services.llm.service.LLMService object at 0x7eff9dac55e0>
+
+    @pytest.mark.real_integration
+    @pytest.mark.requires_postgres
+    @pytest.mark.requires_embeddings
+    @pytest.mark.requires_llm
+    @pytest.mark.asyncio
+    async def test_full_rag_pipeline(real_db_service, real_embedding_service, real_llm_service):
+        """Test complete RAG pipeline: indexing -> retrieval -> generation."""
+        from rag_factory.strategies.indexing.vector_embedding import VectorEmbeddingIndexing
+        from rag_factory.strategies.retrieval.semantic_retriever import SemanticRetriever
+        from rag_factory.strategies.base import StrategyConfig
+        from rag_factory.services.dependencies import StrategyDependencies
+        from rag_factory.services.llm.base import Message, MessageRole
+        from rag_factory.core.indexing_interface import IndexingContext
+        from dataclasses import asdict
+    
+        # Step 1: Index documents
+        documents = [
+            {
+                "text": "The Eiffel Tower was built in 1889 by Gustave Eiffel. It is located in Paris, France and stands 330 meters tall.",
+                "id": "eiffel_doc",
+                "metadata": {"source": "eiffel.txt"}
+            },
+            {
+                "text": "Python is a high-level programming language created by Guido van Rossum in 1991. It is known for its simplicity and readability.",
+                "id": "python_doc",
+                "metadata": {"source": "python.txt"}
+            }
+        ]
+    
+        indexing_config = StrategyConfig(strategy_name="indexing", chunk_size=200, chunk_overlap=50)
+        indexing_deps = StrategyDependencies(
+            embedding_service=real_embedding_service,
+            database_service=real_db_service
+        )
+        indexing_strategy = VectorEmbeddingIndexing(config=asdict(indexing_config), dependencies=indexing_deps)
+    
+        # Create indexing context
+        indexing_context = IndexingContext(database_service=real_db_service, config=asdict(indexing_config))
+    
+        await indexing_strategy.process(documents, indexing_context)
+    
+        # Step 2: Retrieve relevant chunks
+        retrieval_config = StrategyConfig(strategy_name="retrieval", top_k=2)
+        retrieval_deps = StrategyDependencies(
+            embedding_service=real_embedding_service,
+            database_service=real_db_service
+        )
+        retrieval_strategy = SemanticRetriever(config=retrieval_config, dependencies=retrieval_deps)
+    
+        # Create retrieval context
+        from rag_factory.core.retrieval_interface import RetrievalContext
+        retrieval_context = RetrievalContext(database_service=real_db_service, config={})
+    
+        query = "When was the Eiffel Tower built?"
+        retrieved_chunks = await retrieval_strategy.retrieve(query, retrieval_context)
+    
+        assert len(retrieved_chunks) > 0
+    
+        # Step 3: Generate answer using LLM
+        context = "\n\n".join([chunk.text for chunk in retrieved_chunks])
+    
+        messages = [
+            Message(
+                role=MessageRole.SYSTEM,
+                content="Answer the question based only on the provided context. Be concise."
+            ),
+            Message(
+                role=MessageRole.USER,
+                content=f"Context:\n{context}\n\nQuestion: {query}"
+            )
+        ]
+    
+        response = real_llm_service.complete(messages)
+    
+        assert response is not None
+>       assert "1889" in response.content
+E       AssertionError: assert '1889' in 'The given context does not contain information about when the Eiffel Tower was constructed; it only provides details on Python, which has no relation to historical events or structures like the Eiffel Tower. The answer can be found independently of this text but is unrelated to its content regarding programming languages.'
+E        +  where 'The given context does not contain information about when the Eiffel Tower was constructed; it only provides details on Python, which has no relation to historical events or structures like the Eiffel Tower. The answer can be found independently of this text but is unrelated to its content regarding programming languages.' = LLMResponse(content='The given context does not contain information about when the Eiffel Tower was constructed; it only provides details on Python, which has no relation to historical events or structures like the Eiffel Tower. The answer can be found independently of this text but is unrelated to its content regarding programming languages.', model='phi-4-mini-instruct', provider='openai', prompt_tokens=56, completion_tokens=56, total_tokens=112, cost=0.0, latency=3.963956117630005, metadata={'finish_reason': 'stop'}).content
+
+tests/integration_real/test_end_to_end_real.py:186: AssertionError
+---------------------------- Captured stderr setup -----------------------------
+DEBUG:asyncio:Using selector: EpollSelector
+INFO:tests.integration_real.conftest:[FIXTURE] Creating PostgresqlDatabaseService
+INFO:rag_factory.services.database.postgres:Initialized PostgreSQL service for 192.168.56.1:5432/rag_test
+INFO:tests.integration_real.conftest:[FIXTURE] Getting pool for cleanup
+INFO:rag_factory.services.database.postgres:[_ensure_table] Starting table setup for test_chunks_real
+INFO:rag_factory.services.database.postgres:[_ensure_table] Acquiring connection from pool
+INFO:rag_factory.services.database.postgres:[_ensure_table] Connection acquired, enabling pgvector extension
+INFO:rag_factory.services.database.postgres:[_ensure_table] pgvector extension enabled
+INFO:rag_factory.services.database.postgres:[_ensure_table] Creating table test_chunks_real
+INFO:rag_factory.services.database.postgres:[_ensure_table] Table created/verified
+INFO:rag_factory.services.database.postgres:[_ensure_table] Checking if embedding column exists
+INFO:rag_factory.services.database.postgres:[_ensure_table] Embedding column exists: True
+INFO:rag_factory.services.database.postgres:[_ensure_table] Creating ivfflat index
+INFO:rag_factory.services.database.postgres:[_ensure_table] Index created/verified
+INFO:rag_factory.services.database.postgres:Ensured table test_chunks_real exists
+INFO:tests.integration_real.conftest:[FIXTURE] Pool acquired, truncating table
+INFO:tests.integration_real.conftest:[FIXTURE] Table truncated successfully
+INFO:tests.integration_real.conftest:[FIXTURE] Yielding service to test
+INFO:rag_factory.services.embedding.providers.onnx_local:Loading ONNX model: Xenova/all-MiniLM-L6-v2
+INFO:rag_factory.services.utils.onnx_utils:Using model from EMBEDDING_MODEL_NAME env: Xenova/all-MiniLM-L6-v2
+INFO:rag_factory.services.utils.onnx_utils:Using cached ONNX model: models/embeddings/Xenova_all-MiniLM-L6-v2/onnx/model.onnx
+INFO:rag_factory.services.utils.onnx_utils:Created ONNX session with providers: ['CPUExecutionProvider']
+INFO:rag_factory.services.utils.onnx_utils:Model has 3 inputs and 1 outputs
+DEBUG:rag_factory.services.utils.onnx_utils:  Input: input_ids, shape: ['batch_size', 'sequence_length'], type: tensor(int64)
+DEBUG:rag_factory.services.utils.onnx_utils:  Input: attention_mask, shape: ['batch_size', 'sequence_length'], type: tensor(int64)
+DEBUG:rag_factory.services.utils.onnx_utils:  Input: token_type_ids, shape: ['batch_size', 'sequence_length'], type: tensor(int64)
+DEBUG:rag_factory.services.utils.onnx_utils:  Output: last_hidden_state, shape: ['batch_size', 'sequence_length', 384], type: tensor(float)
+INFO:rag_factory.services.utils.onnx_utils:Model validation passed
+INFO:rag_factory.services.embedding.providers.onnx_local:Loaded tokenizer from models/embeddings/Xenova_all-MiniLM-L6-v2/tokenizer.json
+INFO:rag_factory.services.embedding.providers.onnx_local:Loaded ONNX model Xenova/all-MiniLM-L6-v2 with 384 dimensions
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 192.168.56.1:1234
+DEBUG:urllib3.connectionpool:http://192.168.56.1:1234 "GET /v1/models HTTP/1.1" 200 1082
+------------------------------ Captured log setup ------------------------------
+DEBUG    asyncio:selector_events.py:64 Using selector: EpollSelector
+INFO     tests.integration_real.conftest:conftest.py:166 [FIXTURE] Creating PostgresqlDatabaseService
+INFO     rag_factory.services.database.postgres:postgres.py:121 Initialized PostgreSQL service for 192.168.56.1:5432/rag_test
+INFO     tests.integration_real.conftest:conftest.py:179 [FIXTURE] Getting pool for cleanup
+INFO     rag_factory.services.database.postgres:postgres.py:149 [_ensure_table] Starting table setup for test_chunks_real
+INFO     rag_factory.services.database.postgres:postgres.py:150 [_ensure_table] Acquiring connection from pool
+INFO     rag_factory.services.database.postgres:postgres.py:152 [_ensure_table] Connection acquired, enabling pgvector extension
+INFO     rag_factory.services.database.postgres:postgres.py:155 [_ensure_table] pgvector extension enabled
+INFO     rag_factory.services.database.postgres:postgres.py:158 [_ensure_table] Creating table test_chunks_real
+INFO     rag_factory.services.database.postgres:postgres.py:169 [_ensure_table] Table created/verified
+INFO     rag_factory.services.database.postgres:postgres.py:172 [_ensure_table] Checking if embedding column exists
+INFO     rag_factory.services.database.postgres:postgres.py:184 [_ensure_table] Embedding column exists: True
+INFO     rag_factory.services.database.postgres:postgres.py:192 [_ensure_table] Creating ivfflat index
+INFO     rag_factory.services.database.postgres:postgres.py:199 [_ensure_table] Index created/verified
+INFO     rag_factory.services.database.postgres:postgres.py:201 Ensured table test_chunks_real exists
+INFO     tests.integration_real.conftest:conftest.py:181 [FIXTURE] Pool acquired, truncating table
+INFO     tests.integration_real.conftest:conftest.py:185 [FIXTURE] Table truncated successfully
+INFO     tests.integration_real.conftest:conftest.py:192 [FIXTURE] Yielding service to test
+INFO     rag_factory.services.embedding.providers.onnx_local:onnx_local.py:111 Loading ONNX model: Xenova/all-MiniLM-L6-v2
+INFO     rag_factory.services.utils.onnx_utils:onnx_utils.py:90 Using model from EMBEDDING_MODEL_NAME env: Xenova/all-MiniLM-L6-v2
+INFO     rag_factory.services.utils.onnx_utils:onnx_utils.py:113 Using cached ONNX model: models/embeddings/Xenova_all-MiniLM-L6-v2/onnx/model.onnx
+INFO     rag_factory.services.utils.onnx_utils:onnx_utils.py:211 Created ONNX session with providers: ['CPUExecutionProvider']
+INFO     rag_factory.services.utils.onnx_utils:onnx_utils.py:243 Model has 3 inputs and 1 outputs
+DEBUG    rag_factory.services.utils.onnx_utils:onnx_utils.py:247   Input: input_ids, shape: ['batch_size', 'sequence_length'], type: tensor(int64)
+DEBUG    rag_factory.services.utils.onnx_utils:onnx_utils.py:247   Input: attention_mask, shape: ['batch_size', 'sequence_length'], type: tensor(int64)
+DEBUG    rag_factory.services.utils.onnx_utils:onnx_utils.py:247   Input: token_type_ids, shape: ['batch_size', 'sequence_length'], type: tensor(int64)
+DEBUG    rag_factory.services.utils.onnx_utils:onnx_utils.py:251   Output: last_hidden_state, shape: ['batch_size', 'sequence_length', 384], type: tensor(float)
+INFO     rag_factory.services.utils.onnx_utils:onnx_utils.py:273 Model validation passed
+INFO     rag_factory.services.embedding.providers.onnx_local:onnx_local.py:168 Loaded tokenizer from models/embeddings/Xenova_all-MiniLM-L6-v2/tokenizer.json
+INFO     rag_factory.services.embedding.providers.onnx_local:onnx_local.py:177 Loaded ONNX model Xenova/all-MiniLM-L6-v2 with 384 dimensions
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): 192.168.56.1:1234
+DEBUG    urllib3.connectionpool:connectionpool.py:544 http://192.168.56.1:1234 "GET /v1/models HTTP/1.1" 200 1082
+----------------------------- Captured stderr call -----------------------------
+INFO:rag_factory.strategies.indexing.vector_embedding:Starting VectorEmbeddingIndexing.process with 2 documents
+DEBUG:rag_factory.strategies.indexing.vector_embedding:Configuration: batch_size=32, chunk_size=200, overlap=50
+INFO:rag_factory.strategies.indexing.vector_embedding:Using embedding service: AsyncEmbeddingWrapper
+INFO:rag_factory.strategies.indexing.vector_embedding:Starting document chunking...
+DEBUG:rag_factory.strategies.indexing.vector_embedding:_chunk_documents called with 2 documents, chunk_size=200, overlap=50
+DEBUG:rag_factory.strategies.indexing.vector_embedding:Processing document 1/2: doc_id='eiffel_doc', text_length=112
+DEBUG:rag_factory.strategies.indexing.vector_embedding:Document eiffel_doc fits in single chunk (length=112 <= 200)
+DEBUG:rag_factory.strategies.indexing.vector_embedding:Processing document 2/2: doc_id='python_doc', text_length=128
+DEBUG:rag_factory.strategies.indexing.vector_embedding:Document python_doc fits in single chunk (length=128 <= 200)
+DEBUG:rag_factory.strategies.indexing.vector_embedding:_chunk_documents complete: total 2 chunks created
+INFO:rag_factory.strategies.indexing.vector_embedding:Document chunking complete: created 2 chunks from 2 documents
+INFO:rag_factory.strategies.indexing.vector_embedding:Starting embedding generation for 2 chunks in batches of 32...
+DEBUG:rag_factory.strategies.indexing.vector_embedding:Processing batch 1/1 with 2 texts
+DEBUG:rag_factory.strategies.indexing.vector_embedding:Batch 1/1 complete: generated 2 embeddings
+INFO:rag_factory.strategies.indexing.vector_embedding:Embedding generation complete: created 2 embeddings
+INFO:rag_factory.strategies.indexing.vector_embedding:Adding embeddings to chunks...
+INFO:rag_factory.strategies.indexing.vector_embedding:Storing 2 chunks to database...
+DEBUG:rag_factory.services.database.postgres:Storing chunk eiffel_doc_0: embedding dims=384, first 3 values=[0.054607685655355453, 0.10627976804971695, 0.011374696157872677]
+DEBUG:rag_factory.services.database.postgres:Storing chunk python_doc_0: embedding dims=384, first 3 values=[0.038421668112277985, 0.10197843611240387, 0.02736414037644863]
+DEBUG:rag_factory.services.database.postgres:Stored 2 chunks
+INFO:rag_factory.strategies.indexing.vector_embedding:Database storage complete
+INFO:rag_factory.strategies.indexing.vector_embedding:Indexing complete - Documents: 2, Chunks: 2, Embedding dimension: 384
+DEBUG:rag_factory.services.database.postgres:Searching with embedding dims=384, first 3 values=[0.02967029996216297, 0.12840107083320618, 0.025954896584153175]
+DEBUG:rag_factory.services.database.postgres:Found 2 chunks with embeddings in database
+DEBUG:rag_factory.services.database.postgres:Found 1 similar chunks
+INFO:rag_factory.services.llm.service:Sending request with 65 prompt tokens
+DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'idempotency_key': 'stainless-python-retry-0a49e73e-003d-402c-b203-fa116d347f89', 'json_data': {'messages': [{'role': 'system', 'content': 'Answer the question based only on the provided context. Be concise.'}, {'role': 'user', 'content': 'Context:\nPython is a high-level programming language created by Guido van Rossum in 1991. It is known for its simplicity and readability.\n\nQuestion: When was the Eiffel Tower built?'}], 'model': 'phi-4-mini-instruct', 'max_tokens': 1000, 'temperature': 0.7}}
+DEBUG:openai._base_client:Sending HTTP Request: POST http://192.168.56.1:1234/v1/chat/completions
+DEBUG:httpcore.connection:connect_tcp.started host='192.168.56.1' port=1234 local_address=None timeout=5.0 socket_options=None
+DEBUG:httpcore.connection:connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7eff99bea6f0>
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'X-Powered-By', b'Express'), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'857'), (b'ETag', b'W/"359-Y4UUgrTf0wJqkuhoG6lUb62xut4"'), (b'Date', b'Fri, 19 Dec 2025 02:23:07 GMT'), (b'Connection', b'keep-alive'), (b'Keep-Alive', b'timeout=5')])
+INFO:httpx:HTTP Request: POST http://192.168.56.1:1234/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:openai._base_client:HTTP Response: POST http://192.168.56.1:1234/v1/chat/completions "200 OK" Headers({'x-powered-by': 'Express', 'content-type': 'application/json; charset=utf-8', 'content-length': '857', 'etag': 'W/"359-Y4UUgrTf0wJqkuhoG6lUb62xut4"', 'date': 'Fri, 19 Dec 2025 02:23:07 GMT', 'connection': 'keep-alive', 'keep-alive': 'timeout=5'})
+DEBUG:openai._base_client:request_id: None
+INFO:rag_factory.services.llm.service:Completed in 3.96s, 112 tokens, $0.000000
+------------------------------ Captured log call -------------------------------
+INFO     rag_factory.strategies.indexing.vector_embedding:vector_embedding.py:55 Starting VectorEmbeddingIndexing.process with 2 documents
+DEBUG    rag_factory.strategies.indexing.vector_embedding:vector_embedding.py:61 Configuration: batch_size=32, chunk_size=200, overlap=50
+INFO     rag_factory.strategies.indexing.vector_embedding:vector_embedding.py:67 Using embedding service: AsyncEmbeddingWrapper
+INFO     rag_factory.strategies.indexing.vector_embedding:vector_embedding.py:70 Starting document chunking...
+DEBUG    rag_factory.strategies.indexing.vector_embedding:vector_embedding.py:137 _chunk_documents called with 2 documents, chunk_size=200, overlap=50
+DEBUG    rag_factory.strategies.indexing.vector_embedding:vector_embedding.py:146 Processing document 1/2: doc_id='eiffel_doc', text_length=112
+DEBUG    rag_factory.strategies.indexing.vector_embedding:vector_embedding.py:158 Document eiffel_doc fits in single chunk (length=112 <= 200)
+DEBUG    rag_factory.strategies.indexing.vector_embedding:vector_embedding.py:146 Processing document 2/2: doc_id='python_doc', text_length=128
+DEBUG    rag_factory.strategies.indexing.vector_embedding:vector_embedding.py:158 Document python_doc fits in single chunk (length=128 <= 200)
+DEBUG    rag_factory.strategies.indexing.vector_embedding:vector_embedding.py:220 _chunk_documents complete: total 2 chunks created
+INFO     rag_factory.strategies.indexing.vector_embedding:vector_embedding.py:72 Document chunking complete: created 2 chunks from 2 documents
+INFO     rag_factory.strategies.indexing.vector_embedding:vector_embedding.py:85 Starting embedding generation for 2 chunks in batches of 32...
+DEBUG    rag_factory.strategies.indexing.vector_embedding:vector_embedding.py:94 Processing batch 1/1 with 2 texts
+DEBUG    rag_factory.strategies.indexing.vector_embedding:vector_embedding.py:100 Batch 1/1 complete: generated 2 embeddings
+INFO     rag_factory.strategies.indexing.vector_embedding:vector_embedding.py:102 Embedding generation complete: created 2 embeddings
+INFO     rag_factory.strategies.indexing.vector_embedding:vector_embedding.py:105 Adding embeddings to chunks...
+INFO     rag_factory.strategies.indexing.vector_embedding:vector_embedding.py:109 Storing 2 chunks to database...
+DEBUG    rag_factory.services.database.postgres:postgres.py:251 Storing chunk eiffel_doc_0: embedding dims=384, first 3 values=[0.054607685655355453, 0.10627976804971695, 0.011374696157872677]
+DEBUG    rag_factory.services.database.postgres:postgres.py:251 Storing chunk python_doc_0: embedding dims=384, first 3 values=[0.038421668112277985, 0.10197843611240387, 0.02736414037644863]
+DEBUG    rag_factory.services.database.postgres:postgres.py:269 Stored 2 chunks
+INFO     rag_factory.strategies.indexing.vector_embedding:vector_embedding.py:111 Database storage complete
+INFO     rag_factory.strategies.indexing.vector_embedding:vector_embedding.py:114 Indexing complete - Documents: 2, Chunks: 2, Embedding dimension: 384
+DEBUG    rag_factory.services.database.postgres:postgres.py:298 Searching with embedding dims=384, first 3 values=[0.02967029996216297, 0.12840107083320618, 0.025954896584153175]
+DEBUG    rag_factory.services.database.postgres:postgres.py:308 Found 2 chunks with embeddings in database
+DEBUG    rag_factory.services.database.postgres:postgres.py:345 Found 1 similar chunks
+INFO     rag_factory.services.llm.service:service.py:104 Sending request with 65 prompt tokens
+DEBUG    openai._base_client:_base_client.py:482 Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'idempotency_key': 'stainless-python-retry-0a49e73e-003d-402c-b203-fa116d347f89', 'json_data': {'messages': [{'role': 'system', 'content': 'Answer the question based only on the provided context. Be concise.'}, {'role': 'user', 'content': 'Context:\nPython is a high-level programming language created by Guido van Rossum in 1991. It is known for its simplicity and readability.\n\nQuestion: When was the Eiffel Tower built?'}], 'model': 'phi-4-mini-instruct', 'max_tokens': 1000, 'temperature': 0.7}}
+DEBUG    openai._base_client:_base_client.py:978 Sending HTTP Request: POST http://192.168.56.1:1234/v1/chat/completions
+DEBUG    httpcore.connection:_trace.py:47 connect_tcp.started host='192.168.56.1' port=1234 local_address=None timeout=5.0 socket_options=None
+DEBUG    httpcore.connection:_trace.py:47 connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7eff99bea6f0>
+DEBUG    httpcore.http11:_trace.py:47 send_request_headers.started request=<Request [b'POST']>
+DEBUG    httpcore.http11:_trace.py:47 send_request_headers.complete
+DEBUG    httpcore.http11:_trace.py:47 send_request_body.started request=<Request [b'POST']>
+DEBUG    httpcore.http11:_trace.py:47 send_request_body.complete
+DEBUG    httpcore.http11:_trace.py:47 receive_response_headers.started request=<Request [b'POST']>
+DEBUG    httpcore.http11:_trace.py:47 receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'X-Powered-By', b'Express'), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'857'), (b'ETag', b'W/"359-Y4UUgrTf0wJqkuhoG6lUb62xut4"'), (b'Date', b'Fri, 19 Dec 2025 02:23:07 GMT'), (b'Connection', b'keep-alive'), (b'Keep-Alive', b'timeout=5')])
+INFO     httpx:_client.py:1025 HTTP Request: POST http://192.168.56.1:1234/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG    httpcore.http11:_trace.py:47 receive_response_body.started request=<Request [b'POST']>
+DEBUG    httpcore.http11:_trace.py:47 receive_response_body.complete
+DEBUG    httpcore.http11:_trace.py:47 response_closed.started
+DEBUG    httpcore.http11:_trace.py:47 response_closed.complete
+DEBUG    openai._base_client:_base_client.py:1016 HTTP Response: POST http://192.168.56.1:1234/v1/chat/completions "200 OK" Headers({'x-powered-by': 'Express', 'content-type': 'application/json; charset=utf-8', 'content-length': '857', 'etag': 'W/"359-Y4UUgrTf0wJqkuhoG6lUb62xut4"', 'date': 'Fri, 19 Dec 2025 02:23:07 GMT', 'connection': 'keep-alive', 'keep-alive': 'timeout=5'})
+DEBUG    openai._base_client:_base_client.py:1024 request_id: None
+INFO     rag_factory.services.llm.service:service.py:119 Completed in 3.96s, 112 tokens, $0.000000
+--------------------------- Captured stderr teardown ---------------------------
+INFO:tests.integration_real.conftest:[FIXTURE] Test completed, starting cleanup
+INFO:tests.integration_real.conftest:[FIXTURE] Pool acquired for cleanup
+INFO:tests.integration_real.conftest:[FIXTURE] Table dropped successfully
+INFO:tests.integration_real.conftest:[FIXTURE] Closing service
+INFO:rag_factory.services.database.postgres:Closed PostgreSQL async connection pool
+DEBUG:rag_factory.services.database.postgres:Cleared DatabaseContext cache
+INFO:tests.integration_real.conftest:[FIXTURE] Service closed
+---------------------------- Captured log teardown -----------------------------
+INFO     tests.integration_real.conftest:conftest.py:196 [FIXTURE] Test completed, starting cleanup
+INFO     tests.integration_real.conftest:conftest.py:199 [FIXTURE] Pool acquired for cleanup
+INFO     tests.integration_real.conftest:conftest.py:202 [FIXTURE] Table dropped successfully
+INFO     tests.integration_real.conftest:conftest.py:207 [FIXTURE] Closing service
+INFO     rag_factory.services.database.postgres:postgres.py:610 Closed PostgreSQL async connection pool
+DEBUG    rag_factory.services.database.postgres:postgres.py:619 Cleared DatabaseContext cache
+INFO     tests.integration_real.conftest:conftest.py:209 [FIXTURE] Service closed
 =============================== warnings summary ===============================
 rag_factory/services/llm/config.py:8
   /mnt/MCPProyects/ragTools/rag_factory/services/llm/config.py:8: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
@@ -152,10 +398,10 @@ rag_factory/services/api/cohere.py                                    30     30 
 rag_factory/services/api/openai.py                                    46     46     0%   7-235
 rag_factory/services/consistency.py                                   32     24    25%   80-113, 144-170
 rag_factory/services/database/__init__.py                              5      0   100%
-rag_factory/services/database/database_context.py                    181    153    15%   88-106, 123, 140-150, 179-200, 223-240, 256-266, 305-330, 338-339, 343-406, 414-415, 430-510, 516-517, 521-546
+rag_factory/services/database/database_context.py                    181    159    12%   58-64, 88-106, 123, 140-150, 179-200, 223-240, 256-266, 305-330, 338-339, 343-406, 414-415, 430-510, 516-517, 521-546
 rag_factory/services/database/migration_validator.py                  85     63    26%   29-30, 61-69, 81-88, 108-120, 137-141, 152-181, 192-204, 215-222, 234, 246-256, 268-271
 rag_factory/services/database/neo4j.py                                54     36    33%   14, 60-71, 79-84, 103-114, 134-150, 172-181, 188-191, 195, 199
-rag_factory/services/database/postgres.py                            194     55    72%   17-18, 26-27, 85, 91-103, 187-189, 215, 239, 241, 245-246, 322-325, 355-370, 420-435, 467-485, 500, 527, 538, 591, 618, 622
+rag_factory/services/database/postgres.py                            195     83    57%   17-18, 26-27, 85, 91-103, 187-189, 215, 239, 241, 245-246, 327-330, 360-375, 390-414, 425-440, 472-490, 504-527, 532, 543, 580-598, 614-616, 623, 627
 rag_factory/services/dependencies.py                                  41     12    71%   99, 101, 103, 105, 107, 134-140, 179-180
 rag_factory/services/embedding/__init__.py                             4      0   100%
 rag_factory/services/embedding/base.py                                31      6    81%   44, 59, 68, 77, 86, 98
@@ -229,7 +475,7 @@ rag_factory/strategies/indexing/hierarchical.py                       90     73 
 rag_factory/strategies/indexing/in_memory.py                          41     25    39%   54, 65, 93-121, 143, 160, 173, 194-200
 rag_factory/strategies/indexing/keyword_indexing.py                   42     42     0%   8-157
 rag_factory/strategies/indexing/knowledge_graph_indexing.py           46     33    28%   18, 27, 48-89, 108-129
-rag_factory/strategies/indexing/vector_embedding.py                   98      9    91%   64-65, 76-77, 149-150, 174-175, 213
+rag_factory/strategies/indexing/vector_embedding.py                   98     34    65%   64-65, 76-77, 149-150, 167-218
 rag_factory/strategies/knowledge_graph/__init__.py                     4      4     0%   8-19
 rag_factory/strategies/knowledge_graph/config.py                      21     21     0%   8-129
 rag_factory/strategies/knowledge_graph/entity_extractor.py            70     70     0%   7-205
@@ -286,11 +532,60 @@ rag_factory/utils/__init__.py                                          3      0 
 rag_factory/utils/token_counter.py                                    45     30    33%   36-40, 52-62, 74-82, 86, 90, 105-106, 124-135, 153-158
 rag_factory/utils/tokenization.py                                     95     73    23%   36-40, 53-64, 87-114, 126-129, 141-144, 156, 175-190, 209-228, 241-243, 251-252, 270-271, 292-293, 314-315
 ------------------------------------------------------------------------------------------------
-TOTAL                                                              12324  10329    16%
-DEBUG:httpcore.connection:close.started
-DEBUG:httpcore.connection:close.complete
-================== 15 passed, 2 warnings in 316.62s (0:05:16) ==================
+TOTAL                                                              12325  10388    16%
+=========================== short test summary info ============================
+FAILED tests/integration_real/test_end_to_end_real.py::test_full_rag_pipeline - AssertionError: assert '1889' in 'The given context does not contain information about when the Eiffel Tower was constructed; it only provides details on Python, which has no relation to historical events or structures like the Eiffel Tower. The answer can be found independently of this text but is unrelated to its content regarding programming languages.'
+ +  where 'The given context does not contain information about when the Eiffel Tower was constructed; it only provides details on Python, which has no relation to historical events or structures like the Eiffel Tower. The answer can be found independently of this text but is unrelated to its content regarding programming languages.' = LLMResponse(content='The given context does not contain information about when the Eiffel Tower was constructed; it only provides details on Python, which has no relation to historical events or structures like the Eiffel Tower. The answer can be found independently of this text but is unrelated to its content regarding programming languages.', model='phi-4-mini-instruct', provider='openai', prompt_tokens=56, completion_tokens=56, total_tokens=112, cost=0.0, latency=3.963956117630005, metadata={'finish_reason': 'stop'}).content
+=================== 1 failed, 1 passed, 2 warnings in 30.69s ===================
+--- Logging error ---
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/logging/__init__.py", line 1163, in emit
+    stream.write(msg + self.terminator)
+ValueError: I/O operation on closed file.
+Call stack:
+  File "/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/openai/_base_client.py", line 815, in __del__
+    self.close()
+  File "/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/httpx/_client.py", line 1270, in close
+    self._transport.close()
+  File "/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/httpx/_transports/default.py", line 262, in close
+    self._pool.close()
+  File "/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/httpcore/_sync/connection_pool.py", line 353, in close
+    self._close_connections(closing_connections)
+  File "/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/httpcore/_sync/connection_pool.py", line 345, in _close_connections
+    connection.close()
+  File "/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/httpcore/_sync/connection.py", line 172, in close
+    with Trace("close", logger, None, {}):
+  File "/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/httpcore/_trace.py", line 52, in __enter__
+    self.trace(f"{self.name}.started", info)
+  File "/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/httpcore/_trace.py", line 47, in trace
+    self.logger.debug(message)
+Message: 'close.started'
+Arguments: ()
+--- Logging error ---
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/logging/__init__.py", line 1163, in emit
+    stream.write(msg + self.terminator)
+ValueError: I/O operation on closed file.
+Call stack:
+  File "/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/openai/_base_client.py", line 815, in __del__
+    self.close()
+  File "/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/httpx/_client.py", line 1270, in close
+    self._transport.close()
+  File "/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/httpx/_transports/default.py", line 262, in close
+    self._pool.close()
+  File "/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/httpcore/_sync/connection_pool.py", line 353, in close
+    self._close_connections(closing_connections)
+  File "/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/httpcore/_sync/connection_pool.py", line 345, in _close_connections
+    connection.close()
+  File "/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/httpcore/_sync/connection.py", line 172, in close
+    with Trace("close", logger, None, {}):
+  File "/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/httpcore/_trace.py", line 64, in __exit__
+    self.trace(f"{self.name}.complete", info)
+  File "/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/httpcore/_trace.py", line 47, in trace
+    self.logger.debug(message)
+Message: 'close.complete'
+Arguments: ()
 
 ========================================
-Test run completed at 2025-12-18 20:56:19
+Test run completed at 2025-12-18 23:23:18
 ========================================

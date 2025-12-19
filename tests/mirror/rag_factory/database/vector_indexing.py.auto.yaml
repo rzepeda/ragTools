@@ -1,0 +1,5 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/database/vector_indexing.py
+test_files:
+- tests/unit/database/test_vector_indexing.py
+mocks: []

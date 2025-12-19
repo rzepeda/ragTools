@@ -1,0 +1,4 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/cli/utils/__init__.py
+test_files: []
+mocks: []

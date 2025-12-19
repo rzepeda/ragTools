@@ -1,0 +1,4 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/strategies/retrieval/knowledge_graph_retriever.py
+test_files: []
+mocks: []

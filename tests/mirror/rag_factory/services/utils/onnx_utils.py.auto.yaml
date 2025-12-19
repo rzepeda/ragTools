@@ -1,0 +1,5 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/services/utils/onnx_utils.py
+test_files:
+- tests/unit/services/utils/test_onnx_utils.py
+mocks: []

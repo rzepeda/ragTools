@@ -133,10 +133,10 @@ async def test_rag_workflow(embedding_service, llm_service, database_service):
     results = await db_service.search_chunks(query_embedding)
     
     assert len(results) == 1
-    assert results[0]["text"] == text
+    assert results[0].text == text
     
     # 4. Generate answer with LLM
-    context = results[0]["text"]
+    context = results[0].text
     prompt = f"Context: {context}\nQuestion: {query}"
     messages = [Message(role=MessageRole.USER, content=prompt)]
     

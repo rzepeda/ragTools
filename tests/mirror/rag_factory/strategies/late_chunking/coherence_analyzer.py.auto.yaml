@@ -1,0 +1,5 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/strategies/late_chunking/coherence_analyzer.py
+test_files:
+- tests/unit/strategies/late_chunking/test_coherence_analyzer.py
+mocks: []

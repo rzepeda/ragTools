@@ -1,0 +1,8 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/strategies/query_expansion/base.py
+test_files:
+- tests/unit/strategies/query_expansion/test_base.py
+- tests/unit/strategies/query_expansion/test_expander_service.py
+- tests/unit/strategies/query_expansion/test_llm_expander.py
+- tests/unit/strategies/query_expansion/test_prompts.py
+mocks: []

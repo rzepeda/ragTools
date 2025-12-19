@@ -1,0 +1,8 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/legacy_config.py
+test_files:
+- tests/integration/test_config_integration.py
+- tests/integration/test_package_integration.py
+- tests/unit/test_config.py
+- tests/unit/test_package.py
+mocks: []

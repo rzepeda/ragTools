@@ -1,0 +1,5 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/evaluation/metrics/retrieval.py
+test_files:
+- tests/unit/evaluation/test_retrieval_metrics.py
+mocks: []

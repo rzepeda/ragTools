@@ -1,0 +1,5 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/exceptions.py
+test_files:
+- tests/integration/test_factory_integration.py
+mocks: []

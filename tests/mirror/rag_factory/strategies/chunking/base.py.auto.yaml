@@ -1,0 +1,9 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/strategies/chunking/base.py
+test_files:
+- tests/unit/strategies/chunking/test_docling_chunker.py
+- tests/unit/strategies/chunking/test_fixed_size_chunker.py
+- tests/unit/strategies/chunking/test_hybrid_chunker.py
+- tests/unit/strategies/chunking/test_semantic_chunker.py
+- tests/unit/strategies/chunking/test_structural_chunker.py
+mocks: []

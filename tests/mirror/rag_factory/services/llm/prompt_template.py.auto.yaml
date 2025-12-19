@@ -1,0 +1,6 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/services/llm/prompt_template.py
+test_files:
+- tests/integration/services/test_llm_integration.py
+- tests/unit/services/llm/test_prompt_template.py
+mocks: []

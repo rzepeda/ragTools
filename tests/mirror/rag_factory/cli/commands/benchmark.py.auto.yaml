@@ -1,0 +1,6 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/cli/commands/benchmark.py
+test_files:
+- tests/integration/cli/test_benchmark_integration.py
+- tests/unit/cli/test_benchmark_command.py
+mocks: []

@@ -1,0 +1,6 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/strategies/hierarchical/models.py
+test_files:
+- tests/unit/strategies/hierarchical/test_hierarchy_builder.py
+- tests/unit/strategies/hierarchical/test_parent_retriever.py
+mocks: []

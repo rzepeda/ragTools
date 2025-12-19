@@ -1,0 +1,11 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/services/database/postgres.py
+test_files:
+- tests/conftest.py
+- tests/integration/services/test_service_integration.py
+- tests/integration_real/conftest.py
+- tests/unit/database/test_batch_operations.py
+- tests/unit/database/test_pgvector.py
+- tests/unit/services/database/test_migration_validator.py
+- tests/unit/services/test_database_service.py
+mocks: []

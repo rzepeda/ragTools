@@ -1,0 +1,6 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/strategies/fine_tuned/config.py
+test_files:
+- tests/integration/services/test_fine_tuned_onnx_integration.py
+- tests/unit/strategies/fine_tuned/test_custom_loader.py
+mocks: []

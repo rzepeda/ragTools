@@ -1,0 +1,5 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/services/embedding/providers/cohere.py
+test_files:
+- tests/integration_real/conftest.py
+mocks: []

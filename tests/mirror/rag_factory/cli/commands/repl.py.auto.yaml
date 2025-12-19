@@ -1,0 +1,5 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/cli/commands/repl.py
+test_files:
+- tests/unit/cli/test_repl_command.py
+mocks: []

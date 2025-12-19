@@ -1,0 +1,5 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/strategies/multi_query/parallel_executor.py
+test_files:
+- tests/unit/strategies/multi_query/test_parallel_executor.py
+mocks: []

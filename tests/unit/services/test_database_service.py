@@ -132,9 +132,9 @@ async def test_search_chunks(service, mock_pool):
     results = await service.search_chunks([0.1, 0.2, 0.3], top_k=5)
     
     assert len(results) == 1
-    assert results[0]["chunk_id"] == "1"
-    assert results[0]["similarity"] == 0.95
-    assert results[0]["metadata"] == {"source": "doc1"}
+    assert results[0].chunk_id == "1"
+    assert results[0].metadata["similarity"] == 0.95
+    assert results[0].metadata["source"] == "doc1"
     
     conn.fetch.assert_called_once()
     call_args = conn.fetch.call_args

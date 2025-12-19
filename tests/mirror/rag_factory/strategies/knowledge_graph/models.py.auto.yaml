@@ -1,0 +1,7 @@
+header: '[AUTO-GENERATED] DO NOT EDIT'
+target: rag_factory/strategies/knowledge_graph/models.py
+test_files:
+- tests/unit/strategies/knowledge_graph/test_entity_extractor.py
+- tests/unit/strategies/knowledge_graph/test_hybrid_retriever.py
+- tests/unit/strategies/knowledge_graph/test_memory_graph_store.py
+mocks: []
