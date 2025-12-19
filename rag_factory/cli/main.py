@@ -55,6 +55,7 @@ try:
         benchmark,
         check_consistency,
         config,
+        gui,
         index,
         query,
         repl,
@@ -63,6 +64,7 @@ try:
         validate_e2e,
     )
 
+    app.command(name="gui")(gui.gui_command)
     app.command(name="index")(index.index_command)
     app.command(name="query")(query.query_command)
     app.command(name="strategies")(strategies.list_strategies)
@@ -72,6 +74,7 @@ try:
     app.command(name="validate-pipeline")(validate_pipeline.validate_pipeline)
     app.command(name="check-consistency")(check_consistency.check_consistency)
     app.command(name="validate-e2e")(validate_e2e.validate_e2e)
+
 
 except ImportError as e:
     console.print(f"[red]Error importing commands: {e}[/red]")
