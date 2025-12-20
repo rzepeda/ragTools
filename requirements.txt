@@ -28,6 +28,7 @@ beautifulsoup4>=4.12.0
 pypdf2>=3.0.0
 numpy>=1.24.0
 networkx>=3.2.1  # Knowledge graph strategy
+neo4j>=5.14.0  # Neo4j Python driver for knowledge graph
 
 # Reranking strategy dependencies
 # Optional: Uncomment the reranker implementations you need

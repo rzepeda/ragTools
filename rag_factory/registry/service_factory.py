@@ -48,6 +48,8 @@ class ServiceFactory:
             return self._create_embedding_service(service_name, config)
         elif self._is_database_service(config):
             return self._create_database_service(service_name, config)
+        elif self._is_reranker_service(config):
+            return self._create_reranker_service(service_name, config)
         else:
             raise ServiceInstantiationError(
                 f"Cannot determine service type for '{service_name}'. "
@@ -76,6 +78,12 @@ class ServiceFactory:
         if 'type' in config:
             return config['type'] in ['database', 'postgres', 'neo4j', 'mongodb']
         return False
+    
+    def _is_reranker_service(self, config: Dict[str, Any]) -> bool:
+        """Check if configuration represents a reranker service."""
+        if 'type' in config:
+            return config['type'] == 'reranker'
+        return False
 
     def _create_llm_service(
         self,
@@ -84,29 +92,39 @@ class ServiceFactory:
     ) -> ILLMService:
         """Create LLM service from configuration."""
         # Lazy import to avoid circular dependency
-        from rag_factory.services.api import OpenAILLMService
+        from rag_factory.services.llm.service import LLMService
+        from rag_factory.services.llm.config import LLMServiceConfig
         
         logger.debug(f"Creating LLM service: {service_name}")
 
         url = config['url']
 
-        # Detect provider based on URL
+        # Determine provider and create provider config
         if 'openai.com' in url or 'api.openai.com' in url:
-            # OpenAI LLM service
-            return OpenAILLMService(
-                api_key=config.get('api_key'),
-                model=config['model']
-            )
+            provider = 'openai'
+            provider_config = {
+                'api_key': config.get('api_key'),
+                'model': config['model']
+            }
         else:
             # LM Studio or other OpenAI-compatible service
-            # Note: OpenAILLMService doesn't support base_url parameter
-            # For now, we'll raise an error. In a real implementation,
-            # we'd need a separate LMStudioLLMService or use a different approach
-            raise ServiceInstantiationError(
-                f"LM Studio and OpenAI-compatible services not yet fully supported. "
-                f"Only OpenAI API (api.openai.com) is currently supported for LLM services. "
-                f"Service '{service_name}' uses URL: {url}"
-            )
+            provider = 'openai'  # Use OpenAI provider with custom base_url
+            provider_config = {
+                'api_key': config.get('api_key', 'not-needed'),
+                'model': config['model'],
+                'base_url': url
+            }
+            logger.info(f"Using OpenAI-compatible service at: {url}")
+        
+        # Create LLMServiceConfig
+        llm_config = LLMServiceConfig(
+            provider=provider,
+            provider_config=provider_config,
+            enable_rate_limiting=False  # Disable for local services
+        )
+        
+        # Create LLMService
+        return LLMService(llm_config)
 
     def _create_embedding_service(
         self,
@@ -196,4 +214,45 @@ class ServiceFactory:
         else:
             raise ServiceInstantiationError(
                 f"Unknown database type: {db_type}"
+            )
+    
+    def _create_reranker_service(self, service_name: str, config: Dict[str, Any]) -> Any:
+        """Create reranker service instance.
+        
+        Args:
+            service_name: Name of the service
+            config: Service configuration
+            
+        Returns:
+            Reranker service instance
+        """
+        from rag_factory.services.local.reranker import CosineRerankingService
+        
+        provider = config.get('provider', 'cosine')
+        
+        if provider == 'cosine':
+            # Get embedding service reference
+            embedding_service_ref = config.get('embedding_service')
+            if not embedding_service_ref:
+                raise ServiceInstantiationError(
+                    f"Cosine reranker requires 'embedding_service' configuration"
+                )
+            
+            # Note: embedding_service will be injected by the registry
+            # For now, we'll create a placeholder that will be resolved later
+            # The actual embedding service will be passed when the reranker is used
+            logger.info(f"Creating cosine reranker service: {service_name}")
+            
+            # Store the embedding service reference for later resolution
+            # The service registry will handle the dependency injection
+            return {
+                '_type': 'reranker',
+                '_provider': 'cosine',
+                '_embedding_service_ref': embedding_service_ref,
+                '_config': config
+            }
+        else:
+            raise ServiceInstantiationError(
+                f"Unsupported reranker provider: {provider}. "
+                f"Supported providers: cosine"
             )

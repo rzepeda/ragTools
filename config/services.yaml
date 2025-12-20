@@ -1,5 +1,7 @@
-# Service Registry - Local ONNX Services (No API Keys Needed)
+# Service Registry - Configured for VM connecting to Host Services
+# Uses environment variables from .env file
 services:
+  # Local ONNX Embedding Service (runs on VM)
   embedding_local:
     name: "local-onnx-minilm"
     type: "embedding"
@@ -9,9 +11,67 @@ services:
     batch_size: 32
     dimensions: 384
   
+  # PostgreSQL Database (on host via Docker)
   db_main:
     name: "main-postgres"
     type: "postgres"
     connection_string: "${DATABASE_URL}"
     pool_size: 10
     max_overflow: 20
+  
+  # LM Studio LLM Service (on host)
+  llm_local:
+    name: "lm-studio-local"
+    type: "llm"
+    provider: "openai"  # LM Studio uses OpenAI-compatible API
+    url: "${LM_STUDIO_BASE_URL}"
+    api_key: "${LM_STUDIO_API_KEY}"
+    model: "${LM_STUDIO_MODEL}"
+    temperature: 0.7
+    max_tokens: 2000
+    timeout: 60
+  
+  # Neo4j Graph Database (on host via Docker) - for knowledge graph strategies
+  neo4j_main:
+    name: "main-neo4j"
+    type: "neo4j"
+    uri: "${NEO4J_URI}"
+    user: "${NEO4J_USER}"
+    password: "${NEO4J_PASSWORD}"
+    database: "neo4j"
+  
+  # Alias for knowledge-graph-pair which expects db_neo4j
+  db_neo4j:
+    name: "neo4j-graph-db"
+    type: "neo4j"
+    uri: "${NEO4J_URI}"
+    user: "${NEO4J_USER}"
+    password: "${NEO4J_PASSWORD}"
+    database: "neo4j"
+  
+  # OpenAI Embedding Service (for hybrid-search and semantic-api strategies)
+  embedding_openai:
+    name: "openai-embeddings"
+    type: "embedding"
+    provider: "openai"
+    api_key: "${OPENAI_API_KEY}"
+    model: "text-embedding-3-small"
+  
+  # Fine-tuned Embedding Service (placeholder - uses local for now)
+  embedding_finetuned:
+    name: "finetuned-embeddings"
+    type: "embedding"
+    provider: "onnx"
+    model: "Xenova/all-MiniLM-L6-v2"  # Replace with actual fine-tuned model
+    cache_dir: "./models/embeddings"
+    batch_size: 32
+    dimensions: 384
+  
+  # Reranker Service (cosine similarity-based, lightweight)
+  reranker_local:
+    name: "local-cosine-reranker"
+    type: "reranker"
+    provider: "cosine"  # Uses cosine similarity with embeddings
+    embedding_service: "embedding_local"  # Reference to embedding service
+    metric: "cosine"  # cosine, dot, or euclidean
+    normalize: true

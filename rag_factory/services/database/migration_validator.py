@@ -105,14 +105,25 @@ class MigrationValidator:
             >>> if not is_valid:
             ...     print(f"Please run: alembic upgrade {missing[0]}")
         """
-        current_revision = self._get_current_revision()
-        
-        # If no migrations applied at all, all are missing
-        if not current_revision:
+        # Get all current heads (may be multiple with branching)
+        try:
+            with self.engine.connect() as conn:
+                inspector = inspect(conn)
+                if "alembic_version" not in inspector.get_table_names():
+                    return (False, required_revisions)
+                
+                context = MigrationContext.configure(conn)
+                current_heads = context.get_current_heads()
+                
+                if not current_heads:
+                    return (False, required_revisions)
+        except Exception:
             return (False, required_revisions)
         
-        # Get all revisions between base and current
-        applied_revisions = self._get_applied_revisions(current_revision)
+        # Get all applied revisions from all heads
+        applied_revisions = set()
+        for head in current_heads:
+            applied_revisions.update(self._get_applied_revisions(head))
         
         # Check which required revisions are missing
         missing = [r for r in required_revisions if r not in applied_revisions]
@@ -184,7 +195,8 @@ class MigrationValidator:
         """Get current revision from alembic_version table.
         
         Returns:
-            Current revision ID or None if no migrations applied
+            Current revision ID or None if no migrations applied.
+            If multiple heads exist, returns the first one.
             
         Note:
             Returns None if alembic_version table doesn't exist
@@ -196,9 +208,12 @@ class MigrationValidator:
                 if "alembic_version" not in inspector.get_table_names():
                     return None
                 
-                # Get current revision
+                # Get current revision(s) - may be multiple heads
                 context = MigrationContext.configure(conn)
-                return context.get_current_revision()
+                heads = context.get_current_heads()
+                
+                # Return first head if any exist
+                return heads[0] if heads else None
         except ProgrammingError:
             # Table doesn't exist
             return None

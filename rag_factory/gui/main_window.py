@@ -13,13 +13,13 @@ import asyncio
 import yaml
 import time
 import threading
+import traceback
+import sys
 
 from rag_factory.config.strategy_pair_manager import StrategyPairManager, ConfigurationError, CompatibilityError
 from rag_factory.registry.service_registry import ServiceRegistry
-from rag_factory.core.indexing_interface import IIndexingStrategy
-from rag_factory.core.retrieval_interface import IRetrievalStrategy
-from rag_factory.core.exceptions import MigrationError
-from rag_factory.core.context import IndexingContext, RetrievalContext
+from rag_factory.core.indexing_interface import IIndexingStrategy, IndexingContext
+from rag_factory.core.retrieval_interface import IRetrievalStrategy, RetrievalContext
 from rag_factory.gui.components import StatusBar, ScrolledText
 from rag_factory.gui.utils import run_async_in_thread, safe_gui_update, format_yaml, format_results
 import logging
@@ -99,7 +99,7 @@ class RAGFactoryGUI:
         
         # Create UI
         self._create_menu()
-        self._create_widgets()
+        self._create_ui()
         
         # Initialize backend
         self._initialize_backend()
@@ -162,6 +162,105 @@ class RAGFactoryGUI:
         
         widget.bind('<Enter>', show_tooltip)
         widget.bind('<Leave>', hide_tooltip)
+    
+    def _create_menu(self) -> None:
+        """Create application menu bar."""
+        menubar = tk.Menu(self.root)
+        
+        # File menu
+        file_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="File", menu=file_menu)
+        file_menu.add_command(label="Reload Configs", command=self._reload_configs)
+        file_menu.add_separator()
+        file_menu.add_command(label="Exit", command=self._on_closing)
+        
+        # Tools menu
+        tools_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Tools", menu=tools_menu)
+        tools_menu.add_command(label="Clear All Data", command=self._clear_all_data)
+        tools_menu.add_command(label="View Logs", command=self._view_logs)
+        tools_menu.add_separator()
+        tools_menu.add_command(label="Settings", command=self._show_settings)
+        
+        # Help menu
+        help_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Help", menu=help_menu)
+        help_menu.add_command(label="Help", command=self._show_help)
+        help_menu.add_command(label="About", command=self._show_about)
+        
+        self.root.config(menu=menubar)
+        
+        # Bind window close event
+        self.root.protocol("WM_DELETE_WINDOW", self._on_closing)
+    
+    
+    def _show_error_dialog(self, title: str, message: str, details: Optional[str] = None) -> None:
+        """Show custom error dialog with selectable text.
+        
+        Args:
+            title: Dialog title
+            message: Main error message
+            details: Optional detailed error info (traceback, etc.)
+        """
+        dialog = tk.Toplevel(self.root)
+        dialog.title(title)
+        dialog.geometry("700x500")
+        dialog.transient(self.root)
+        dialog.grab_set()
+        
+        # Center dialog
+        dialog.update_idletasks()
+        x = (dialog.winfo_screenwidth() // 2) - (350)
+        y = (dialog.winfo_screenheight() // 2) - (250)
+        dialog.geometry(f"700x500+{x}+{y}")
+        
+        # Main frame
+        main_frame = ttk.Frame(dialog, padding=10)
+        main_frame.pack(fill=tk.BOTH, expand=True)
+        
+        # Create text widget for selectable error message
+        text_frame = ttk.Frame(main_frame)
+        text_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 10))
+        
+        error_text = tk.Text(text_frame, wrap=tk.WORD, font=('TkDefaultFont', 10), height=20)
+        scrollbar = ttk.Scrollbar(text_frame, command=error_text.yview)
+        error_text.configure(yscrollcommand=scrollbar.set)
+        
+        error_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        
+        # Insert error content
+        full_text = f"{message}\n"
+        if details:
+            full_text += f"\n{'='*60}\nDetails:\n{'='*60}\n{details}"
+        
+        error_text.insert('1.0', full_text)
+        error_text.configure(state='normal')  # Keep it editable so text is selectable
+        
+        # Buttons frame
+        button_frame = ttk.Frame(main_frame)
+        button_frame.pack(fill=tk.X, pady=(10, 0))
+        
+        def copy_all():
+            """Copy all error text to clipboard."""
+            self.root.clipboard_clear()
+            self.root.clipboard_append(full_text)
+            self.root.update()
+            copy_btn.config(text="✓ Copied!")
+            dialog.after(1500, lambda: copy_btn.config(text="Copy to Clipboard"))
+        
+        # Copy button
+        copy_btn = ttk.Button(button_frame, text="Copy to Clipboard", command=copy_all)
+        copy_btn.pack(side=tk.LEFT, padx=(0, 5))
+        
+        # Close button
+        close_btn = ttk.Button(button_frame, text="Close", command=dialog.destroy)
+        close_btn.pack(side=tk.RIGHT)
+        
+        # Select all text by default for easy copying
+        error_text.tag_add(tk.SEL, "1.0", tk.END)
+        error_text.mark_set(tk.INSERT, "1.0")
+        error_text.focus_set()
     
     def _create_ui(self) -> None:
         """Create all UI components."""
@@ -237,7 +336,7 @@ class RAGFactoryGUI:
                     f"rag-factory gui --config /path/to/services.yaml"
                 )
                 self.status_bar.set_status("error", "Service config not found")
-                messagebox.showerror("Configuration Error", error_msg)
+                self._show_error_dialog("Configuration Error", error_msg)
                 logger.error(f"Service configuration not found: {self.config_path}")
                 return
             
@@ -253,7 +352,7 @@ class RAGFactoryGUI:
                     f"Please check {self.config_path} for errors."
                 )
                 self.status_bar.set_status("error", "Service initialization failed")
-                messagebox.showerror("Service Registry Error", error_msg)
+                self._show_error_dialog("Service Registry Error", error_msg)
                 logger.error(f"ServiceRegistry initialization failed: {e}", exc_info=True)
                 return
             
@@ -277,7 +376,7 @@ class RAGFactoryGUI:
                     f"Please check your configuration."
                 )
                 self.status_bar.set_status("error", "Strategy manager initialization failed")
-                messagebox.showerror("Strategy Manager Error", error_msg)
+                self._show_error_dialog("Strategy Manager Error", error_msg)
                 logger.error(f"StrategyPairManager initialization failed: {e}", exc_info=True)
                 return
             
@@ -287,7 +386,7 @@ class RAGFactoryGUI:
         except Exception as e:
             error_msg = f"Unexpected error during backend initialization:\n{str(e)}"
             self.status_bar.set_status("error", "Initialization failed")
-            messagebox.showerror("Initialization Error", error_msg)
+            self._show_error_dialog("Initialization Error", error_msg)
             logger.error(f"Backend initialization failed: {e}", exc_info=True)
     
     def _verify_required_services(self) -> bool:
@@ -315,7 +414,7 @@ class RAGFactoryGUI:
                 f"Please check {self.config_path} and ensure all required services are configured."
             )
             self.status_bar.set_status("error", "Missing required services")
-            messagebox.showerror("Missing Services", error_msg)
+            self._show_error_dialog("Missing Services", error_msg)
             logger.error(f"Missing required services: {missing_services}")
             return False
         
@@ -588,9 +687,6 @@ class RAGFactoryGUI:
         util_frame.grid(row=row, column=0, sticky="ew", pady=(10, 0))
         row += 1
         
-        )
-        self.settings_btn.pack(side=tk.RIGHT, padx=(0, 5))
-        
         return row
     
     def _load_strategy_list(self) -> None:
@@ -732,11 +828,12 @@ class RAGFactoryGUI:
             enhanced_msg = (
                 f"{error_msg}\n\n"
                 f"To fix this issue, run:\n"
-                f"  alembic upgrade head\n\n"
+                f"  alembic upgrade heads\n\n"
                 f"This will apply all pending database migrations."
             )
+            details = f"Full error:\n{error_msg}"
             self.status_bar.set_status("error", "Missing migrations")
-            messagebox.showerror("Migration Error", enhanced_msg)
+            self._show_error_dialog("Migration Error", enhanced_msg, details)
             logger.error(f"Migration error: {error_msg}")
         elif "service" in error_msg.lower():
             # Service error - suggest checking config
@@ -745,12 +842,12 @@ class RAGFactoryGUI:
                 f"Please check {self.config_path} and ensure all required services are configured."
             )
             self.status_bar.set_status("error", "Missing services")
-            messagebox.showerror("Service Error", enhanced_msg)
+            self._show_error_dialog("Service Error", enhanced_msg)
             logger.error(f"Service error: {error_msg}")
         else:
             # Generic error
             self.status_bar.set_status("error", "Strategy load failed")
-            messagebox.showerror("Strategy Load Error", error_msg)
+            self._show_error_dialog("Strategy Load Error", error_msg)
             logger.error(f"Strategy load error: {error_msg}")
         
         # Clear strategy
@@ -983,7 +1080,7 @@ class RAGFactoryGUI:
             error_msg: Error message
         """
         self.status_bar.set_status("error", f"Indexing failed: {error_msg}")
-        messagebox.showerror("Indexing Error", error_msg)
+        self._show_error_dialog("Indexing Error", error_msg)
         self._update_button_states()
     
     def _retrieve(self) -> None:
@@ -1157,7 +1254,7 @@ Suggestions:
         error_display = f"Retrieval Error:\n\n{error_msg}\n\nPlease check:\n- Database is running\n- Documents are indexed\n- Service configuration is correct"
         self.results_display.set_text(error_display)
         self.status_bar.set_status("error", "Retrieval failed")
-        messagebox.showerror("Retrieval Error", error_msg)
+        self._show_error_dialog("Retrieval Error", error_msg)
         self._update_button_states()
     
     def _clear_all_data(self) -> None:
@@ -1218,7 +1315,7 @@ This action cannot be undone!"""
             except Exception as e:
                 error_msg = f"Error clearing data: {e}"
                 logger.error(error_msg, exc_info=True)
-                messagebox.showerror("Clear Data Error", error_msg)
+                self._show_error_dialog("Clear Data Error", error_msg)
                 self.status_bar.set_status("error", "Failed to clear data")
     
     def _view_logs(self) -> None:
@@ -1272,6 +1369,29 @@ This action cannot be undone!"""
         refresh_logs()
         
         logger.info("Log viewer opened")
+    
+    def _reload_configs(self) -> None:
+        """Reload configuration files and strategies."""
+        try:
+            self.status_bar.set_status("working", "Reloading configurations...")
+            
+            # Reinitialize backend
+            self._initialize_backend()
+            
+            # Reload strategy list
+            if self.strategy_manager is not None:
+                self._load_strategy_list()
+                self.status_bar.set_status("success", "Configurations reloaded")
+                messagebox.showinfo("Reload Complete", "Configurations reloaded successfully")
+            else:
+                self.status_bar.set_status("error", "Failed to reload")
+                self._show_error_dialog("Reload Failed", "Failed to reload configurations")
+                
+        except Exception as e:
+            error_msg = f"Error reloading configurations: {e}"
+            logger.error(error_msg, exc_info=True)
+            self.status_bar.set_status("error", "Reload failed")
+            self._show_error_dialog("Reload Error", error_msg)
     
     def _show_settings(self) -> None:
         """Show settings dialog."""

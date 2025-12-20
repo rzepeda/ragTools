@@ -12,6 +12,12 @@ from rag_factory.exceptions import (
     RetrievalError,
 )
 
+# Import strategies to trigger registration
+try:
+    import rag_factory.strategies.auto_register
+except ImportError:
+    pass  # Strategies not available yet
+
 __all__ = [
     "__version__",
     # Exceptions
