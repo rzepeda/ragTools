@@ -250,6 +250,8 @@ rag_factory/strategies/self_reflective/grader.py
 rag_factory/strategies/self_reflective/models.py
 rag_factory/strategies/self_reflective/refiner.py
 rag_factory/strategies/self_reflective/strategy.py
+rag_factory/strategy_validation/run_validation.py
+rag_factory/strategy_validation/validate_strategies.py
 rag_factory/utils/__init__.py
 rag_factory/utils/token_counter.py
 rag_factory/utils/tokenization.py

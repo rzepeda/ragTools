@@ -170,10 +170,13 @@ class StrategyValidator:
                 
                 result["retrieved_chunks"] = retrieved_texts
                 logger.info(f"  Retrieved {len(retrieved_texts)} chunks")
-            else:
-                logger.info(f"  No retriever available for {strategy_name}")
-            
-            logger.info(f"✓ Successfully validated {strategy_name}")
+                
+                if len(retrieved_texts) == 0:
+                    error_msg = f"No chunks retrieved for query: '{test_case['query']}'"
+                    result["error"] = error_msg
+                    logger.error(f"✗ {error_msg}")
+                else:
+                    logger.info(f"✓ Successfully validated {strategy_name}")
             
         except Exception as e:
             error_msg = f"{type(e).__name__}: {str(e)}"

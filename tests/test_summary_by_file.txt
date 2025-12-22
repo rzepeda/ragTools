@@ -2,41 +2,32 @@
 TEST RESULTS SUMMARY - BY FILE
 ================================================================================
 
-Execution Date: Sat Dec 20 03:03:36 AM -03 2025
+Execution Date: Mon Dec 22 04:28:50 AM -03 2025
 Total test files: 206
-Total duration: 131m 16s
+Total duration: 136m 50s
 
 FILE RESULTS:
-  ✅ PASSED FILES    : 186 (90.3%)
-  ❌ FAILED FILES    : 16 (7.8%)
+  ✅ PASSED FILES    : 195 (94.7%)
+  ❌ FAILED FILES    : 7 (3.4%)
   ⏭️  SKIPPED FILES   : 2 (1.0%)
   ⏱️  TIMEOUT FILES   : 2 (1.0%)
 
 TEST RESULTS:
-  ✅ PASSED TESTS    : 2145 (93.6%)
-  ❌ FAILED TESTS    : 92 (4.0%)
+  ✅ PASSED TESTS    : 2175 (94.7%)
+  ❌ FAILED TESTS    : 68 (3.0%)
   ⏭️  SKIPPED TESTS   : 54 (2.4%)
-  📊 TOTAL TESTS     : 2291
+  📊 TOTAL TESTS     : 2297
 
 ================================================================================
-FAILED TEST FILES (16)
+FAILED TEST FILES (7)
 ================================================================================
 tests/integration/database/test_migration_integration.py
 tests/integration/database/test_migration_validator_integration.py
-tests/integration_real/test_neo4j_real.py
-tests/integration/registry/test_registry_integration.py
-tests/integration/services/test_service_implementations.py
-tests/integration/test_hybrid_search_pair.py
+tests/integration/repositories/test_repository_integration.py
+tests/integration/strategies/test_self_reflective_integration.py
 tests/test_mock_registry.py
 tests/unit/database/test_migrations.py
-tests/unit/documentation/test_code_examples.py
-tests/unit/documentation/test_links.py
-tests/unit/gui/test_backend_integration.py
-tests/unit/gui/test_main_window.py
-tests/unit/gui/test_retrieval_operations.py
-tests/unit/gui/test_utility_operations.py
-tests/unit/registry/test_service_factory.py
-tests/unit/services/database/test_migration_validator.py
+tests/unit/strategies/self_reflective/test_strategy.py
 
 ================================================================================
 TIMEOUT TEST FILES (2)

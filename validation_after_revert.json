@@ -1,9 +1,9 @@
 {
   "summary": {
     "total_strategies": 15,
-    "successful": 14,
-    "failed": 1,
-    "timestamp": "2025-12-22T10:27:04.126502"
+    "successful": 12,
+    "failed": 3,
+    "timestamp": "2025-12-22T10:07:30.348183"
   },
   "results": [
     {
@@ -14,7 +14,7 @@
       "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
       "retrieved_chunks": [],
       "error": "No chunks retrieved for query: 'What specific item does Voyager 1 carry to represent Earth's culture?'",
-      "timestamp": "2025-12-22T10:26:09.547604"
+      "timestamp": "2025-12-22T10:06:02.002946"
     },
     {
       "strategy_name": "context-aware-chunking-pair",
@@ -35,7 +35,7 @@
         "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
       ],
       "error": null,
-      "timestamp": "2025-12-22T10:26:18.577913"
+      "timestamp": "2025-12-22T10:06:21.622072"
     },
     {
       "strategy_name": "contextual-retrieval-pair",
@@ -56,7 +56,7 @@
         "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
       ],
       "error": null,
-      "timestamp": "2025-12-22T10:26:21.247353"
+      "timestamp": "2025-12-22T10:06:28.174633"
     },
     {
       "strategy_name": "fine-tuned-embeddings-pair",
@@ -77,7 +77,7 @@
         "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
       ],
       "error": null,
-      "timestamp": "2025-12-22T10:26:25.312135"
+      "timestamp": "2025-12-22T10:06:32.593185"
     },
     {
       "strategy_name": "hierarchical-rag-pair",
@@ -98,7 +98,7 @@
         "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
       ],
       "error": null,
-      "timestamp": "2025-12-22T10:26:29.552979"
+      "timestamp": "2025-12-22T10:06:36.618036"
     },
     {
       "strategy_name": "hybrid-search-pair",
@@ -106,20 +106,9 @@
       "indexer": "VectorEmbeddingIndexing",
       "retriever": "HybridSearchRetriever",
       "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
-      "retrieved_chunks": [
-        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth.",
-        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth.",
-        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth.",
-        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth.",
-        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth.",
-        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth.",
-        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth.",
-        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth.",
-        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth.",
-        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
-      ],
-      "error": null,
-      "timestamp": "2025-12-22T10:26:34.710748"
+      "retrieved_chunks": [],
+      "error": "No chunks retrieved for query: 'What specific item does Voyager 1 carry to represent Earth's culture?'",
+      "timestamp": "2025-12-22T10:06:45.499499"
     },
     {
       "strategy_name": "keyword-pair",
@@ -127,11 +116,9 @@
       "indexer": "KeywordIndexing",
       "retriever": "KeywordRetriever",
       "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
-      "retrieved_chunks": [
-        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
-      ],
-      "error": null,
-      "timestamp": "2025-12-22T10:26:36.721892"
+      "retrieved_chunks": [],
+      "error": "No chunks retrieved for query: 'What specific item does Voyager 1 carry to represent Earth's culture?'",
+      "timestamp": "2025-12-22T10:06:49.082971"
     },
     {
       "strategy_name": "knowledge-graph-pair",
@@ -152,7 +139,7 @@
         "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
       ],
       "error": null,
-      "timestamp": "2025-12-22T10:26:37.501047"
+      "timestamp": "2025-12-22T10:06:50.014848"
     },
     {
       "strategy_name": "late-chunking-pair",
@@ -173,7 +160,7 @@
         "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
       ],
       "error": null,
-      "timestamp": "2025-12-22T10:26:40.590955"
+      "timestamp": "2025-12-22T10:06:53.551479"
     },
     {
       "strategy_name": "multi-query-pair",
@@ -194,7 +181,7 @@
         "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
       ],
       "error": null,
-      "timestamp": "2025-12-22T10:26:44.006044"
+      "timestamp": "2025-12-22T10:07:00.482013"
     },
     {
       "strategy_name": "query-expansion-pair",
@@ -215,7 +202,7 @@
         "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
       ],
       "error": null,
-      "timestamp": "2025-12-22T10:26:46.517972"
+      "timestamp": "2025-12-22T10:07:05.590947"
     },
     {
       "strategy_name": "reranking-pair",
@@ -236,7 +223,7 @@
         "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
       ],
       "error": null,
-      "timestamp": "2025-12-22T10:26:48.654475"
+      "timestamp": "2025-12-22T10:07:09.213129"
     },
     {
       "strategy_name": "self-reflective-pair",
@@ -248,7 +235,7 @@
         "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
       ],
       "error": null,
-      "timestamp": "2025-12-22T10:26:51.250246"
+      "timestamp": "2025-12-22T10:07:13.072645"
     },
     {
       "strategy_name": "semantic-api-pair",
@@ -269,7 +256,7 @@
         "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
       ],
       "error": null,
-      "timestamp": "2025-12-22T10:26:59.748805"
+      "timestamp": "2025-12-22T10:07:24.055723"
     },
     {
       "strategy_name": "semantic-local-pair",
@@ -290,7 +277,7 @@
         "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
       ],
       "error": null,
-      "timestamp": "2025-12-22T10:27:02.187102"
+      "timestamp": "2025-12-22T10:07:27.758937"
     }
   ]
 }

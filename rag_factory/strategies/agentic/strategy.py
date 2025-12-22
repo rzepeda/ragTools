@@ -169,7 +169,7 @@ class AgenticRAGStrategy(IRAGStrategy):
         # TODO: Implement query processing for agentic strategy
         raise NotImplementedError("process_query not yet implemented for AgenticRAGStrategy")
 
-    async def retrieve(self, query: str, top_k: int = 5, **kwargs) -> List[Dict[str, Any]]:
+    async def retrieve(self, query: str, context, top_k: int = 5) -> List[Dict[str, Any]]:
         """Retrieve relevant information using agentic approach.
         
         Args:

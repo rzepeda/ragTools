@@ -1,0 +1,40 @@
+{
+  "summary": {
+    "total_strategies": 3,
+    "successful": 0,
+    "failed": 3,
+    "timestamp": "2025-12-22T08:37:21.164420"
+  },
+  "results": [
+    {
+      "strategy_name": "agentic-rag-pair",
+      "test_case_id": "fact_001",
+      "indexer": "VectorEmbeddingIndexing",
+      "retriever": "AgenticRAGStrategy",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [],
+      "error": "No chunks retrieved for query: 'What specific item does Voyager 1 carry to represent Earth's culture?'",
+      "timestamp": "2025-12-22T08:37:01.651887"
+    },
+    {
+      "strategy_name": "hybrid-search-pair",
+      "test_case_id": "fact_001",
+      "indexer": "VectorEmbeddingIndexing",
+      "retriever": "HybridSearchRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [],
+      "error": "No chunks retrieved for query: 'What specific item does Voyager 1 carry to represent Earth's culture?'",
+      "timestamp": "2025-12-22T08:37:15.705285"
+    },
+    {
+      "strategy_name": "keyword-pair",
+      "test_case_id": "fact_001",
+      "indexer": "KeywordIndexing",
+      "retriever": "KeywordRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [],
+      "error": "No chunks retrieved for query: 'What specific item does Voyager 1 carry to represent Earth's culture?'",
+      "timestamp": "2025-12-22T08:37:20.472477"
+    }
+  ]
+}

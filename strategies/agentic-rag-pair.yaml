@@ -36,8 +36,10 @@ retriever:
       chunks: "agentic_chunks"
       vectors: "agentic_vectors"
     fields:
-      embedding: "vector_embedding"
+      chunk_id: "chunk_id"
+      document_id: "document_id"
       text: "text_content"
+      embedding: "vector_embedding"
   
   config:
     top_k: 5

@@ -41,6 +41,11 @@ retriever:
   db_config:
     tables:
       chunks: "hybrid_search_chunks"
+    fields:
+      chunk_id: "id"
+      document_id: "document_id"
+      text: "content"
+      embedding: "embedding"
   
   config:
     top_k: 10
