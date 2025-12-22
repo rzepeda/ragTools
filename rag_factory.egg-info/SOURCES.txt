@@ -18,6 +18,7 @@ rag_factory/cli/commands/__init__.py
 rag_factory/cli/commands/benchmark.py
 rag_factory/cli/commands/check_consistency.py
 rag_factory/cli/commands/config.py
+rag_factory/cli/commands/gui.py
 rag_factory/cli/commands/index.py
 rag_factory/cli/commands/query.py
 rag_factory/cli/commands/repl.py
@@ -71,6 +72,15 @@ rag_factory/evaluation/metrics/cost.py
 rag_factory/evaluation/metrics/performance.py
 rag_factory/evaluation/metrics/quality.py
 rag_factory/evaluation/metrics/retrieval.py
+rag_factory/gui/__init__.py
+rag_factory/gui/main_window.py
+rag_factory/gui/main_window_additions.py
+rag_factory/gui/components/__init__.py
+rag_factory/gui/components/scrolled_text.py
+rag_factory/gui/components/status_bar.py
+rag_factory/gui/utils/__init__.py
+rag_factory/gui/utils/formatters.py
+rag_factory/gui/utils/threading.py
 rag_factory/models/__init__.py
 rag_factory/models/embedding/__init__.py
 rag_factory/models/embedding/loader.py
@@ -144,6 +154,7 @@ rag_factory/services/utils/model_converter.py
 rag_factory/services/utils/onnx_utils.py
 rag_factory/services/utils/reranker_selector.py
 rag_factory/strategies/__init__.py
+rag_factory/strategies/auto_register.py
 rag_factory/strategies/base.py
 rag_factory/strategies/agentic/__init__.py
 rag_factory/strategies/agentic/agent.py
@@ -227,6 +238,7 @@ rag_factory/strategies/reranking/cross_encoder_reranker.py
 rag_factory/strategies/reranking/metrics.py
 rag_factory/strategies/reranking/reranker_service.py
 rag_factory/strategies/retrieval/__init__.py
+rag_factory/strategies/retrieval/hybrid_retriever.py
 rag_factory/strategies/retrieval/keyword_retriever.py
 rag_factory/strategies/retrieval/knowledge_graph_retriever.py
 rag_factory/strategies/retrieval/multi_query_retriever.py

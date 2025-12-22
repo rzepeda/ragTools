@@ -7,11 +7,12 @@ import logging
 from .base import ILLMProvider, Message, LLMResponse, StreamChunk, MessageRole
 from .config import LLMServiceConfig
 from ..embedding.rate_limiter import RateLimiter
+from ..interfaces import ILLMService
 
 logger = logging.getLogger(__name__)
 
 
-class LLMService:
+class LLMService(ILLMService):
     """Centralized LLM service with multi-provider support.
 
     Example:
@@ -214,3 +215,58 @@ class LLMService:
         """
         prompt_tokens = self.provider.count_tokens(messages)
         return self.provider.calculate_cost(prompt_tokens, max_completion_tokens)
+
+    # ILLMService interface methods (async wrappers)
+    async def complete_async(
+        self,
+        prompt: str,
+        max_tokens: Optional[int] = None,
+        temperature: float = 0.7,
+        **kwargs: Any
+    ) -> str:
+        """Generate completion for prompt (ILLMService interface method).
+        
+        This is an async wrapper around the sync complete() method for
+        interface compliance.
+        """
+        if not prompt:
+            raise ValueError("prompt cannot be empty")
+        
+        # Convert prompt to Message format
+        messages = [Message(role=MessageRole.USER, content=prompt)]
+        
+        # Call the sync complete method
+        response = self.complete(
+            messages,
+            temperature=temperature,
+            max_tokens=max_tokens or 1000,
+            **kwargs
+        )
+        
+        return response.content
+
+    async def stream_complete(
+        self,
+        prompt: str,
+        max_tokens: Optional[int] = None,
+        temperature: float = 0.7,
+        **kwargs: Any
+    ) -> AsyncIterator[str]:
+        """Generate streaming completion (ILLMService interface method).
+        
+        This wraps the internal stream() method for interface compliance.
+        """
+        if not prompt:
+            raise ValueError("prompt cannot be empty")
+        
+        # Convert prompt to Message format
+        messages = [Message(role=MessageRole.USER, content=prompt)]
+        
+        # Stream using the internal stream method
+        async for chunk in self.stream(
+            messages,
+            temperature=temperature,
+            max_tokens=max_tokens or 1000,
+            **kwargs
+        ):
+            yield chunk.content

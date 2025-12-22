@@ -312,13 +312,13 @@ def real_llm_service(require_llm):
 @pytest_asyncio.fixture
 async def real_neo4j_service(require_neo4j) -> AsyncGenerator:
     """Provide real Neo4j service."""
-    from rag_factory.services.database.neo4j import Neo4jDatabaseService
+    from rag_factory.services.database.neo4j import Neo4jGraphService
     
     uri = os.getenv("NEO4J_URI")
     user = os.getenv("NEO4J_USER")
     password = os.getenv("NEO4J_PASSWORD")
     
-    service = Neo4jDatabaseService(
+    service = Neo4jGraphService(
         uri=uri,
         user=user,
         password=password
@@ -328,7 +328,7 @@ async def real_neo4j_service(require_neo4j) -> AsyncGenerator:
     
     # Cleanup: delete test data
     try:
-        await service.execute_query(
+        await service.query(
             "MATCH (n:TestNode) DETACH DELETE n"
         )
     except Exception:

@@ -142,23 +142,47 @@ script_location = migrations
     
     def test_validate_all_migrations_applied(self, validator: MigrationValidator) -> None:
         """Test validation when all required migrations are applied."""
-        # Mock current revision
-        with patch.object(validator, '_get_current_revision', return_value="002"):
-            with patch.object(validator, '_get_applied_revisions', return_value={"001", "002"}):
-                is_valid, missing = validator.validate(["001", "002"])
-                
-                assert is_valid is True
-                assert missing == []
+        # Mock engine connection and MigrationContext
+        mock_conn = Mock()
+        mock_context = Mock(spec=MigrationContext)
+        mock_context.get_current_heads = Mock(return_value=["002"])
+        
+        mock_inspector = Mock()
+        mock_inspector.get_table_names = Mock(return_value=["alembic_version"])
+        
+        with patch.object(validator.engine, 'connect') as mock_connect:
+            mock_connect.return_value.__enter__ = Mock(return_value=mock_conn)
+            mock_connect.return_value.__exit__ = Mock(return_value=False)
+            
+            with patch('rag_factory.services.database.migration_validator.inspect', return_value=mock_inspector):
+                with patch('rag_factory.services.database.migration_validator.MigrationContext.configure', return_value=mock_context):
+                    with patch.object(validator, '_get_applied_revisions', return_value={"001", "002"}):
+                        is_valid, missing = validator.validate(["001", "002"])
+                        
+                        assert is_valid is True
+                        assert missing == []
     
     def test_validate_missing_migrations(self, validator: MigrationValidator) -> None:
         """Test validation when some migrations are missing."""
-        # Mock current revision at 001
-        with patch.object(validator, '_get_current_revision', return_value="001"):
-            with patch.object(validator, '_get_applied_revisions', return_value={"001"}):
-                is_valid, missing = validator.validate(["001", "002"])
-                
-                assert is_valid is False
-                assert missing == ["002"]
+        # Mock engine connection with head at 001
+        mock_conn = Mock()
+        mock_context = Mock(spec=MigrationContext)
+        mock_context.get_current_heads = Mock(return_value=["001"])
+        
+        mock_inspector = Mock()
+        mock_inspector.get_table_names = Mock(return_value=["alembic_version"])
+        
+        with patch.object(validator.engine, 'connect') as mock_connect:
+            mock_connect.return_value.__enter__ = Mock(return_value=mock_conn)
+            mock_connect.return_value.__exit__ = Mock(return_value=False)
+            
+            with patch('rag_factory.services.database.migration_validator.inspect', return_value=mock_inspector):
+                with patch('rag_factory.services.database.migration_validator.MigrationContext.configure', return_value=mock_context):
+                    with patch.object(validator, '_get_applied_revisions', return_value={"001"}):
+                        is_valid, missing = validator.validate(["001", "002"])
+                        
+                        assert is_valid is False
+                        assert missing == ["002"]
     
     def test_validate_no_migrations_applied(self, validator: MigrationValidator) -> None:
         """Test validation when no migrations are applied."""
@@ -170,21 +194,47 @@ script_location = migrations
     
     def test_validate_or_raise_success(self, validator: MigrationValidator) -> None:
         """Test validate_or_raise when all migrations are applied."""
-        with patch.object(validator, '_get_current_revision', return_value="002"):
-            with patch.object(validator, '_get_applied_revisions', return_value={"001", "002"}):
-                # Should not raise
-                validator.validate_or_raise(["001", "002"])
+        # Mock engine connection
+        mock_conn = Mock()
+        mock_context = Mock(spec=MigrationContext)
+        mock_context.get_current_heads = Mock(return_value=["002"])
+        
+        mock_inspector = Mock()
+        mock_inspector.get_table_names = Mock(return_value=["alembic_version"])
+        
+        with patch.object(validator.engine, 'connect') as mock_connect:
+            mock_connect.return_value.__enter__ = Mock(return_value=mock_conn)
+            mock_connect.return_value.__exit__ = Mock(return_value=False)
+            
+            with patch('rag_factory.services.database.migration_validator.inspect', return_value=mock_inspector):
+                with patch('rag_factory.services.database.migration_validator.MigrationContext.configure', return_value=mock_context):
+                    with patch.object(validator, '_get_applied_revisions', return_value={"001", "002"}):
+                        # Should not raise
+                        validator.validate_or_raise(["001", "002"])
     
     def test_validate_or_raise_failure(self, validator: MigrationValidator) -> None:
         """Test validate_or_raise when migrations are missing."""
-        with patch.object(validator, '_get_current_revision', return_value="001"):
-            with patch.object(validator, '_get_applied_revisions', return_value={"001"}):
-                with pytest.raises(MigrationValidationError) as exc_info:
-                    validator.validate_or_raise(["001", "002"])
-                
-                assert exc_info.value.missing_revisions == ["002"]
-                assert "002" in str(exc_info.value)
-                assert "alembic upgrade" in str(exc_info.value)
+        # Mock engine connection
+        mock_conn = Mock()
+        mock_context = Mock(spec=MigrationContext)
+        mock_context.get_current_heads = Mock(return_value=["001"])
+        
+        mock_inspector = Mock()
+        mock_inspector.get_table_names = Mock(return_value=["alembic_version"])
+        
+        with patch.object(validator.engine, 'connect') as mock_connect:
+            mock_connect.return_value.__enter__ = Mock(return_value=mock_conn)
+            mock_connect.return_value.__exit__ = Mock(return_value=False)
+            
+            with patch('rag_factory.services.database.migration_validator.inspect', return_value=mock_inspector):
+                with patch('rag_factory.services.database.migration_validator.MigrationContext.configure', return_value=mock_context):
+                    with patch.object(validator, '_get_applied_revisions', return_value={"001"}):
+                        with pytest.raises(MigrationValidationError) as exc_info:
+                            validator.validate_or_raise(["001", "002"])
+                        
+                        assert exc_info.value.missing_revisions == ["002"]
+                        assert "002" in str(exc_info.value)
+                        assert "alembic upgrade" in str(exc_info.value)
     
     def test_build_error_message(self, validator: MigrationValidator) -> None:
         """Test error message building."""
@@ -205,7 +255,7 @@ script_location = migrations
         """Test getting current revision from database."""
         mock_conn = Mock()
         mock_context = Mock(spec=MigrationContext)
-        mock_context.get_current_revision = Mock(return_value="002")
+        mock_context.get_current_heads = Mock(return_value=["002"])
         
         mock_inspector = Mock()
         mock_inspector.get_table_names = Mock(return_value=["alembic_version", "documents"])
@@ -218,6 +268,7 @@ script_location = migrations
                 with patch('rag_factory.services.database.migration_validator.MigrationContext.configure', return_value=mock_context):
                     revision = validator._get_current_revision()
                     
+                    # Should return first head
                     assert revision == "002"
     
     def test_get_current_revision_no_table(self, validator: MigrationValidator) -> None:
@@ -339,7 +390,7 @@ class TestMigrationValidatorIntegration:
             # Mock database state - only 001 applied
             mock_conn = Mock()
             mock_context = Mock(spec=MigrationContext)
-            mock_context.get_current_revision = Mock(return_value="001")
+            mock_context.get_current_heads = Mock(return_value=["001"])
             
             mock_inspector = Mock()
             mock_inspector.get_table_names = Mock(return_value=["alembic_version"])

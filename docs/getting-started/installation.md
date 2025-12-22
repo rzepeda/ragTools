@@ -46,7 +46,7 @@ pip install rag-factory
 Or install from source:
 
 ```bash
-git clone https://github.com/yourusername/rag-factory.git
+git clone #.git
 cd rag-factory
 pip install -e .
 ```

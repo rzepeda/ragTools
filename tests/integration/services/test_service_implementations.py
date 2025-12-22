@@ -150,26 +150,32 @@ class TestDatabaseServices:
         except ImportError:
             pytest.skip("neo4j package not installed")
 
-        with patch('neo4j.AsyncGraphDatabase') as MockDB:
-            # Setup mocks
-            mock_driver = AsyncMock()
+        with patch('rag_factory.services.database.neo4j.AsyncGraphDatabase') as MockDB:
+            # Setup mocks - driver should be regular Mock, not AsyncMock
+            mock_driver = Mock()
             MockDB.driver.return_value = mock_driver
-
+            
+            # Create async context manager for session
             mock_session = AsyncMock()
-            mock_driver.session.return_value.__aenter__.return_value = mock_session
-
+            mock_session_context = AsyncMock()
+            mock_session_context.__aenter__ = AsyncMock(return_value=mock_session)
+            mock_session_context.__aexit__ = AsyncMock(return_value=None)
+            
+            # driver.session should be a regular Mock returning the context manager
+            mock_driver.session = Mock(return_value=mock_session_context)
+            
             mock_result = AsyncMock()
             mock_record = {"id": "node_123"}
             mock_result.single.return_value = mock_record
             mock_session.run.return_value = mock_result
-
+            
             # Create service
             service = Neo4jGraphService(
                 uri="bolt://localhost:7687",
                 user="neo4j",
                 password="password"
             )
-
+            
             # Test create_node
             node_id = await service.create_node("Person", {"name": "Alice"})
             assert node_id == "node_123"

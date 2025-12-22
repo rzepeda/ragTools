@@ -371,7 +371,7 @@ Then restart the application.
 - **Help Dialog**: Press `F1` or Help → Help
 - **About**: Help → About
 - **Logs**: Tools → View Logs
-- **Documentation**: [GitHub Repository](https://github.com/yourusername/rag-factory)
+- **Documentation**: [GitHub Repository](#)
 
 ---
 

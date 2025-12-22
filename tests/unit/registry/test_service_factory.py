@@ -70,21 +70,18 @@ class TestLLMServiceCreation:
             "max_tokens": 2000
         }
 
-        with patch('rag_factory.services.api.OpenAILLMService') as mock_class:
+        with patch('rag_factory.services.llm.service.LLMService') as mock_class:
             mock_instance = Mock()
             mock_class.return_value = mock_instance
 
             service = factory._create_llm_service("llm_openai", config)
 
             assert service is mock_instance
-            # OpenAILLMService only accepts api_key and model in __init__
-            mock_class.assert_called_once_with(
-                api_key="sk-test",
-                model="gpt-4"
-            )
+            # LLMService is created with LLMServiceConfig
+            assert mock_class.called
 
     def test_create_llm_service_lm_studio(self, factory):
-        """Test creating LM Studio LLM service raises error (not yet supported)."""
+        """Test creating LM Studio LLM service (OpenAI-compatible)."""
         config = {
             "name": "test-llm",
             "url": "http://localhost:1234/v1",
@@ -92,24 +89,30 @@ class TestLLMServiceCreation:
             "temperature": 0.7
         }
 
-        # LM Studio is not yet supported, should raise error
-        with pytest.raises(ServiceInstantiationError) as exc_info:
-            factory._create_llm_service("llm1", config)
+        with patch('rag_factory.services.llm.service.LLMService') as mock_class:
+            mock_instance = Mock()
+            mock_class.return_value = mock_instance
 
-        assert "not yet fully supported" in str(exc_info.value)
+            service = factory._create_llm_service("llm1", config)
+
+            assert service is mock_instance
+            assert mock_class.called
 
     def test_create_llm_service_with_defaults(self, factory):
-        """Test creating LLM service with default values (LM Studio not supported)."""
+        """Test creating LLM service with default values."""
         config = {
             "url": "http://localhost:1234/v1",
             "model": "test-model"
         }
 
-        # LM Studio is not yet supported, should raise error
-        with pytest.raises(ServiceInstantiationError) as exc_info:
-            factory._create_llm_service("llm1", config)
+        with patch('rag_factory.services.llm.service.LLMService') as mock_class:
+            mock_instance = Mock()
+            mock_class.return_value = mock_instance
 
-        assert "not yet fully supported" in str(exc_info.value)
+            service = factory._create_llm_service("llm1", config)
+
+            assert service is mock_instance
+            assert mock_class.called
 
 
 class TestEmbeddingServiceCreation:

@@ -315,9 +315,27 @@ class RAGFactoryGUI:
                 except Exception:
                     self.handleError(record)
         
-        # Add handler to root logger
+        # Get the GUI logger
+        gui_logger = logging.getLogger('rag_factory.gui.main_window')
+        gui_logger.setLevel(logging.INFO)  # Set level BEFORE adding handler
+        gui_logger.disabled = False  # Ensure logger is not disabled by other tests
+        gui_logger.propagate = True  # Ensure propagation is enabled
+        
+        # Remove any existing GUILogHandler instances to prevent accumulation
+        # This is important when multiple GUI instances are created (e.g., in tests)
+        handlers_to_remove = []
+        for handler in gui_logger.handlers[:]:  # Copy list to avoid modification during iteration
+            if type(handler).__name__ == 'GUILogHandler':
+                handlers_to_remove.append(handler)
+        
+        for handler in handlers_to_remove:
+            gui_logger.removeHandler(handler)
+        
+        # Create and add new handler
         handler = GUILogHandler(self.log_buffer)
-        logging.getLogger().addHandler(handler)
+        handler.setLevel(logging.INFO)
+        gui_logger.addHandler(handler)
+        
         logger.info("GUI log capture initialized")
     
     def _initialize_backend(self) -> None:
@@ -1112,7 +1130,7 @@ class RAGFactoryGUI:
                 
                 context = RetrievalContext(
                     database_service=self.service_registry.get("db_main"),
-                    top_k=top_k
+                    config={"top_k": top_k}
                 )
                 
                 # Call retrieval pipeline (async)

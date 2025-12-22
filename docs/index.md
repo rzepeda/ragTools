@@ -191,6 +191,6 @@ RAG Factory is released under the MIT License. See the LICENSE file for details.
 
 ## 🔗 Links
 
-- [GitHub Repository](https://github.com/yourusername/rag-factory)
-- [Issue Tracker](https://github.com/yourusername/rag-factory/issues)
+- [GitHub Repository](#)
+- [Issue Tracker](#/issues)
 - [PyPI Package](https://pypi.org/project/rag-factory/)

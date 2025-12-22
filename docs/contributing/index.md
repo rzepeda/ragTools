@@ -14,7 +14,7 @@ We are committed to providing a welcoming and inclusive environment. Please be r
 
 ### Reporting Bugs
 
-- Use the [GitHub issue tracker](https://github.com/yourusername/rag-factory/issues)
+- Use the [GitHub issue tracker](#/issues)
 - Include a clear description and steps to reproduce
 - Provide system information (OS, Python version, etc.)
 
@@ -54,7 +54,7 @@ See the <!-- BROKEN LINK: Development Setup Guide <!-- (broken link to: developm
 
 ## Questions?
 
-- Open a [GitHub Discussion](https://github.com/yourusername/rag-factory/discussions)
+- Open a [GitHub Discussion](#/discussions)
 - Check the [FAQ](../troubleshooting/faq.md)
 
 Thank you for contributing!

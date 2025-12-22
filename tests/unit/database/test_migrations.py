@@ -69,8 +69,9 @@ class TestAlembicMigrations:
             before_downgrade = context.get_current_revision()
         engine.dispose()
 
-        # Downgrade one version
-        command.downgrade(alembic_config, "-1")
+        # Downgrade to semantic_local_schema (the common parent before the merge)
+        # Using -1 would be ambiguous for merge migrations with multiple parents
+        command.downgrade(alembic_config, "semantic_local_schema")
 
         # Verify version changed
         engine = create_engine(test_db_url)
@@ -80,6 +81,7 @@ class TestAlembicMigrations:
         engine.dispose()
 
         assert after_downgrade != before_downgrade
+        assert after_downgrade == "semantic_local_schema"
 
     def test_migration_history(self, alembic_config: Config) -> None:
         """Test retrieving migration history."""

@@ -103,6 +103,10 @@ class TestQueryExecution:
         app = gui_app_with_strategy
         app.query_var.set("test query")
         
+        # Need both strategies for button to be enabled
+        app.indexing_strategy = Mock()
+        app.retrieval_strategy = Mock()
+        
         app._update_button_states()
         assert str(app.retrieve_btn['state']) == 'normal'
         

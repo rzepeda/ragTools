@@ -1,0 +1,2 @@
+tests/integration/gui/test_end_to_end_workflow.py
+tests/integration/gui/test_gui_launch.py

@@ -148,10 +148,10 @@ class TestClearAllData:
         db_service.clear_all.side_effect = Exception("Database error")
         
         with patch('tkinter.messagebox.askyesno', return_value=True), \
-             patch('tkinter.messagebox.showerror') as mock_error:
+             patch.object(app, '_show_error_dialog') as mock_error:
             app._clear_all_data()
             
-            # Verify error was shown
+            # Verify error dialog was shown
             mock_error.assert_called_once()
 
 
@@ -169,19 +169,35 @@ class TestLogCapture:
         """Test that logs are captured to buffer."""
         app = gui_app
         
+        # Verify the log handler is set up
+        gui_logger = logging.getLogger('rag_factory.gui.main_window')
+        
+        # Find the GUILogHandler in the logger's handlers
+        gui_handler = None
+        for handler in gui_logger.handlers:
+            if hasattr(handler, 'buffer') and handler.buffer is app.log_buffer:
+                gui_handler = handler
+                break
+        
+        # If no handler found, the setup is broken
+        assert gui_handler is not None, "GUILogHandler not found in logger handlers"
+        
         initial_count = len(app.log_buffer)
         
-        # Log a message
-        logger = logging.getLogger(__name__)
-        logger.info("Test log message")
+        # Log a message using the GUI logger
+        gui_logger.info("Test log message")
+        
+        # Force flush all handlers
+        for handler in gui_logger.handlers:
+            handler.flush()
         
         # Give time for handler to process
         import time
         time.sleep(0.1)
         
         # Verify log was captured
-        assert len(app.log_buffer) > initial_count
-        assert any("Test log message" in log for log in app.log_buffer)
+        assert len(app.log_buffer) > initial_count, f"Log buffer did not increase: {initial_count} -> {len(app.log_buffer)}"
+        assert any("Test log message" in log for log in app.log_buffer), f"Test message not found in buffer: {app.log_buffer}"
     
     def test_log_buffer_limit(self, gui_app):
         """Test that log buffer is limited to 1000 entries."""

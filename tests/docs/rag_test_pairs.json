@@ -1,0 +1,292 @@
+{
+  "test_pairs": [
+    {
+      "id": 1,
+      "name": "Semantic Similarity - Basic",
+      "text": "The Arctic fox, also known as the white fox or polar fox, is remarkably adapted to survive in extreme cold. Its thick fur provides insulation with the warmest coat of any mammal, while its compact body shape minimizes heat loss. During winter, its coat turns white for camouflage against snow, and in summer it changes to brown or gray to blend with tundra vegetation. These foxes can survive temperatures as low as -70°C.",
+      "query": "What adaptations help polar foxes survive freezing temperatures?",
+      "expected_behaviors": {
+        "semantic_match": true,
+        "keyword_match": false,
+        "requires_multi_hop": false,
+        "requires_numerical_precision": false
+      },
+      "optimal_strategies": ["semantic_search", "reranking"],
+      "difficulty": "easy",
+      "tags": ["semantic", "synonym_understanding", "basic_retrieval"]
+    },
+    {
+      "id": 2,
+      "name": "Keyword Precision - Technical",
+      "text": "The TCP three-way handshake establishes a connection through SYN, SYN-ACK, and ACK packets. First, the client sends a SYN packet with a random sequence number. The server responds with SYN-ACK, acknowledging the client's sequence number and providing its own. Finally, the client sends an ACK packet, completing the handshake. This mechanism ensures both parties are ready for data transmission and prevents half-open connections.",
+      "query": "Explain the TCP three-way handshake sequence",
+      "expected_behaviors": {
+        "semantic_match": true,
+        "keyword_match": true,
+        "requires_multi_hop": false,
+        "requires_numerical_precision": false
+      },
+      "optimal_strategies": ["keyword_search", "bm25", "reranking"],
+      "difficulty": "easy",
+      "tags": ["keyword", "technical", "exact_match"]
+    },
+    {
+      "id": 3,
+      "name": "Hierarchical Context",
+      "text": "Renaissance art underwent three distinct phases. The Early Renaissance (1400-1475) focused on perspective and anatomy, with artists like Masaccio pioneering linear perspective. The High Renaissance (1475-1525) achieved perfect balance, exemplified by Leonardo da Vinci's sfumato technique and Michelangelo's sculptures. The Late Renaissance (1525-1600) introduced Mannerism, characterized by elongated figures and complex compositions, as seen in works by Parmigianino.",
+      "query": "What technique did Leonardo da Vinci develop during the High Renaissance?",
+      "expected_behaviors": {
+        "semantic_match": true,
+        "keyword_match": true,
+        "requires_multi_hop": false,
+        "requires_numerical_precision": false,
+        "requires_hierarchical_context": true
+      },
+      "optimal_strategies": ["hierarchical_rag", "contextual_retrieval", "reranking"],
+      "difficulty": "medium",
+      "tags": ["hierarchical", "contextual", "structured_information"]
+    },
+    {
+      "id": 4,
+      "name": "Multi-Hop Reasoning",
+      "text": "Marie Curie won her first Nobel Prize in Physics in 1903 alongside her husband Pierre Curie and Henri Becquerel for their work on radioactivity. After Pierre's death in 1906, she continued research and won her second Nobel Prize in Chemistry in 1911 for discovering radium and polonium. Her daughter, Irène Joliot-Curie, also won a Nobel Prize in Chemistry in 1935 for synthesizing new radioactive elements.",
+      "query": "How many Nobel Prizes did the Curie family win in total?",
+      "expected_behaviors": {
+        "semantic_match": true,
+        "keyword_match": true,
+        "requires_multi_hop": true,
+        "requires_numerical_precision": true,
+        "requires_reasoning": true
+      },
+      "optimal_strategies": ["agentic_rag", "knowledge_graph", "self_reflective"],
+      "difficulty": "hard",
+      "tags": ["multi_hop", "reasoning", "aggregation", "numerical"]
+    },
+    {
+      "id": 5,
+      "name": "Negation Handling",
+      "text": "While most reptiles are cold-blooded ectotherms, the leatherback sea turtle exhibits regional endothermy. Unlike typical reptiles, it can maintain body temperatures up to 18°C warmer than surrounding water through metabolic heat generation and gigantothermy. This unique adaptation allows leatherbacks to hunt in frigid Arctic waters where other sea turtles cannot survive, pursuing jellyfish at depths exceeding 1,000 meters.",
+      "query": "What reptiles can regulate their body temperature unlike most reptiles?",
+      "expected_behaviors": {
+        "semantic_match": true,
+        "keyword_match": false,
+        "requires_multi_hop": false,
+        "requires_numerical_precision": false,
+        "requires_negation_understanding": true
+      },
+      "optimal_strategies": ["semantic_search", "query_expansion", "contextual_retrieval"],
+      "difficulty": "medium",
+      "tags": ["negation", "exception_handling", "semantic_precision"]
+    },
+    {
+      "id": 6,
+      "name": "Numerical Precision",
+      "text": "The human brain contains approximately 86 billion neurons, each forming between 1,000 and 10,000 synapses with other neurons. This creates a network of roughly 100 trillion connections. The cerebral cortex, representing about 80% of the brain's mass, handles higher cognitive functions. Information travels through neurons at speeds ranging from 0.5 to 120 meters per second, depending on whether the axon is myelinated.",
+      "query": "How many neurons are in the human brain?",
+      "expected_behaviors": {
+        "semantic_match": true,
+        "keyword_match": true,
+        "requires_multi_hop": false,
+        "requires_numerical_precision": true
+      },
+      "optimal_strategies": ["semantic_search", "keyword_search", "reranking"],
+      "difficulty": "easy",
+      "tags": ["numerical", "precision", "factual"]
+    },
+    {
+      "id": 7,
+      "name": "Temporal Ordering",
+      "text": "The Apollo 11 mission achieved humanity's first lunar landing through carefully orchestrated stages. On July 16, 1969, the Saturn V rocket launched from Kennedy Space Center. Three days later, on July 19, the spacecraft entered lunar orbit. July 20 marked the historic moment when the Eagle lunar module landed in the Sea of Tranquility at 20:17 UTC. Neil Armstrong stepped onto the lunar surface six hours later at 02:56 UTC on July 21, followed by Buzz Aldrin nineteen minutes afterward.",
+      "query": "What happened between the lunar orbit insertion and the first steps on the moon?",
+      "expected_behaviors": {
+        "semantic_match": true,
+        "keyword_match": true,
+        "requires_multi_hop": true,
+        "requires_numerical_precision": false,
+        "requires_temporal_understanding": true
+      },
+      "optimal_strategies": ["hierarchical_rag", "agentic_rag", "knowledge_graph"],
+      "difficulty": "hard",
+      "tags": ["temporal", "sequential", "multi_hop", "chronological"]
+    },
+    {
+      "id": 8,
+      "name": "Comparative Analysis",
+      "text": "Photosynthesis and cellular respiration are complementary processes. Photosynthesis converts carbon dioxide and water into glucose and oxygen using light energy, occurring in chloroplasts of plant cells. The chemical equation is 6CO₂ + 6H₂O + light energy → C₆H₁₂O₆ + 6O₂. Cellular respiration reverses this process, breaking down glucose with oxygen to produce ATP, carbon dioxide, and water in mitochondria. All living cells perform cellular respiration, while only plant cells, algae, and some bacteria perform photosynthesis.",
+      "query": "What are the differences between photosynthesis and cellular respiration?",
+      "expected_behaviors": {
+        "semantic_match": true,
+        "keyword_match": true,
+        "requires_multi_hop": true,
+        "requires_numerical_precision": false,
+        "requires_comparison": true
+      },
+      "optimal_strategies": ["multi_query_rag", "contextual_retrieval", "reranking"],
+      "difficulty": "medium",
+      "tags": ["comparison", "multi_aspect", "scientific"]
+    },
+    {
+      "id": 9,
+      "name": "Acronym and Abbreviation",
+      "text": "The United States Federal Bureau of Investigation (FBI) was established in 1908 as the Bureau of Investigation under the Department of Justice. It gained its current name in 1935. The FBI's primary mission includes protecting the United States from terrorist attacks, foreign intelligence operations, and cyber threats. Headquartered in Washington, D.C., the bureau operates 56 field offices across the country and maintains legal attaché offices in U.S. embassies worldwide.",
+      "query": "When was the FBI founded and what does it do?",
+      "expected_behaviors": {
+        "semantic_match": true,
+        "keyword_match": true,
+        "requires_multi_hop": false,
+        "requires_numerical_precision": true,
+        "requires_entity_resolution": true
+      },
+      "optimal_strategies": ["keyword_search", "semantic_search", "knowledge_graph"],
+      "difficulty": "easy",
+      "tags": ["acronym", "entity_recognition", "factual"]
+    },
+    {
+      "id": 10,
+      "name": "Causal Relationships",
+      "text": "The Irish Potato Famine of 1845-1852 was triggered by Phytophthora infestans, a water mold that devastated potato crops. Since potatoes comprised 80% of the Irish diet, the blight caused mass starvation. Approximately one million people died, and another million emigrated, reducing Ireland's population by 25%. British government policies exacerbated the crisis by continuing grain exports from Ireland and providing inadequate relief. This catastrophe fundamentally altered Ireland's demographics, culture, and relationship with Britain.",
+      "query": "Why did the potato blight have such devastating effects in Ireland?",
+      "expected_behaviors": {
+        "semantic_match": true,
+        "keyword_match": true,
+        "requires_multi_hop": true,
+        "requires_numerical_precision": false,
+        "requires_causal_reasoning": true
+      },
+      "optimal_strategies": ["self_reflective_rag", "knowledge_graph", "contextual_retrieval"],
+      "difficulty": "hard",
+      "tags": ["causal", "multi_factor", "reasoning", "historical"]
+    },
+    {
+      "id": 11,
+      "name": "Definition with Context",
+      "text": "Quantum entanglement occurs when particles become correlated such that the quantum state of one particle cannot be described independently of others, even when separated by vast distances. Einstein famously called this 'spooky action at a distance.' When measuring one entangled particle's property (like spin), the other particle's corresponding property is instantly determined, regardless of separation. This phenomenon doesn't violate relativity because no information is actually transmitted faster than light—the correlation exists, but random measurement outcomes prevent faster-than-light communication.",
+      "query": "What is quantum entanglement?",
+      "expected_behaviors": {
+        "semantic_match": true,
+        "keyword_match": true,
+        "requires_multi_hop": false,
+        "requires_numerical_precision": false,
+        "requires_contextual_understanding": true
+      },
+      "optimal_strategies": ["contextual_retrieval", "semantic_search", "reranking"],
+      "difficulty": "medium",
+      "tags": ["definition", "contextual", "scientific", "complex_concept"]
+    },
+    {
+      "id": 12,
+      "name": "Ambiguous Reference Resolution",
+      "text": "Amazon was founded by Jeff Bezos in 1994 as an online bookstore operating from his garage in Seattle. The company chose its name to convey scale, referencing the Amazon River, the world's largest river by volume. Initially focusing solely on books, it expanded into CDs, electronics, and eventually became the world's largest online retailer. Today, the corporation dominates cloud computing through AWS, produces consumer electronics like the Kindle, and operates streaming services, far exceeding its original scope.",
+      "query": "Why did the company choose that name?",
+      "expected_behaviors": {
+        "semantic_match": true,
+        "keyword_match": false,
+        "requires_multi_hop": true,
+        "requires_numerical_precision": false,
+        "requires_coreference_resolution": true
+      },
+      "optimal_strategies": ["semantic_search", "reranking", "knowledge_graph"],
+      "difficulty": "medium",
+      "tags": ["coreference", "entity_tracking", "ambiguous_reference"]
+    },
+    {
+      "id": 13,
+      "name": "Procedural Knowledge",
+      "text": "Performing the Heimlich maneuver on a choking adult requires specific steps. First, stand behind the person and wrap your arms around their waist. Make a fist with one hand and place it slightly above the navel, thumb side in. Grasp your fist with your other hand and press hard into the abdomen with a quick, upward thrust. Repeat this motion five times. If the object doesn't dislodge, check the person's mouth for the obstruction. Continue cycles of five abdominal thrusts until the object is expelled or emergency services arrive.",
+      "query": "How do you perform the Heimlich maneuver?",
+      "expected_behaviors": {
+        "semantic_match": true,
+        "keyword_match": true,
+        "requires_multi_hop": false,
+        "requires_numerical_precision": false,
+        "requires_sequential_understanding": true
+      },
+      "optimal_strategies": ["hierarchical_rag", "semantic_search", "keyword_search"],
+      "difficulty": "easy",
+      "tags": ["procedural", "sequential", "instructional"]
+    },
+    {
+      "id": 14,
+      "name": "Statistical Information",
+      "text": "Climate change impacts vary significantly by region. Arctic temperatures are rising twice as fast as the global average, with sea ice declining at 13% per decade since 1979. Mediterranean regions face 40% reduction in summer rainfall by 2100 under current emissions scenarios. Small island nations like Tuvalu and Maldives, with maximum elevations under 5 meters, face existential threats from projected sea level rise of 0.5 to 1.0 meters by 2100. Meanwhile, sub-Saharan Africa experiences increased drought frequency, with some regions seeing 30% decline in agricultural productivity.",
+      "query": "Which regions are most affected by climate change and by how much?",
+      "expected_behaviors": {
+        "semantic_match": true,
+        "keyword_match": true,
+        "requires_multi_hop": true,
+        "requires_numerical_precision": true,
+        "requires_aggregation": true
+      },
+      "optimal_strategies": ["late_chunking", "contextual_retrieval", "multi_query_rag"],
+      "difficulty": "hard",
+      "tags": ["statistical", "multi_region", "numerical", "aggregation"]
+    },
+    {
+      "id": 15,
+      "name": "Edge Case - Specialized Domain",
+      "text": "The James Webb Space Telescope (JWST), launched on December 25, 2021, revolutionized astronomy by observing the universe in infrared wavelengths. Its 6.5-meter primary mirror, composed of 18 gold-plated beryllium segments, collects light from objects 13.5 billion years old. Positioned at the L2 Lagrange point, 1.5 million kilometers from Earth, JWST operates at -233°C to detect faint infrared signals. Early discoveries included detailed images of exoplanet atmospheres, ancient galaxies forming 300 million years after the Big Bang, and complex organic molecules in star-forming regions.",
+      "query": "What has the James Webb telescope discovered?",
+      "expected_behaviors": {
+        "semantic_match": true,
+        "keyword_match": true,
+        "requires_multi_hop": false,
+        "requires_numerical_precision": true,
+        "requires_domain_knowledge": true
+      },
+      "optimal_strategies": ["fine_tuned_embeddings", "semantic_search", "contextual_retrieval"],
+      "difficulty": "medium",
+      "tags": ["specialized_domain", "recent_information", "astronomy", "technical"]
+    }
+  ],
+  "metadata": {
+    "total_pairs": 15,
+    "version": "1.0.0",
+    "created_date": "2024-12-20",
+    "purpose": "Comprehensive RAG strategy testing and benchmarking",
+    "difficulty_distribution": {
+      "easy": 4,
+      "medium": 6,
+      "hard": 5
+    },
+    "strategy_coverage": {
+      "semantic_search": 15,
+      "keyword_search": 9,
+      "hierarchical_rag": 4,
+      "multi_query_rag": 2,
+      "agentic_rag": 3,
+      "knowledge_graph": 5,
+      "self_reflective_rag": 2,
+      "contextual_retrieval": 7,
+      "reranking": 10,
+      "late_chunking": 1,
+      "fine_tuned_embeddings": 1,
+      "query_expansion": 1
+    },
+    "evaluation_dimensions": [
+      "semantic_match",
+      "keyword_match",
+      "multi_hop_reasoning",
+      "numerical_precision",
+      "temporal_understanding",
+      "causal_reasoning",
+      "coreference_resolution",
+      "negation_handling",
+      "comparison_ability",
+      "sequential_understanding",
+      "entity_resolution",
+      "domain_specialization"
+    ]
+  },
+  "usage_instructions": {
+    "indexing": "Index all 'text' fields into your RAG system with pair_id as metadata",
+    "querying": "For each pair, execute the 'query' field and retrieve top-k results",
+    "evaluation": "Check if the corresponding text is retrieved in top-k results",
+    "metrics": [
+      "Retrieval accuracy (top-1, top-3, top-5)",
+      "Mean Reciprocal Rank (MRR)",
+      "Latency (milliseconds)",
+      "Cost (API calls for LLM-based strategies)"
+    ],
+    "example_code": "test_suite = load_json('rag_test_pairs.json'); for pair in test_suite['test_pairs']: index(pair['text']); results = retrieve(pair['query']); evaluate(results, pair)"
+  }
+}

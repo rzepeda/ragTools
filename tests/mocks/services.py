@@ -100,6 +100,7 @@ def create_mock_database_service(
     # Async methods
     service.get_chunks_for_documents = AsyncMock(return_value=get_chunks_return_value)
     service.search_chunks = AsyncMock(return_value=search_chunks_return_value)
+    service.search_chunks_by_keywords = AsyncMock(return_value=search_chunks_return_value)  # For hybrid search
     service.store_chunks = AsyncMock(return_value=store_chunks_return_value)
     service.store_chunks_with_hierarchy = AsyncMock(return_value=store_chunks_return_value)  # For hierarchical indexing
     service.store_keyword_index = AsyncMock(return_value=None)

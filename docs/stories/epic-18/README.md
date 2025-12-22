@@ -174,5 +174,5 @@ Possible additions in future epics:
 ## Related Documentation
 
 - [Epic 18 Full Specification](../../epics/epic-18-gui.md)
-- [Epic 17 Strategy Pair Configuration](../../epics/epic-17-strategy-pairs.md)
+<!-- Epic 17 Strategy Pair Configuration documentation not yet created -->
 - [Epic 04 Stories (Template Reference)](../Completed/epic-04/)

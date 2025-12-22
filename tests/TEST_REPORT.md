@@ -1,538 +1,429 @@
-# Test Report
+# Test Results Summary Report
 
-**Generated:** 2025-12-18  
-**Test Execution Date:** Thu Dec 18 01:44:44 AM -03 2025  
-**Total Duration:** 69m 39s
+**Generated:** 2025-12-20  
+**Test Duration:** 131m 16s  
+**Total Test Files:** 206
 
 ---
 
-## Executive Summary
+## 📊 Overall Statistics
 
-| Metric | Count | Percentage |
+### File-Level Results
+| Status | Count | Percentage |
 |--------|-------|------------|
-| **Total Test Files** | 197 | 100% |
-| ✅ Passed Files | 172 | 87.3% |
-| ❌ Failed Files | 22 | 11.2% |
-| ⏭️ Skipped Files | 3 | 1.5% |
-| **Total Tests** | 2,198 | 100% |
-| ✅ Passed Tests | 2,008 | 91.4% |
-| ❌ Failed Tests | 126 | 5.7% |
-| ⏭️ Skipped Tests | 64 | 2.9% |
+| ✅ **Passed** | 186 | 90.3% |
+| ❌ **Failed** | 16 | 7.8% |
+| ⏭️ **Skipped** | 2 | 1.0% |
+| ⏱️ **Timeout** | 2 | 1.0% |
+
+### Test-Level Results
+| Status | Count | Percentage |
+|--------|-------|------------|
+| ✅ **Passed** | 2,145 | 93.6% |
+| ❌ **Failed** | 92 | 4.0% |
+| ⏭️ **Skipped** | 54 | 2.4% |
+| 📊 **Total** | 2,291 | 100% |
 
 ---
 
-## Error Categories
+## 🔍 Errors Grouped by Category
 
-### 1. Configuration Issues (🔧)
 
-These tests fail due to missing or incorrect configuration such as API keys, database connections, or model files.
+### Database Migration - Multiple Heads (3 files)
 
-#### 1.1 Database Connection Issues
-**Impact:** Low - Tests require PostgreSQL/Neo4j running  
-**Affected Files:** 0 (All database tests are passing with proper configuration)
+🔴 **HIGH PRIORITY** - `tests/integration/database/test_migration_integration.py`
 
-#### 1.2 Missing Model Files
-**Impact:** Low - Tests require ONNX models to be downloaded  
-**Affected Files:** 1
+- **Error Type:** Alembic Multiple Heads
+- **Description:** Multiple migration branches: finetuned_schema, contextual_schema, hierarchical_schema, context_aware_schema, keyword_schema
+- **Recommended Fix:** Run: alembic merge heads
+- **Failed Tests:** 8
 
-- `tests/integration/registry/test_registry_integration.py`
-  - **Error:** `FileNotFoundError` - ONNX model files not found
-  - **Solution:** Download required ONNX models or skip tests when models unavailable
+🔴 **HIGH PRIORITY** - `tests/integration/database/test_migration_validator_integration.py`
 
-#### 1.3 Import/Package Issues
-**Impact:** Medium - Package installation or import path issues  
-**Affected Files:** 2
+- **Error Type:** Alembic Multiple Heads
+- **Description:** Multiple migration branches: finetuned_schema, contextual_schema, hierarchical_schema, context_aware_schema, keyword_schema
+- **Recommended Fix:** Run: alembic merge heads
+- **Failed Tests:** 22
 
-- `tests/integration/test_package_integration.py`
-  - **Error:** `ModuleNotFoundError` - Cannot import installed package
-  - **Solution:** Ensure package is properly installed in test environment
+🔴 **HIGH PRIORITY** - `tests/unit/database/test_migrations.py`
 
-- `tests/unit/test_package.py`
-  - **Error:** `ModuleNotFoundError` - Import path issues
-  - **Solution:** Fix import paths or package structure
+- **Error Type:** Alembic Multiple Heads
+- **Description:** Multiple migration branches: finetuned_schema, contextual_schema, hierarchical_schema, context_aware_schema, keyword_schema
+- **Recommended Fix:** Run: alembic merge heads
+- **Failed Tests:** 12
 
----
 
-### 2. Requirement Issues (📋)
+### Neo4j Connection (1 file)
 
-These tests fail due to missing requirements, dependencies, or environmental prerequisites that need to be addressed in the codebase.
+🟡 **MEDIUM PRIORITY** - `tests/integration_real/test_neo4j_real.py`
 
-#### 2.1 Database Migration - Vector Extension Dependencies
-**Impact:** High - Affects database migration rollback functionality  
-**Affected Files:** 3  
-**Total Failures:** 28 tests
+- **Error Type:** Neo4j Connection
+- **Description:** Cannot connect to Neo4j database
+- **Recommended Fix:** Set NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD in .env
+- **Failed Tests:** 0
 
-**Root Cause:** Migration downgrade attempts to drop the `vector` extension, but dependent objects (like `test_chunks_real` table) still exist.
 
-**Error Message:**
-```
-psycopg2.errors.DependentObjectsStillExist: cannot drop extension vector because other objects depend on it
-DETAIL: column embedding of table test_chunks_real depends on type vector
-HINT: Use DROP ... CASCADE to drop the dependent objects too.
-```
+### Import/Module Errors (1 file)
 
-**Affected Files:**
-- `tests/integration/database/test_migration_integration.py` (3 tests)
-  - `test_real_migration_execution`
-  - `test_migration_with_existing_data`
-  - `test_rollback_functionality`
+🟡 **MEDIUM PRIORITY** - `tests/unit/gui/test_backend_integration.py`
 
-- `tests/integration/database/test_migration_validator_integration.py` (12 tests)
-  - `test_validate_with_no_migrations`
-  - `test_validate_with_partial_migrations`
-  - `test_validate_or_raise_failure`
-  - `test_get_current_revision`
-  - `test_is_at_head`
-  - `test_error_message_details`
-  - And 6 more...
+- **Error Type:** Import Error
+- **Description:** Missing module: rag_factory.core.exceptions
+- **Recommended Fix:** Fix import path or install rag_factory.core.exceptions
+- **Failed Tests:** 0
 
-- `tests/unit/database/test_migrations.py` (6 tests)
-  - `test_migration_upgrade_to_head`
-  - `test_migration_downgrade`
-  - `test_migration_creates_tables`
-  - `test_migration_creates_indexes`
-  - `test_migration_idempotency`
-  - `test_get_current_version`
 
-**Recommendation:**
-- Update migration downgrade scripts to use `DROP ... CASCADE` or properly clean up dependent objects before dropping the vector extension
-- Add test fixtures to properly clean up database state between tests
+### GUI/Tkinter Issues (3 files)
 
-#### 2.2 Database Migration - Missing Tables
-**Impact:** High - Affects migration upgrade functionality  
-**Affected Files:** 2  
-**Total Failures:** 8 tests
+🟡 **MEDIUM PRIORITY** - `tests/unit/gui/test_main_window.py`
 
-**Root Cause:** Migration 002 attempts to add columns to the `chunks` table, but the table doesn't exist because migration 001 was not properly executed.
+- **Error Type:** GUI/Tkinter
+- **Description:** Tkinter or GUI-related error
+- **Recommended Fix:** Check GUI initialization and mocking
+- **Failed Tests:** 12
 
-**Error Message:**
-```
-psycopg2.errors.UndefinedTable: relation "chunks" does not exist
-[SQL: ALTER TABLE chunks ADD COLUMN parent_chunk_id UUID]
-```
+🟡 **MEDIUM PRIORITY** - `tests/unit/gui/test_retrieval_operations.py`
 
-**Affected Files:**
-- `tests/integration/database/test_migration_integration.py` (1 test)
-  - `test_pgvector_extension_installed`
+- **Error Type:** GUI/Tkinter
+- **Description:** Tkinter or GUI-related error
+- **Recommended Fix:** Check GUI initialization and mocking
+- **Failed Tests:** 2
 
-- `tests/integration/database/test_migration_validator_integration.py` (7 tests)
-  - `test_validate_with_all_migrations`
-  - `test_validate_or_raise_success`
-  - `test_validate_single_migration`
-  - `test_validate_nonexistent_migration`
-  - `test_validate_after_downgrade`
-  - `test_multiple_validators_same_database`
+🟡 **MEDIUM PRIORITY** - `tests/unit/gui/test_utility_operations.py`
 
-**Recommendation:**
-- Fix migration test fixtures to ensure proper migration order
-- Add migration dependency checks before running upgrade scripts
-- Ensure test database is in a clean state before each test
+- **Error Type:** GUI/Tkinter
+- **Description:** Tkinter or GUI-related error
+- **Recommended Fix:** Check GUI initialization and mocking
+- **Failed Tests:** 2
 
----
 
-### 3. Code Issues (🐛)
+### Documentation Errors (2 files)
 
-These tests fail due to bugs, incorrect implementations, or API mismatches in the code.
+🟢 **LOW PRIORITY** - `tests/unit/documentation/test_code_examples.py`
 
-#### 3.1 Type Errors
-**Impact:** Medium - Code implementation issues  
-**Affected Files:** 9  
-**Total Failures:** ~35 tests
+- **Error Type:** Documentation Syntax
+- **Description:** Code examples have syntax errors
+- **Recommended Fix:** Fix code syntax in documentation
+- **Failed Tests:** 2
 
-**Common Patterns:**
-- Incorrect function signatures
-- Missing or extra parameters
-- Type mismatches in function calls
+🟢 **LOW PRIORITY** - `tests/unit/documentation/test_links.py`
 
-**Affected Files:**
-- `tests/integration/services/test_service_integration.py` (2 tests)
-  - `test_embedding_database_consistency`
-  - `test_rag_workflow`
+- **Error Type:** Documentation Links
+- **Description:** Broken internal links in documentation
+- **Recommended Fix:** Fix documentation link paths
+- **Failed Tests:** 4
 
-- `tests/integration/strategies/test_self_reflective_integration.py` (4 tests)
-  - `test_end_to_end_workflow`
-  - `test_performance_within_limits`
-  - `test_retry_with_poor_results`
-  - `test_with_real_llm`
 
-- `tests/unit/database/test_pgvector.py` (1 test)
-  - `test_cosine_similarity_search`
+### Mock/Test Configuration (2 files)
 
-- `tests/unit/services/embedding/test_onnx_local_provider.py` (1 test)
-  - `test_calculate_cost_is_zero`
+🟡 **MEDIUM PRIORITY** - `tests/test_mock_registry.py`
 
-- `tests/unit/services/llm/test_anthropic_provider.py` (multiple tests)
-  - `test_stream` and others
+- **Error Type:** Mock Configuration
+- **Description:** Mock object has incorrect configuration
+- **Recommended Fix:** Update mock configuration or test setup
+- **Failed Tests:** 0
 
-- `tests/unit/services/llm/test_ollama_provider.py` (multiple tests)
+🟡 **MEDIUM PRIORITY** - `tests/unit/services/database/test_migration_validator.py`
 
-- `tests/unit/services/llm/test_openai_provider.py` (multiple tests)
+- **Error Type:** Mock Configuration
+- **Description:** Mock object is not subscriptable
+- **Recommended Fix:** Update mock configuration or test setup
+- **Failed Tests:** 12
 
-- `tests/unit/services/llm/test_service.py` (multiple tests)
 
-- `tests/unit/services/test_database_service.py` (1 test)
-  - `test_store_chunks_with_hierarchy`
+### Type/Attribute Errors (1 file)
 
-**Recommendation:**
-- Review and fix function signatures to match expected interfaces
-- Update tests to use correct API calls
-- Add type hints and validation
+🟡 **MEDIUM PRIORITY** - `tests/integration/test_hybrid_search_pair.py`
 
-#### 3.2 Assertion Errors
-**Impact:** Medium - Test expectations don't match implementation  
-**Affected Files:** 3  
-**Total Failures:** ~10 tests
+- **Error Type:** TypeError
+- **Description:** object Mock can't be used in 'await' expression
+- **Recommended Fix:** Fix type mismatches or attribute access
+- **Failed Tests:** 2
 
-**Affected Files:**
-- `tests/unit/config/test_strategy_pair_manager.py` (2 tests)
-  - `test_db_context_creation`
-  - `test_load_pair_success`
 
-- `tests/unit/documentation/test_code_examples.py` (1 test)
-  - `test_all_code_examples_have_valid_syntax`
+### Assertion Failures (1 file)
 
-- `tests/unit/documentation/test_links.py` (1 test)
-  - `test_no_broken_internal_links`
+🟡 **MEDIUM PRIORITY** - `tests/unit/registry/test_service_factory.py`
 
-**Recommendation:**
-- Update test assertions to match current implementation
-- Fix code examples in documentation
-- Repair broken internal links
+- **Error Type:** Assertion Failure
+- **Description:** assert <rag_factory.services.llm.service.LLMService object at 0x7a6006ec3a10> is <Mock name='OpenAIL
+- **Recommended Fix:** Review test expectations
+- **Failed Tests:** 6
 
-#### 3.3 Attribute Errors
-**Impact:** Low - Missing or incorrect attribute access  
-**Affected Files:** 1  
-**Total Failures:** ~9 tests
 
-**Affected Files:**
-- `tests/unit/registry/test_service_factory.py` (9 tests)
-  - Database service creation tests
-  - Embedding service creation tests
-  - LLM service creation tests
+### Other Errors (2 files)
 
-**Recommendation:**
-- Fix attribute access in service factory
-- Ensure all required attributes are properly initialized
+🟢 **LOW PRIORITY** - `tests/integration/registry/test_registry_integration.py`
 
-#### 3.4 Other Code Issues
-**Affected Files:** 2
+- **Error Type:** Other
+- **Description:** See test output for details
+- **Recommended Fix:** Investigate error in test results
+- **Failed Tests:** 2
 
-- `tests/test_mock_registry.py`
-  - Various mock registry issues
+🟢 **LOW PRIORITY** - `tests/integration/services/test_service_implementations.py`
 
-- `tests/unit/strategies/indexing/test_context_aware.py`
-  - Context-aware indexing strategy issues
+- **Error Type:** Other
+- **Description:** See test output for details
+- **Recommended Fix:** Investigate error in test results
+- **Failed Tests:** 4
 
-- `tests/unit/database/test_batch_operations.py` (1 test)
-  - `test_store_chunks_with_hierarchy`
 
 ---
 
-## Failing Test Files
+## 📋 Error Type Summary
 
-### Integration Tests (6 files)
+| Category | Count | Description |
+|----------|-------|-------------|
+| ⚙️ **Configuration Issues** | 4 | Missing API keys, database connections, model paths, or environment setup |
+| 🐛 **Requirement/Implementation Issues** | 9 | Code bugs, test logic errors, or API mismatches |
+| 📦 **Dependency Issues** | 1 | Missing modules or import errors |
+| ❓ **Unknown/Other** | 2 | Unclassified errors requiring investigation |
+
+---
+
+## 🔧 Recommended Actions (Priority Order)
+
+### 🔴 High Priority
 
 1. **tests/integration/database/test_migration_integration.py**
-   - Category: Requirement Issue (Database Migration)
-   - Failures: 4/4 tests (100%)
-   - Priority: High
+   - **Issue:** Multiple migration branches: finetuned_schema, contextual_schema, hierarchical_schema, context_aware_schema, keyword_schema
+   - **Fix:** Run: alembic merge heads
 
 2. **tests/integration/database/test_migration_validator_integration.py**
-   - Category: Requirement Issue (Database Migration)
-   - Failures: 12/15 tests (80%)
-   - Priority: High
+   - **Issue:** Multiple migration branches: finetuned_schema, contextual_schema, hierarchical_schema, context_aware_schema, keyword_schema
+   - **Fix:** Run: alembic merge heads
 
-3. **tests/integration/registry/test_registry_integration.py**
-   - Category: Configuration Issue (Missing Model Files)
-   - Failures: 3 tests
-   - Priority: Low
+3. **tests/unit/database/test_migrations.py**
+   - **Issue:** Multiple migration branches: finetuned_schema, contextual_schema, hierarchical_schema, context_aware_schema, keyword_schema
+   - **Fix:** Run: alembic merge heads
 
-4. **tests/integration/services/test_service_integration.py**
-   - Category: Code Issue (Type Errors)
-   - Failures: 2 tests
-   - Priority: Medium
+### 🟡 Medium Priority
 
-5. **tests/integration/strategies/test_self_reflective_integration.py**
-   - Category: Code Issue (Type Errors)
-   - Failures: 4 tests
-   - Priority: Medium
+1. **tests/integration_real/test_neo4j_real.py**
+   - **Issue:** Cannot connect to Neo4j database
+   - **Fix:** Set NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD in .env
 
-6. **tests/integration/test_package_integration.py**
-   - Category: Configuration Issue (Import Errors)
-   - Failures: 2 tests
-   - Priority: Medium
+2. **tests/unit/gui/test_backend_integration.py**
+   - **Issue:** Missing module: rag_factory.core.exceptions
+   - **Fix:** Fix import path or install rag_factory.core.exceptions
 
-### Unit Tests (16 files)
+3. **tests/unit/gui/test_main_window.py**
+   - **Issue:** Tkinter or GUI-related error
+   - **Fix:** Check GUI initialization and mocking
 
-7. **tests/test_mock_registry.py**
-   - Category: Code Issue
-   - Priority: Medium
+4. **tests/unit/gui/test_retrieval_operations.py**
+   - **Issue:** Tkinter or GUI-related error
+   - **Fix:** Check GUI initialization and mocking
 
-8. **tests/unit/config/test_strategy_pair_manager.py**
-   - Category: Code Issue (Assertion Errors)
-   - Failures: 2 tests
-   - Priority: Medium
+5. **tests/unit/gui/test_utility_operations.py**
+   - **Issue:** Tkinter or GUI-related error
+   - **Fix:** Check GUI initialization and mocking
 
-9. **tests/unit/database/test_batch_operations.py**
-   - Category: Code Issue
-   - Failures: 1 test
-   - Priority: Low
+6. **tests/test_mock_registry.py**
+   - **Issue:** Mock object has incorrect configuration
+   - **Fix:** Update mock configuration or test setup
 
-10. **tests/unit/database/test_migrations.py**
-    - Category: Requirement Issue (Database Migration)
-    - Failures: 6 tests
-    - Priority: High
+7. **tests/unit/services/database/test_migration_validator.py**
+   - **Issue:** Mock object is not subscriptable
+   - **Fix:** Update mock configuration or test setup
 
-11. **tests/unit/database/test_pgvector.py**
-    - Category: Code Issue (Type Errors)
-    - Failures: 1 test
-    - Priority: Low
+8. **tests/integration/test_hybrid_search_pair.py**
+   - **Issue:** object Mock can't be used in 'await' expression
+   - **Fix:** Fix type mismatches or attribute access
 
-12. **tests/unit/documentation/test_code_examples.py**
-    - Category: Code Issue (Assertion Errors)
-    - Failures: 1 test
-    - Priority: Low
+9. **tests/unit/registry/test_service_factory.py**
+   - **Issue:** assert <rag_factory.services.llm.service.LLMService object at 0x7a6006ec3a10> is <Mock name='OpenAIL
+   - **Fix:** Review test expectations
 
-13. **tests/unit/documentation/test_links.py**
-    - Category: Code Issue (Assertion Errors)
-    - Failures: 1 test
-    - Priority: Low
-
-14. **tests/unit/registry/test_service_factory.py**
-    - Category: Code Issue (Attribute Errors)
-    - Failures: 9 tests
-    - Priority: Medium
-
-15. **tests/unit/services/embedding/test_onnx_local_provider.py**
-    - Category: Code Issue (Type Errors)
-    - Failures: 1 test
-    - Priority: Low
-
-16. **tests/unit/services/llm/test_anthropic_provider.py**
-    - Category: Code Issue (Type Errors)
-    - Failures: Multiple tests
-    - Priority: Medium
-
-17. **tests/unit/services/llm/test_ollama_provider.py**
-    - Category: Code Issue (Type Errors)
-    - Failures: Multiple tests
-    - Priority: Medium
-
-18. **tests/unit/services/llm/test_openai_provider.py**
-    - Category: Code Issue (Type Errors)
-    - Failures: Multiple tests
-    - Priority: Medium
-
-19. **tests/unit/services/llm/test_service.py**
-    - Category: Code Issue (Type Errors)
-    - Failures: Multiple tests
-    - Priority: Medium
-
-20. **tests/unit/services/test_database_service.py**
-    - Category: Code Issue (Type Errors)
-    - Failures: 1 test
-    - Priority: Low
-
-21. **tests/unit/strategies/indexing/test_context_aware.py**
-    - Category: Code Issue
-    - Failures: Unknown
-    - Priority: Low
-
-22. **tests/unit/test_package.py**
-    - Category: Configuration Issue (Import Errors)
-    - Failures: Unknown
-    - Priority: Medium
 
 ---
 
-## Individual Failing Tests
+## 📁 Complete List of Failed Test Files
 
-### High Priority (Database Migration Issues)
+- `tests/integration/database/test_migration_integration.py`
+- `tests/integration/database/test_migration_validator_integration.py`
+- `tests/integration/registry/test_registry_integration.py`
+- `tests/integration/services/test_service_implementations.py`
+- `tests/integration/test_hybrid_search_pair.py`
+- `tests/integration_real/test_neo4j_real.py`
+- `tests/test_mock_registry.py`
+- `tests/unit/database/test_migrations.py`
+- `tests/unit/documentation/test_code_examples.py`
+- `tests/unit/documentation/test_links.py`
+- `tests/unit/gui/test_backend_integration.py`
+- `tests/unit/gui/test_main_window.py`
+- `tests/unit/gui/test_retrieval_operations.py`
+- `tests/unit/gui/test_utility_operations.py`
+- `tests/unit/registry/test_service_factory.py`
+- `tests/unit/services/database/test_migration_validator.py`
 
-#### tests/integration/database/test_migration_integration.py
-- `TestMigrationIntegration::test_real_migration_execution`
-- `TestMigrationIntegration::test_migration_with_existing_data`
-- `TestMigrationIntegration::test_rollback_functionality`
-- `TestMigrationIntegration::test_pgvector_extension_installed`
-
-#### tests/integration/database/test_migration_validator_integration.py
-- `TestMigrationValidatorIntegration::test_validate_with_no_migrations`
-- `TestMigrationValidatorIntegration::test_validate_with_partial_migrations`
-- `TestMigrationValidatorIntegration::test_validate_with_all_migrations`
-- `TestMigrationValidatorIntegration::test_validate_or_raise_success`
-- `TestMigrationValidatorIntegration::test_validate_or_raise_failure`
-- `TestMigrationValidatorIntegration::test_get_current_revision`
-- `TestMigrationValidatorIntegration::test_is_at_head`
-- `TestMigrationValidatorIntegration::test_error_message_details`
-- `TestMigrationValidatorIntegration::test_validate_single_migration`
-- `TestMigrationValidatorIntegration::test_validate_nonexistent_migration`
-- `TestMigrationValidatorIntegration::test_validate_after_downgrade`
-- `TestMigrationValidatorIntegration::test_multiple_validators_same_database`
-
-#### tests/unit/database/test_migrations.py
-- `TestAlembicMigrations::test_migration_upgrade_to_head`
-- `TestAlembicMigrations::test_migration_downgrade`
-- `TestAlembicMigrations::test_migration_creates_tables`
-- `TestAlembicMigrations::test_migration_creates_indexes`
-- `TestAlembicMigrations::test_migration_idempotency`
-- `TestAlembicMigrations::test_get_current_version`
-
-### Medium Priority (Code Issues)
-
-#### tests/integration/services/test_service_integration.py
-- `test_embedding_database_consistency`
-- `test_rag_workflow`
-
-#### tests/integration/strategies/test_self_reflective_integration.py
-- `TestSelfReflectiveIntegration::test_end_to_end_workflow`
-- `TestSelfReflectiveIntegration::test_performance_within_limits`
-- `TestSelfReflectiveIntegration::test_retry_with_poor_results`
-- `TestSelfReflectiveWithLMStudio::test_with_real_llm`
-
-#### tests/unit/config/test_strategy_pair_manager.py
-- `test_db_context_creation`
-- `test_load_pair_success`
-
-#### tests/unit/registry/test_service_factory.py
-- `TestDatabaseServiceCreation::test_create_database_service_neo4j`
-- `TestDatabaseServiceCreation::test_create_database_service_neo4j_with_defaults`
-- `TestDatabaseServiceCreation::test_create_database_service_postgres_with_components`
-- `TestDatabaseServiceCreation::test_create_database_service_postgres_with_connection_string`
-- `TestDatabaseServiceCreation::test_create_database_service_postgres_with_defaults`
-- `TestEmbeddingServiceCreation::test_create_embedding_service_onnx`
-- `TestEmbeddingServiceCreation::test_create_embedding_service_onnx_with_defaults`
-- `TestEmbeddingServiceCreation::test_create_embedding_service_openai`
-- `TestLLMServiceCreation::test_create_llm_service_openai`
-
-#### tests/unit/services/llm/test_anthropic_provider.py
-- `test_stream`
-- `test_generate`
-- `test_generate_with_system_prompt`
-- And others...
-
-#### tests/unit/services/llm/test_ollama_provider.py
-- Multiple streaming and generation tests
-
-#### tests/unit/services/llm/test_openai_provider.py
-- Multiple streaming and generation tests
-
-#### tests/unit/services/llm/test_service.py
-- Multiple LLM service tests
-
-### Low Priority (Configuration & Minor Issues)
-
-#### tests/integration/registry/test_registry_integration.py
-- `TestConfigurationValidation::test_configuration_warnings`
-- `TestErrorHandling::test_invalid_service_config`
-- `TestRealServiceInstantiation::test_multiple_service_instantiation`
-
-#### tests/integration/test_package_integration.py
-- `TestFullWorkflow::test_full_workflow_with_installed_package`
-- `TestSmokeTest::test_basic_usage_smoke_test`
-
-#### tests/unit/database/test_batch_operations.py
-- `TestBatchOperations::test_store_chunks_with_hierarchy`
-
-#### tests/unit/database/test_pgvector.py
-- `TestPgVectorIntegration::test_cosine_similarity_search`
-
-#### tests/unit/documentation/test_code_examples.py
-- `TestCodeExamples::test_all_code_examples_have_valid_syntax`
-
-#### tests/unit/documentation/test_links.py
-- `TestDocumentationLinks::test_no_broken_internal_links`
-
-#### tests/unit/services/embedding/test_onnx_local_provider.py
-- `test_calculate_cost_is_zero`
-
-#### tests/unit/services/test_database_service.py
-- `test_store_chunks_with_hierarchy`
 
 ---
 
-## Recommendations
+## ⏱️ Timeout Test Files
 
-### Immediate Actions (High Priority)
-
-1. **Fix Database Migration Issues** (28 failing tests)
-   - Update migration downgrade scripts to use `DROP ... CASCADE` or properly clean up dependent objects
-   - Fix migration test fixtures to ensure proper migration order and clean database state
-   - Add migration dependency checks
-
-2. **Fix Service Factory Attribute Errors** (9 failing tests)
-   - Review and fix attribute access in service factory
-   - Ensure all required attributes are properly initialized
-
-### Short-term Actions (Medium Priority)
-
-3. **Fix LLM Provider Type Errors** (~20 failing tests)
-   - Review and update function signatures for LLM providers
-   - Ensure streaming and generation methods match expected interfaces
-   - Add proper type hints
-
-4. **Fix Integration Test Type Errors** (6 failing tests)
-   - Update service integration tests to use correct API calls
-   - Fix self-reflective strategy integration tests
-
-5. **Fix Package Import Issues** (2 failing tests)
-   - Ensure package is properly installed in test environment
-   - Fix import paths
-
-### Long-term Actions (Low Priority)
-
-6. **Fix Documentation Tests** (2 failing tests)
-   - Update code examples in documentation
-   - Repair broken internal links
-
-7. **Handle Missing Model Files** (3 failing tests)
-   - Add proper skip decorators for tests requiring ONNX models
-   - Document model download requirements
-
-8. **Fix Minor Code Issues** (5 failing tests)
-   - Fix batch operations tests
-   - Fix pgvector integration tests
-   - Fix context-aware indexing tests
+- `tests/integration/gui/test_end_to_end_workflow.py`
+- `tests/integration/gui/test_gui_launch.py`
 
 ---
 
-## Test Coverage
+## 🧪 Individual Failed Tests
 
-Based on the coverage report from the test run:
+<details>
+<summary>Click to expand full list of {len(re.findall(r'FAILED', content))} failed tests</summary>
 
-- **Overall Coverage:** 12%
-- **Total Statements:** 12,307
-- **Missed Statements:** 10,858
+- `tests/integration/database/test_migration_integration.py::TestMigrationIntegration::test_migration_with_existing_data`
+- `tests/integration/database/test_migration_integration.py::TestMigrationIntegration::test_migration_with_existing_data - alembic.util.exc.CommandError: Multiple head revisions are present for given argument 'head'; please specify a specific target revision, '<branchname>@head' to narrow to a specific head, or 'heads' for all heads`
+- `tests/integration/database/test_migration_integration.py::TestMigrationIntegration::test_pgvector_extension_installed`
+- `tests/integration/database/test_migration_integration.py::TestMigrationIntegration::test_real_migration_execution`
+- `tests/integration/database/test_migration_integration.py::TestMigrationIntegration::test_real_migration_execution - alembic.util.exc.CommandError: Multiple head revisions are present for given argument 'head'; please specify a specific target revision, '<branchname>@head' to narrow to a specific head, or 'heads' for all heads`
+- `tests/integration/database/test_migration_integration.py::TestMigrationIntegration::test_rollback_functionality`
+- `tests/integration/database/test_migration_integration.py::TestMigrationIntegration::test_rollback_functionality - alembic.util.exc.CommandError: Multiple head revisions are present for given argument 'head'; please specify a specific target revision, '<branchname>@head' to narrow to a specific head, or 'heads' for all heads`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorEdgeCases::test_validate_empty_requirements`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorEdgeCases::test_validator_with_auto_discovered_config`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorEdgeCases::test_validator_with_auto_discovered_config - alembic.util.exc.CommandError: The script directory has multiple heads (due to branching).Please use get_heads(), or merge the branches using alembic merge.`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_get_all_revisions`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_get_all_revisions - alembic.util.exc.CommandError: The script directory has multiple heads (due to branching).Please use get_heads(), or merge the branches using alembic merge.`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_get_current_revision`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_get_current_revision - alembic.util.exc.CommandError: Multiple head revisions are present for given argument 'head'; please specify a specific target revision, '<branchname>@head' to narrow to a specific head, or 'heads' for all heads`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_is_at_head`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_is_at_head - alembic.util.exc.CommandError: The script directory has multiple heads (due to branching).Please use get_heads(), or merge the branches using alembic merge.`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_multiple_validators_same_database`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_multiple_validators_same_database - alembic.util.exc.CommandError: Multiple head revisions are present for given argument 'head'; please specify a specific target revision, '<branchname>@head' to narrow to a specific head, or 'heads' for all heads`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_after_downgrade`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_after_downgrade - alembic.util.exc.CommandError: Multiple head revisions are present for given argument 'head'; please specify a specific target revision, '<branchname>@head' to narrow to a specific head, or 'heads' for all heads`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_nonexistent_migration`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_nonexistent_migration - alembic.util.exc.CommandError: Multiple head revisions are present for given argument 'head'; please specify a specific target revision, '<branchname>@head' to narrow to a specific head, or 'heads' for all heads`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_or_raise_success`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_or_raise_success - alembic.util.exc.CommandError: Multiple head revisions are present for given argument 'head'; please specify a specific target revision, '<branchname>@head' to narrow to a specific head, or 'heads' for all heads`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_single_migration`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_single_migration - alembic.util.exc.CommandError: Multiple head revisions are present for given argument 'head'; please specify a specific target revision, '<branchname>@head' to narrow to a specific head, or 'heads' for all heads`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_with_all_migrations`
+- `tests/integration/database/test_migration_validator_integration.py::TestMigrationValidatorIntegration::test_validate_with_all_migrations - alembic.util.exc.CommandError: Multiple head revisions are present for given argument 'head'; please specify a specific target revision, '<branchname>@head' to narrow to a specific head, or 'heads' for all heads`
+- `tests/integration/gui/test_end_to_end_workflow.py::TestStrategyLoading::test_strategy_loading_workflow`
+- `tests/integration/gui/test_gui_launch.py::TestGUILaunch::test_gui_window_properties`
+- `tests/integration/registry/test_registry_integration.py::TestOpenAIServices::test_openai_llm_instantiation`
+- `tests/integration/services/test_service_implementations.py::TestDatabaseServices::test_neo4j_graph_service_basic_functionality`
+- `tests/unit/database/test_migrations.py::TestAlembicMigrations::test_get_current_version`
+- `tests/unit/database/test_migrations.py::TestAlembicMigrations::test_get_current_version - alembic.util.exc.CommandError: Multiple head revisions are present for given argument 'head'; please specify a specific target revision, '<branchname>@head' to narrow to a specific head, or 'heads' for all heads`
+- `tests/unit/database/test_migrations.py::TestAlembicMigrations::test_migration_creates_indexes`
+- `tests/unit/database/test_migrations.py::TestAlembicMigrations::test_migration_creates_tables`
+- `tests/unit/database/test_migrations.py::TestAlembicMigrations::test_migration_creates_tables - alembic.util.exc.CommandError: Multiple head revisions are present for given argument 'head'; please specify a specific target revision, '<branchname>@head' to narrow to a specific head, or 'heads' for all heads`
+- `tests/unit/database/test_migrations.py::TestAlembicMigrations::test_migration_downgrade`
+- `tests/unit/database/test_migrations.py::TestAlembicMigrations::test_migration_downgrade - alembic.util.exc.CommandError: Multiple head revisions are present for given argument 'head'; please specify a specific target revision, '<branchname>@head' to narrow to a specific head, or 'heads' for all heads`
+- `tests/unit/database/test_migrations.py::TestAlembicMigrations::test_migration_idempotency`
+- `tests/unit/database/test_migrations.py::TestAlembicMigrations::test_migration_idempotency - alembic.util.exc.CommandError: Multiple head revisions are present for given argument 'head'; please specify a specific target revision, '<branchname>@head' to narrow to a specific head, or 'heads' for all heads`
+- `tests/unit/database/test_migrations.py::TestAlembicMigrations::test_migration_upgrade_to_head`
+- `tests/unit/database/test_migrations.py::TestAlembicMigrations::test_migration_upgrade_to_head - alembic.util.exc.CommandError: Multiple head revisions are present for given argument 'head'; please specify a specific target revision, '<branchname>@head' to narrow to a specific head, or 'heads' for all heads`
+- `tests/unit/documentation/test_code_examples.py::TestCodeExamples::test_all_code_examples_have_valid_syntax`
+- `tests/unit/documentation/test_links.py::TestDocumentationLinks::test_no_broken_internal_links`
+- `tests/unit/documentation/test_links.py::TestDocumentationLinks::test_no_todo_links`
+- `tests/unit/gui/test_main_window.py::TestButtonStates::test_button_state_with_strategy_no_text`
+- `tests/unit/gui/test_main_window.py::TestButtonStates::test_retrieve_button_state_with_query`
+- `tests/unit/gui/test_main_window.py::TestMainWindowCreation::test_window_geometry`
+- `tests/unit/gui/test_main_window.py::TestMainWindowCreation::test_window_geometry - AssertionError: assert '900x800' in '1200x800+360+53'`
+- `tests/unit/gui/test_main_window.py::TestMainWindowCreation::test_window_minimum_size`
+- `tests/unit/gui/test_main_window.py::TestMainWindowCreation::test_window_minimum_size - assert 900 == 800`
+- `tests/unit/gui/test_main_window.py::TestUtilityMethods::test_show_help_displays_message`
+- `tests/unit/gui/test_main_window.py::TestWidgetCreation::test_all_buttons_exist`
+- `tests/unit/gui/test_retrieval_operations.py::TestQueryExecution::test_retrieve_button_disabled_during_operation`
+- `tests/unit/gui/test_utility_operations.py::TestClearAllData::test_clear_data_error_handling`
+- `tests/unit/registry/test_service_factory.py::TestLLMServiceCreation::test_create_llm_service_lm_studio`
+- `tests/unit/registry/test_service_factory.py::TestLLMServiceCreation::test_create_llm_service_lm_studio - Failed: DID NOT RAISE <class 'rag_factory.registry.exceptions.ServiceInstantiationError'>`
+- `tests/unit/registry/test_service_factory.py::TestLLMServiceCreation::test_create_llm_service_openai`
+- `tests/unit/registry/test_service_factory.py::TestLLMServiceCreation::test_create_llm_service_openai - AssertionError: assert <rag_factory.services.llm.service.LLMService object at 0x7a6006ec3a10> is <Mock name='OpenAILLMService()' id='134552847700224'>`
+- `tests/unit/registry/test_service_factory.py::TestLLMServiceCreation::test_create_llm_service_with_defaults`
+- `tests/unit/services/database/test_migration_validator.py::TestMigrationValidator::test_get_current_revision_success`
+- `tests/unit/services/database/test_migration_validator.py::TestMigrationValidator::test_get_current_revision_success - TypeError: 'Mock' object is not subscriptable`
+- `tests/unit/services/database/test_migration_validator.py::TestMigrationValidator::test_validate_all_migrations_applied`
+- `tests/unit/services/database/test_migration_validator.py::TestMigrationValidator::test_validate_all_migrations_applied - assert False is True`
+- `tests/unit/services/database/test_migration_validator.py::TestMigrationValidator::test_validate_missing_migrations`
+- `tests/unit/services/database/test_migration_validator.py::TestMigrationValidator::test_validate_or_raise_failure`
+- `tests/unit/services/database/test_migration_validator.py::TestMigrationValidator::test_validate_or_raise_success`
+- `tests/unit/services/database/test_migration_validator.py::TestMigrationValidatorIntegration::test_full_validation_workflow`
 
-### Low Coverage Areas
-
-- Evaluation modules: 0% coverage
-- Strategies (chunking, contextual, knowledge graph, etc.): 0% coverage
-- Observability modules: 0% coverage
-- Repository modules: 0% coverage
-- Legacy config: 0% coverage
-- Many service providers: 0% coverage
-
-### Good Coverage Areas
-
-- Core exceptions: 100%
-- Registry base: 100%
-- Service interfaces: 100%
-- Base models: 60-100%
-- CLI main: 68%
-- Core capabilities: 74%
-- Query expansion base: 85%
-
-**Recommendation:** Increase test coverage for untested modules, especially evaluation, strategies, and observability components.
+</details>
 
 ---
 
-## Conclusion
+## 📝 Configuration vs Implementation Breakdown
 
-The test suite shows **91.4% test pass rate** with 2,008 out of 2,198 tests passing. The main issues are:
+### Tests Failing Due to Configuration Issues
+These tests require proper environment setup (`.env` file, database connections, API keys):
 
-1. **Database migration problems** (28 tests) - Requires fixing migration scripts
-2. **Type errors in LLM providers** (~20 tests) - Requires API signature fixes
-3. **Service factory issues** (9 tests) - Requires attribute initialization fixes
-4. **Configuration issues** (5 tests) - Requires proper environment setup
 
-Addressing the high-priority database migration issues and service factory problems would significantly improve the test pass rate to approximately **95%**.
+**Database Migration - Multiple Heads:**
+- `tests/integration/database/test_migration_integration.py`
+- `tests/integration/database/test_migration_validator_integration.py`
+- `tests/unit/database/test_migrations.py`
+
+**Neo4j Connection:**
+- `tests/integration_real/test_neo4j_real.py`
+
+
+### Tests Failing Due to Implementation/Requirement Issues
+These tests require code fixes or test logic updates:
+
+
+**Import/Module Errors:**
+- `tests/unit/gui/test_backend_integration.py`
+
+**GUI/Tkinter Issues:**
+- `tests/unit/gui/test_main_window.py`
+- `tests/unit/gui/test_retrieval_operations.py`
+- `tests/unit/gui/test_utility_operations.py`
+
+**Documentation Errors:**
+- `tests/unit/documentation/test_code_examples.py`
+- `tests/unit/documentation/test_links.py`
+
+**Mock/Test Configuration:**
+- `tests/test_mock_registry.py`
+- `tests/unit/services/database/test_migration_validator.py`
+
+**Type/Attribute Errors:**
+- `tests/integration/test_hybrid_search_pair.py`
+
+**Assertion Failures:**
+- `tests/unit/registry/test_service_factory.py`
+
+
+---
+
+## 💡 Quick Fixes
+
+### For Database Migration Issues:
+```bash
+# Merge multiple migration heads
+alembic merge heads
+
+# Apply all migrations
+alembic upgrade head
+```
+
+### For Neo4j Connection Issues:
+Add to `.env` file:
+```bash
+NEO4J_URI=bolt://localhost:7687
+NEO4J_USER=neo4j
+NEO4J_PASSWORD=your_password
+```
+
+### For Import Errors:
+```bash
+# Install missing dependencies
+pip install -r requirements.txt
+
+# Or install specific missing modules
+pip install <module_name>
+```
+
+---
+
+## 📈 Test Health Metrics
+
+- **Overall Pass Rate:** 93.6% (2,145/2,291 tests)
+- **File Pass Rate:** 90.3% (186/206 files)
+- **Critical Issues:** {len(high_items)} (High Priority)
+- **Non-Critical Issues:** {len(medium_items)} (Medium Priority)
+

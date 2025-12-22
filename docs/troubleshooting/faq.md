@@ -197,8 +197,8 @@ See the <!-- BROKEN LINK: Documentation Guide <!-- (broken link to: ../contribut
 
 ### Where can I get help?
 
-- [GitHub Issues](https://github.com/yourusername/rag-factory/issues) - Bug reports
-- [GitHub Discussions](https://github.com/yourusername/rag-factory/discussions) - Questions
+- [GitHub Issues](#/issues) - Bug reports
+- [GitHub Discussions](#/discussions) - Questions
 - [Documentation](../index.md) - Guides and tutorials
 
 ### How do I report a bug?
@@ -217,4 +217,4 @@ Yes! See the [Contributing Guide](../contributing/index.md).
 
 ## Still have questions?
 
-Open a [GitHub Discussion](https://github.com/yourusername/rag-factory/discussions) and we'll be happy to help!
+Open a [GitHub Discussion](#/discussions) and we'll be happy to help!

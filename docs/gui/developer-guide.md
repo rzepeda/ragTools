@@ -526,19 +526,19 @@ stats.print_stats(20)
 ### Debugging Tips
 
 1. **Enable Debug Logging**:
-   ```python
-   logging.basicConfig(level=logging.DEBUG)
-   ```
+```python
+logging.basicConfig(level=logging.DEBUG)
+```
 
 2. **Use Breakpoints**:
-   ```python
-   import pdb; pdb.set_trace()
-   ```
+```python
+import pdb; pdb.set_trace()
+```
 
 3. **Check Event Loop**:
-   ```python
-   print(f"Event loop: {asyncio.get_event_loop()}")
-   ```
+```python
+print(f"Event loop: {asyncio.get_event_loop()}")
+```
 
 4. **Monitor Database**:
    ```sql

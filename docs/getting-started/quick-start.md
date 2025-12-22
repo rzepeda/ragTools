@@ -277,4 +277,4 @@ Congratulations! You've created your first RAG retrieval system. Here's what to 
 
 - Check the [FAQ](../troubleshooting/faq.md) for common questions
 - See <!-- BROKEN LINK: Troubleshooting <!-- (broken link to: ../troubleshooting/common-errors.md) --> --> Troubleshooting for common issues
-- Open an issue on [GitHub](https://github.com/yourusername/rag-factory/issues)
+- Open an issue on [GitHub](#/issues)

@@ -2,40 +2,50 @@
 TEST RESULTS SUMMARY - BY FILE
 ================================================================================
 
-Execution Date: Thu Dec 18 10:19:02 PM -03 2025
-Total test files: 197
-Total duration: 73m 55s
+Execution Date: Sat Dec 20 03:03:36 AM -03 2025
+Total test files: 206
+Total duration: 131m 16s
 
 FILE RESULTS:
-  ✅ PASSED FILES    : 187 (94.9%)
-  ❌ FAILED FILES    : 7 (3.6%)
-  ⏭️  SKIPPED FILES   : 3 (1.5%)
-  ⏱️  TIMEOUT FILES   : 0 (0.0%)
+  ✅ PASSED FILES    : 186 (90.3%)
+  ❌ FAILED FILES    : 16 (7.8%)
+  ⏭️  SKIPPED FILES   : 2 (1.0%)
+  ⏱️  TIMEOUT FILES   : 2 (1.0%)
 
 TEST RESULTS:
-  ✅ PASSED TESTS    : 2065 (96.5%)
-  ❌ FAILED TESTS    : 12 (0.6%)
-  ⏭️  SKIPPED TESTS   : 64 (3.0%)
-  📊 TOTAL TESTS     : 2141
+  ✅ PASSED TESTS    : 2145 (93.6%)
+  ❌ FAILED TESTS    : 92 (4.0%)
+  ⏭️  SKIPPED TESTS   : 54 (2.4%)
+  📊 TOTAL TESTS     : 2291
 
 ================================================================================
-FAILED TEST FILES (7)
+FAILED TEST FILES (16)
 ================================================================================
-tests/benchmarks/test_contextual_performance.py
-tests/integration_real/test_database_real.py
-tests/integration_real/test_end_to_end_real.py
-tests/integration/services/test_service_integration.py
+tests/integration/database/test_migration_integration.py
+tests/integration/database/test_migration_validator_integration.py
+tests/integration_real/test_neo4j_real.py
+tests/integration/registry/test_registry_integration.py
+tests/integration/services/test_service_implementations.py
+tests/integration/test_hybrid_search_pair.py
 tests/test_mock_registry.py
-tests/unit/database/test_pgvector.py
-tests/unit/services/test_database_service.py
+tests/unit/database/test_migrations.py
+tests/unit/documentation/test_code_examples.py
+tests/unit/documentation/test_links.py
+tests/unit/gui/test_backend_integration.py
+tests/unit/gui/test_main_window.py
+tests/unit/gui/test_retrieval_operations.py
+tests/unit/gui/test_utility_operations.py
+tests/unit/registry/test_service_factory.py
+tests/unit/services/database/test_migration_validator.py
 
 ================================================================================
-TIMEOUT TEST FILES (0)
+TIMEOUT TEST FILES (2)
 ================================================================================
+tests/integration/gui/test_end_to_end_workflow.py
+tests/integration/gui/test_gui_launch.py
 
 ================================================================================
-SKIPPED TEST FILES (3)
+SKIPPED TEST FILES (2)
 ================================================================================
 tests/benchmarks/test_model_comparison_performance.py
 tests/integration/documentation/test_documentation_integration.py
-tests/integration_real/test_neo4j_real.py

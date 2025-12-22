@@ -13,7 +13,6 @@ from pathlib import Path
 pytest.importorskip("tkinter")
 
 from rag_factory.gui.main_window import RAGFactoryGUI
-from rag_factory.core.exceptions import MigrationError
 
 
 @pytest.fixture
