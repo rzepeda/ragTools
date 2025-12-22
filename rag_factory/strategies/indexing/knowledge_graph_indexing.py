@@ -117,7 +117,8 @@ class KnowledgeGraphIndexing(IIndexingStrategy):
                 'chunk_id': f"{doc_id}_{chunk_idx}",
                 'text': chunk_text,
                 'document_id': doc_id,
-                'metadata': {'chunk_index': chunk_idx}
+                'chunk_index': chunk_idx,
+                'metadata': {}
             })
             
             if end == len(text):

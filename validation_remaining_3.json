@@ -1,0 +1,21 @@
+{
+  "summary": {
+    "total_strategies": 1,
+    "successful": 0,
+    "failed": 1,
+    "timestamp": "2025-12-22T00:09:20.495929"
+  },
+  "results": [
+    {
+      "strategy_name": "self-reflective-pair",
+      "test_case_id": "fact_001",
+      "indexer": "VectorEmbeddingIndexing",
+      "retriever": "SelfReflectiveRAGStrategy",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [],
+      "error": "TypeError: int() argument must be a string, a bytes-like object or a real number, not 'RetrievalContext'",
+      "timestamp": "2025-12-22T00:09:12.354978",
+      "traceback": "Traceback (most recent call last):\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategy_validation/validate_strategies.py\", line 158, in validate_strategy\n    chunks = await retrieval_strategy.retrieve(test_case[\"query\"], retrieval_context)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategies/self_reflective/strategy.py\", line 96, in retrieve\n    results = await self.base_strategy.search_chunks(\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/services/database/database_context.py\", line 415, in search_chunks\n    return await loop.run_in_executor(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/concurrent/futures/thread.py\", line 58, in run\n    result = self.fn(*self.args, **self.kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/services/database/database_context.py\", line 436, in _search_chunks_sync\n    results = self.vector_search(\n              ^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/services/database/database_context.py\", line 324, in vector_search\n    ).order_by('distance').limit(top_k)\n                           ^^^^^^^^^^^^\n  File \"<string>\", line 2, in limit\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/sql/base.py\", line 283, in _generative\n    x = fn(self, *args, **kw)\n        ^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/sql/selectable.py\", line 4010, in limit\n    self._limit_clause = self._offset_or_limit_clause(limit)\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/sql/selectable.py\", line 3909, in _offset_or_limit_clause\n    return coercions.expect(\n           ^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/sql/coercions.py\", line 413, in expect\n    resolved = impl._literal_coercion(\n               ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/sql/coercions.py\", line 1093, in _literal_coercion\n    value = util.asint(element)\n            ^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py\", line 1371, in asint\n    return int(value)\n           ^^^^^^^^^^\nTypeError: int() argument must be a string, a bytes-like object or a real number, not 'RetrievalContext'\n"
+    }
+  ]
+}

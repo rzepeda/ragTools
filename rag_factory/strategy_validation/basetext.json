@@ -1,0 +1,51 @@
+[
+  {
+    "id": "fact_001",
+    "type": "direct_retrieval",
+    "text": "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth.",
+    "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+    "result": "Voyager 1 carries the Golden Record, which is a 12-inch gold-plated copper disk containing selected sounds and images."
+  },
+  {
+    "id": "reasoning_002",
+    "type": "multi_hop_reasoning",
+    "text": "Company A reported a revenue of $50 million in Q1 and $60 million in Q2. However, operational costs were consistent at $40 million per quarter. Company B, a competitor, had a flat revenue of $80 million across both quarters but higher operational costs of $70 million per quarter.",
+    "query": "Which company had a higher total profit over the first two quarters combined?",
+    "result": "Company A had a higher total profit. Company A's total profit was $30 million ($10M in Q1 + $20M in Q2), while Company B's total profit was $20 million ($10M in Q1 + $10M in Q2)."
+  },
+  {
+    "id": "code_003",
+    "type": "technical_constraints",
+    "text": "To configure the database connection in the 'config.yaml' file, you must set the 'max_connections' parameter. For development environments, this value should be set to 10. For production environments, the recommended value is 100, but it can be increased up to 500 if the server has at least 64GB of RAM.",
+    "query": "What is the maximum allowable connection limit for a production server with 128GB of RAM?",
+    "result": "The maximum allowable connection limit is 500."
+  },
+  {
+    "id": "negative_004",
+    "type": "negative_constraint",
+    "text": "The 'SolarMax' panel series is compatible with the Alpha and Beta inverters. The 'SolarMax Pro' series supports Beta and Gamma inverters. Note that neither series is compatible with the Delta inverter, regardless of firmware version.",
+    "query": "Can I use the SolarMax Pro panels with a Delta inverter?",
+    "result": "No, the SolarMax Pro series is not compatible with the Delta inverter."
+  },
+  {
+    "id": "summ_005",
+    "type": "summarization",
+    "text": "Photosynthesis is a process used by plants and other organisms to convert light energy into chemical energy. The chemical energy is stored in carbohydrate molecules, such as sugars, which are synthesized from carbon dioxide and water. Oxygen is released as a waste product. This process is crucial for maintaining the oxygen content of the Earth's atmosphere.",
+    "query": "Summarize the inputs and outputs of photosynthesis.",
+    "result": "Inputs: Light energy, carbon dioxide, and water. Outputs: Carbohydrate molecules (sugars) and oxygen."
+  },
+  {
+    "id": "needle_006",
+    "type": "needle_in_haystack",
+    "text": "Policies regarding remote work vary by department. Engineering allows remote work on Fridays. Marketing requires full office attendance. HR allows remote work on Mondays. Sales allows remote work on Tuesdays and Thursdays. The Finance department is unique; they allow remote work only on the third Wednesday of every month. IT support is fully remote.",
+    "query": "When does the Finance team work remotely?",
+    "result": "The Finance team allows remote work only on the third Wednesday of every month."
+  },
+  {
+    "id": "ambiguity_007",
+    "type": "distractor_handling",
+    "text": "The Red Fox (Vulpes vulpes) is the largest of the true foxes. It is native to the entire Northern Hemisphere. In contrast, the Kit Fox is the smallest fox living in North America. The Arctic Fox, often confused with the Red Fox in winter due to coat changes, is distinct and primarily lives in Arctic regions.",
+    "query": "Which fox species is native to the entire Northern Hemisphere?",
+    "result": "The Red Fox (Vulpes vulpes)."
+  }
+]

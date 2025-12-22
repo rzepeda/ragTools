@@ -13,7 +13,7 @@ from rag_factory.services.dependencies import ServiceDependency, StrategyDepende
 def mock_database_service():
     """Create mock database service."""
     service = Mock()
-    service.store_chunks_with_hierarchy = AsyncMock()
+    service.store_chunks = AsyncMock()
     return service
 
 
@@ -86,8 +86,8 @@ class TestHierarchicalIndexing:
         assert IndexCapability.HIERARCHY in result.capabilities
 
         # Verify database was called
-        indexing_context.database.store_chunks_with_hierarchy.assert_called_once()
-        stored_chunks = indexing_context.database.store_chunks_with_hierarchy.call_args[0][0]
+        indexing_context.database.store_chunks.assert_called_once()
+        stored_chunks = indexing_context.database.store_chunks.call_args[0][0]
         
         # Should have root + sections + paragraphs
         assert len(stored_chunks) > 0
@@ -116,7 +116,7 @@ This is a subsection.'''
 
         result = await hierarchical_strategy.process(documents, indexing_context)
 
-        stored_chunks = indexing_context.database.store_chunks_with_hierarchy.call_args[0][0]
+        stored_chunks = indexing_context.database.store_chunks.call_args[0][0]
         
         # Should have root + sections
         assert any(c['level'] == 0 for c in stored_chunks)  # Root
@@ -139,7 +139,7 @@ This is a subsection.'''
         ]
 
         await hierarchical_strategy.process(documents, indexing_context)
-        stored_chunks = indexing_context.database.store_chunks_with_hierarchy.call_args[0][0]
+        stored_chunks = indexing_context.database.store_chunks.call_args[0][0]
 
         for chunk in stored_chunks:
             # All chunks should have required metadata
@@ -175,7 +175,7 @@ This is a subsection.'''
         ]
 
         result = await strategy.process(documents, indexing_context)
-        stored_chunks = indexing_context.database.store_chunks_with_hierarchy.call_args[0][0]
+        stored_chunks = indexing_context.database.store_chunks.call_args[0][0]
 
         # With max_depth=1, should only have levels 0 and 1
         levels = {c['level'] for c in stored_chunks}
@@ -198,8 +198,8 @@ This is a subsection.'''
         # Should handle gracefully
         assert result.document_count == 1
         # Database might not be called if no chunks created
-        if indexing_context.database.store_chunks_with_hierarchy.called:
-            stored_chunks = indexing_context.database.store_chunks_with_hierarchy.call_args[0][0]
+        if indexing_context.database.store_chunks.called:
+            stored_chunks = indexing_context.database.store_chunks.call_args[0][0]
             assert len(stored_chunks) == 0
 
     @pytest.mark.asyncio
@@ -219,7 +219,7 @@ This is a subsection.'''
         result = await hierarchical_strategy.process(documents, indexing_context)
 
         assert result.document_count == 2
-        stored_chunks = indexing_context.database.store_chunks_with_hierarchy.call_args[0][0]
+        stored_chunks = indexing_context.database.store_chunks.call_args[0][0]
         
         # Should have chunks from both documents
         doc_ids = {c['document_id'] for c in stored_chunks}
@@ -237,7 +237,7 @@ This is a subsection.'''
         ]
 
         await hierarchical_strategy.process(documents, indexing_context)
-        stored_chunks = indexing_context.database.store_chunks_with_hierarchy.call_args[0][0]
+        stored_chunks = indexing_context.database.store_chunks.call_args[0][0]
 
         # Root should have empty path
         root = next(c for c in stored_chunks if c['level'] == 0)
@@ -317,7 +317,7 @@ Content 3'''
         ]
 
         await hierarchical_strategy.process(documents, indexing_context)
-        stored_chunks = indexing_context.database.store_chunks_with_hierarchy.call_args[0][0]
+        stored_chunks = indexing_context.database.store_chunks.call_args[0][0]
 
         # All chunks should have the original metadata
         for chunk in stored_chunks:

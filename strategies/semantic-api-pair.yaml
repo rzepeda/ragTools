@@ -5,7 +5,7 @@ description: "Semantic search using OpenAI/Cohere API embeddings (requires API k
 indexer:
   strategy: "VectorEmbeddingIndexer"
   services:
-    embedding: "$embedding_openai"  # or $embedding_cohere
+    embedding: "$embedding_local"  # Changed from embedding_openai to use local ONNX
     db: "$db_main"
   
   db_config:
@@ -27,7 +27,7 @@ indexer:
 retriever:
   strategy: "SemanticRetriever"
   services:
-    embedding: "$embedding_openai"  # Must match indexer
+    embedding: "$embedding_local"  # Changed from embedding_openai to use local ONNX
     db: "$db_main"
   
   db_config:

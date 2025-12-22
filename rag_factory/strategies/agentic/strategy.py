@@ -144,7 +144,7 @@ class AgenticRAGStrategy(IRAGStrategy):
         raise NotImplementedError("prepare_data not yet implemented for AgenticRAGStrategy")
     
     async def aretrieve(self, query: str, top_k: int):
-        """Async retrieve - delegates to sync retrieve for now.
+        """Async retrieve - delegates to sync retrieve (no await needed).
         
         Args:
             query: Search query
@@ -153,6 +153,7 @@ class AgenticRAGStrategy(IRAGStrategy):
         Returns:
             List of chunks
         """
+        # retrieve() is synchronous, so we just call it directly
         return self.retrieve(query, top_k)
     
     def process_query(self, query: str, context):
@@ -168,7 +169,7 @@ class AgenticRAGStrategy(IRAGStrategy):
         # TODO: Implement query processing for agentic strategy
         raise NotImplementedError("process_query not yet implemented for AgenticRAGStrategy")
 
-    def retrieve(self, query: str, top_k: int = 5, **kwargs) -> List[Dict[str, Any]]:
+    async def retrieve(self, query: str, top_k: int = 5, **kwargs) -> List[Dict[str, Any]]:
         """Retrieve relevant information using agentic approach.
         
         Args:
@@ -195,7 +196,9 @@ class AgenticRAGStrategy(IRAGStrategy):
             result = self.agent.run(query, max_iterations=self.strategy_config.max_iterations)
 
             # Extract results
-            chunks = result["results"][:top_k]
+            # Ensure top_k is an integer (might be passed as RetrievalContext)
+            top_k_int = int(top_k) if not isinstance(top_k, int) else top_k
+            chunks = result["results"][:top_k_int]
 
             # Add strategy metadata
             for chunk in chunks:

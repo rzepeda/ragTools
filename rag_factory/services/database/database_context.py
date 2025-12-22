@@ -360,6 +360,9 @@ class DatabaseContext:
                     data = {}
                     for k, v in chunk.items():
                         mapped_k = self._map_field(k)
+                        # Skip 'id' field - let database auto-generate UUID
+                        if mapped_k == 'id':
+                            continue
                         if mapped_k in chunks_cols:
                             data[mapped_k] = v
                     
@@ -397,6 +400,9 @@ class DatabaseContext:
                         
                     for k, v in chunk.items():
                         mapped_k = self._map_field(k)
+                        # Skip 'id' field - let database auto-generate UUID for vectors table
+                        if mapped_k == 'id':
+                            continue
                         if mapped_k in vectors_cols:
                             data[mapped_k] = v
                             
@@ -544,3 +550,38 @@ class DatabaseContext:
                 "metadata": getattr(row, self._map_field("metadata"))
             })
         return results
+
+    async def store_keyword_index(self, inverted_index: Dict[str, List[Dict[str, Any]]]) -> None:
+        """Store keyword inverted index to database.
+        
+        Args:
+            inverted_index: Dict mapping keywords to list of {chunk_id, score} dicts
+        """
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, self._store_keyword_index_sync, inverted_index)
+    
+    def _store_keyword_index_sync(self, inverted_index: Dict[str, List[Dict[str, Any]]]) -> None:
+        """Synchronous implementation of store_keyword_index."""
+        if not inverted_index:
+            return
+        
+        # Check if inverted_index table exists
+        if "inverted_index" not in self.tables:
+            logger.warning("No 'inverted_index' table mapping found, skipping keyword index storage")
+            return
+        
+        table = self.get_table("inverted_index")
+        
+        with self.engine.begin() as conn:
+            # Clear existing index (simple approach)
+            conn.execute(delete(table))
+            
+            # Insert new index entries
+            for keyword, chunk_list in inverted_index.items():
+                for entry in chunk_list:
+                    data = {
+                        self._map_field("term"): keyword,
+                        self._map_field("chunk_id"): entry['chunk_id'],
+                        self._map_field("score"): entry.get('score', 1.0)
+                    }
+                    conn.execute(insert(table).values(**data))

@@ -1,0 +1,58 @@
+{
+  "summary": {
+    "total_strategies": 4,
+    "successful": 2,
+    "failed": 2,
+    "timestamp": "2025-12-22T01:08:21.632713"
+  },
+  "results": [
+    {
+      "strategy_name": "hierarchical-rag-pair",
+      "test_case_id": "fact_001",
+      "indexer": "HierarchicalIndexing",
+      "retriever": "SemanticRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [
+        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth.",
+        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth.",
+        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
+      ],
+      "error": null,
+      "timestamp": "2025-12-22T01:07:51.937597"
+    },
+    {
+      "strategy_name": "late-chunking-pair",
+      "test_case_id": "fact_001",
+      "indexer": "LateChunkingRAGStrategy",
+      "retriever": "SemanticRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [
+        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
+      ],
+      "error": null,
+      "timestamp": "2025-12-22T01:08:01.323237"
+    },
+    {
+      "strategy_name": "agentic-rag-pair",
+      "test_case_id": "fact_001",
+      "indexer": "VectorEmbeddingIndexing",
+      "retriever": "AgenticRAGStrategy",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [],
+      "error": "TypeError: object list can't be used in 'await' expression",
+      "timestamp": "2025-12-22T01:08:06.795063",
+      "traceback": "Traceback (most recent call last):\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategy_validation/validate_strategies.py\", line 158, in validate_strategy\n    chunks = await retrieval_strategy.retrieve(test_case[\"query\"], retrieval_context)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: object list can't be used in 'await' expression\n"
+    },
+    {
+      "strategy_name": "hybrid-search-pair",
+      "test_case_id": "fact_001",
+      "indexer": "VectorEmbeddingIndexing",
+      "retriever": "HybridSearchRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [],
+      "error": "StatementError: (builtins.ValueError) expected 1536 dimensions, not 384\n[SQL: INSERT INTO chunks (document_id, chunk_index, text, embedding, metadata) VALUES (%(document_id)s::UUID, %(chunk_index)s, %(text)s, %(embedding)s, %(metadata)s)]",
+      "timestamp": "2025-12-22T01:08:18.607448",
+      "traceback": "Traceback (most recent call last):\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py\", line 1814, in _execute_context\n    context = constructor(\n              ^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py\", line 1488, in _init_compiled\n    key: flattened_processors[key](compiled_params[key])\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/pgvector/sqlalchemy/__init__.py\", line 22, in process\n    return to_db(value, self.dim)\n           ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/pgvector/utils/__init__.py\", line 35, in to_db\n    raise ValueError('expected %d dimensions, not %d' % (dim, len(value)))\nValueError: expected 1536 dimensions, not 384\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategy_validation/validate_strategies.py\", line 145, in validate_strategy\n    indexing_result = await indexing_strategy.process([doc], indexing_context)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategies/indexing/vector_embedding.py\", line 110, in process\n    await context.database.store_chunks(chunks)\n  File \"/mnt/MCPProyects/ragTools/rag_factory/services/database/database_context.py\", line 339, in store_chunks\n    await loop.run_in_executor(None, self._store_chunks_sync, chunks)\n  File \"/usr/lib/python3.12/concurrent/futures/thread.py\", line 58, in run\n    result = self.fn(*self.args, **self.kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/services/database/database_context.py\", line 374, in _store_chunks_sync\n    conn.execute(stmt)\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py\", line 1416, in execute\n    return meth(\n           ^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py\", line 516, in _execute_on_connection\n    return connection._execute_clauseelement(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py\", line 1639, in _execute_clauseelement\n    ret = self._execute_context(\n          ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py\", line 1820, in _execute_context\n    self._handle_dbapi_exception(\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py\", line 2343, in _handle_dbapi_exception\n    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py\", line 1814, in _execute_context\n    context = constructor(\n              ^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py\", line 1488, in _init_compiled\n    key: flattened_processors[key](compiled_params[key])\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/pgvector/sqlalchemy/__init__.py\", line 22, in process\n    return to_db(value, self.dim)\n           ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/pgvector/utils/__init__.py\", line 35, in to_db\n    raise ValueError('expected %d dimensions, not %d' % (dim, len(value)))\nsqlalchemy.exc.StatementError: (builtins.ValueError) expected 1536 dimensions, not 384\n[SQL: INSERT INTO chunks (document_id, chunk_index, text, embedding, metadata) VALUES (%(document_id)s::UUID, %(chunk_index)s, %(text)s, %(embedding)s, %(metadata)s)]\n"
+    }
+  ]
+}

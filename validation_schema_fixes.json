@@ -1,0 +1,22 @@
+{
+  "summary": {
+    "total_strategies": 1,
+    "successful": 1,
+    "failed": 0,
+    "timestamp": "2025-12-21T23:22:34.853379"
+  },
+  "results": [
+    {
+      "strategy_name": "knowledge-graph-pair",
+      "test_case_id": "fact_001",
+      "indexer": "KnowledgeGraphIndexing",
+      "retriever": "KnowledgeGraphRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [
+        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
+      ],
+      "error": null,
+      "timestamp": "2025-12-21T23:22:28.628792"
+    }
+  ]
+}

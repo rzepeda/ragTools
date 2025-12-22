@@ -52,11 +52,11 @@ class SelfReflectiveRAGStrategy:
         self.max_retries = config.get("max_retries", 2)
         self.timeout_seconds = config.get("timeout_seconds", 10)
 
-    def retrieve(
+    async def retrieve(
         self,
         query: str,
-        top_k: int = 5,
-        **kwargs
+        context: Any,  # RetrievalContext
+        top_k: int = 5
     ) -> List[Dict[str, Any]]:
         """Retrieve with self-reflection and retry.
 
@@ -90,11 +90,17 @@ class SelfReflectiveRAGStrategy:
             attempt_start = time.time()
 
             # Perform retrieval with base strategy
-            results = self.base_strategy.retrieve(
-                current_query,
-                top_k=top_k,
-                **kwargs
-            )
+            # Use embedding service to embed query, then search
+            if self.deps and self.deps.embedding_service:
+                query_embedding = await self.deps.embedding_service.embed(current_query)
+                results = await self.base_strategy.search_chunks(
+                    query_embedding=query_embedding,
+                    top_k=top_k
+                )
+            else:
+                # Fallback: return empty results
+                logger.warning("No embedding service available for retrieval")
+                results = []
 
             # Convert results to dict format if needed
             results = self._normalize_results(results)

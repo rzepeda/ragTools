@@ -1,0 +1,32 @@
+{
+  "summary": {
+    "total_strategies": 2,
+    "successful": 0,
+    "failed": 2,
+    "timestamp": "2025-12-22T01:03:54.887659"
+  },
+  "results": [
+    {
+      "strategy_name": "hierarchical-rag-pair",
+      "test_case_id": "fact_001",
+      "indexer": "HierarchicalIndexing",
+      "retriever": "SemanticRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [],
+      "error": "AttributeError: Neither 'Column' object nor 'Comparator' object has an attribute 'cosine_distance'",
+      "timestamp": "2025-12-22T01:03:40.320735",
+      "traceback": "Traceback (most recent call last):\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py\", line 1599, in __getattr__\n    return getattr(self.comparator, key)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'Comparator' object has no attribute 'cosine_distance'\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategy_validation/validate_strategies.py\", line 158, in validate_strategy\n    chunks = await retrieval_strategy.retrieve(test_case[\"query\"], retrieval_context)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategies/retrieval/semantic_retriever.py\", line 67, in retrieve\n    results = await context.database.search_chunks(\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/services/database/database_context.py\", line 418, in search_chunks\n    return await loop.run_in_executor(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/concurrent/futures/thread.py\", line 58, in run\n    result = self.fn(*self.args, **self.kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/services/database/database_context.py\", line 439, in _search_chunks_sync\n    results = self.vector_search(\n              ^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/services/database/database_context.py\", line 310, in vector_search\n    distance_func = table.c[physical_vector_field].cosine_distance\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py\", line 1601, in __getattr__\n    raise AttributeError(\nAttributeError: Neither 'Column' object nor 'Comparator' object has an attribute 'cosine_distance'\n"
+    },
+    {
+      "strategy_name": "late-chunking-pair",
+      "test_case_id": "fact_001",
+      "indexer": "LateChunkingRAGStrategy",
+      "retriever": "SemanticRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [],
+      "error": "AttributeError: Neither 'Column' object nor 'Comparator' object has an attribute 'cosine_distance'",
+      "timestamp": "2025-12-22T01:03:49.559565",
+      "traceback": "Traceback (most recent call last):\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py\", line 1599, in __getattr__\n    return getattr(self.comparator, key)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'Comparator' object has no attribute 'cosine_distance'\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategy_validation/validate_strategies.py\", line 158, in validate_strategy\n    chunks = await retrieval_strategy.retrieve(test_case[\"query\"], retrieval_context)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategies/retrieval/semantic_retriever.py\", line 67, in retrieve\n    results = await context.database.search_chunks(\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/services/database/database_context.py\", line 418, in search_chunks\n    return await loop.run_in_executor(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/concurrent/futures/thread.py\", line 58, in run\n    result = self.fn(*self.args, **self.kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/services/database/database_context.py\", line 439, in _search_chunks_sync\n    results = self.vector_search(\n              ^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/services/database/database_context.py\", line 310, in vector_search\n    distance_func = table.c[physical_vector_field].cosine_distance\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py\", line 1601, in __getattr__\n    raise AttributeError(\nAttributeError: Neither 'Column' object nor 'Comparator' object has an attribute 'cosine_distance'\n"
+    }
+  ]
+}

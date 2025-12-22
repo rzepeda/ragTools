@@ -87,12 +87,24 @@ class KeywordIndexing(IIndexingStrategy):
 
         chunks = await context.database.get_chunks_for_documents(document_ids)
 
+        # If no chunks found, create them from documents
         if not chunks:
-            # If no chunks found, we can't extract keywords from them
-            # This might happen if chunking hasn't run yet
-            # For now, we'll return empty result or raise error?
-            # Story says: "raise ValueError("No chunks found. Run chunking strategy first.")"
-            raise ValueError("No chunks found. Run chunking strategy first.")
+            chunk_size = self.config.get('chunk_size', 512)
+            overlap = self.config.get('overlap', 50)
+            
+            chunks = []
+            for doc in documents:
+                text = doc.get('text', '')
+                if not text:
+                    continue
+                    
+                doc_id = doc.get('id', 'unknown')
+                doc_chunks = self._chunk_document(text, doc_id, chunk_size, overlap)
+                chunks.extend(doc_chunks)
+            
+            # Store chunks to database
+            if chunks:
+                await context.database.store_chunks(chunks)
 
         # Extract keywords using TF-IDF
         max_keywords = self.config.get('max_keywords', 1000)
@@ -147,7 +159,7 @@ class KeywordIndexing(IIndexingStrategy):
                     inverted_index[keyword] = []
 
                 inverted_index[keyword].append({
-                    'chunk_id': chunk['id'],
+                    'chunk_id': chunk.get('chunk_id', chunk.get('id')),
                     'score': score
                 })
 
@@ -166,3 +178,35 @@ class KeywordIndexing(IIndexingStrategy):
             document_count=len(documents),
             chunk_count=len(chunks)
         )
+    
+    def _chunk_document(
+        self,
+        text: str,
+        doc_id: str,
+        chunk_size: int,
+        overlap: int
+    ) -> List[Dict[str, Any]]:
+        """Simple character-based chunking."""
+        chunks = []
+        start = 0
+        chunk_idx = 0
+        
+        while start < len(text):
+            end = min(start + chunk_size, len(text))
+            chunk_text = text[start:end]
+            
+            chunks.append({
+                'chunk_id': f"{doc_id}_{chunk_idx}",
+                'text': chunk_text,
+                'document_id': doc_id,
+                'chunk_index': chunk_idx,
+                'metadata': {}
+            })
+            
+            if end == len(text):
+                break
+                
+            start += chunk_size - overlap
+            chunk_idx += 1
+        
+        return chunks

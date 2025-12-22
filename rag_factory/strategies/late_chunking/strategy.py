@@ -114,7 +114,7 @@ class LateChunkingRAGStrategy(IIndexingStrategy):
                 continue
                 
             # Use existing index_document method
-            self.index_document(text, doc_id)
+            await self.index_document(text, doc_id)
             # Note: index_document doesn't return chunk count, 
             # so we'll estimate or track separately if needed
             total_chunks += 1  # Placeholder
@@ -129,7 +129,7 @@ class LateChunkingRAGStrategy(IIndexingStrategy):
             chunk_count=total_chunks
         )
 
-    def index_document(self, document: str, document_id: str) -> None:
+    async def index_document(self, document: str, document_id: str) -> None:
         """
         Index document using late chunking.
 
@@ -159,12 +159,16 @@ class LateChunkingRAGStrategy(IIndexingStrategy):
                 logger.info(f"Average coherence score: {avg_coherence:.3f}")
 
         # Step 4: Index chunks in vector store
-        for chunk in chunks:
-            self.vector_store.index_chunk(
-                chunk_id=chunk.chunk_id,
-                text=chunk.text,
-                embedding=chunk.chunk_embedding,
-                metadata={
+        # Prepare chunks for batch storage
+        chunks_to_store = []
+        for i, chunk in enumerate(chunks):
+            chunks_to_store.append({
+                'chunk_id': chunk.chunk_id,
+                'text': chunk.text,
+                'embedding': chunk.chunk_embedding,
+                'document_id': chunk.document_id,
+                'chunk_index': i,
+                'metadata': {
                     "document_id": chunk.document_id,
                     "token_count": chunk.token_count,
                     "coherence_score": chunk.coherence_score,
@@ -172,7 +176,11 @@ class LateChunkingRAGStrategy(IIndexingStrategy):
                     "token_range": chunk.token_range,
                     "char_range": chunk.char_range
                 }
-            )
+            })
+        
+        # Store all chunks at once
+        if chunks_to_store and self.vector_store:
+            await self.vector_store.store_chunks(chunks_to_store)
 
         logger.info(f"Indexed {len(chunks)} chunks for document {document_id}")
 

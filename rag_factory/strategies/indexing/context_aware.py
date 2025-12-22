@@ -101,8 +101,14 @@ class ContextAwareChunkingIndexing(IIndexingStrategy):
                 chunk_size_max
             )
 
-            # Add metadata
+            # Add metadata and required fields
             for i, chunk in enumerate(doc_chunks):
+                # Add required database fields
+                chunk['chunk_id'] = f"{doc_id}_{i}"
+                chunk['document_id'] = doc_id
+                chunk['chunk_index'] = i
+                
+                # Add metadata
                 chunk['metadata'] = chunk.get('metadata', {})
                 chunk['metadata'].update({
                     'document_id': doc_id,

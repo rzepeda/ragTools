@@ -1,0 +1,21 @@
+{
+  "summary": {
+    "total_strategies": 1,
+    "successful": 0,
+    "failed": 1,
+    "timestamp": "2025-12-21T23:30:54.634667"
+  },
+  "results": [
+    {
+      "strategy_name": "keyword-pair",
+      "test_case_id": "fact_001",
+      "indexer": "KeywordIndexing",
+      "retriever": "KeywordRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [],
+      "error": "ValueError: No chunks found. Run chunking strategy first.",
+      "timestamp": "2025-12-21T23:30:54.192802",
+      "traceback": "Traceback (most recent call last):\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategy_validation/validate_strategies.py\", line 145, in validate_strategy\n    indexing_result = await indexing_strategy.process([doc], indexing_context)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategies/indexing/keyword_indexing.py\", line 95, in process\n    raise ValueError(\"No chunks found. Run chunking strategy first.\")\nValueError: No chunks found. Run chunking strategy first.\n"
+    }
+  ]
+}

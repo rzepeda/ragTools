@@ -1,0 +1,20 @@
+{
+  "summary": {
+    "total_strategies": 1,
+    "successful": 1,
+    "failed": 0,
+    "timestamp": "2025-12-21T23:48:36.116191"
+  },
+  "results": [
+    {
+      "strategy_name": "keyword-pair",
+      "test_case_id": "fact_001",
+      "indexer": "KeywordIndexing",
+      "retriever": "KeywordRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [],
+      "error": null,
+      "timestamp": "2025-12-21T23:48:35.255642"
+    }
+  ]
+}

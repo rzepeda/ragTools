@@ -88,14 +88,20 @@ async def test_process_no_chunks(
     indexing_context,
     mock_database_service
 ):
-    """Test error when no chunks are found."""
+    """Test that chunks are created when none are found."""
     # Setup
-    documents = [{"id": "doc1"}]
+    documents = [{"id": "doc1", "text": "machine learning is great"}]
     mock_database_service.get_chunks_for_documents.return_value = []
+    mock_database_service.store_chunks = AsyncMock()
     
-    # Execute & Verify
-    with pytest.raises(ValueError, match="No chunks found"):
-        await keyword_indexing.process(documents, indexing_context)
+    # Execute
+    result = await keyword_indexing.process(documents, indexing_context)
+    
+    # Verify chunks were created and stored
+    mock_database_service.store_chunks.assert_called_once()
+    stored_chunks = mock_database_service.store_chunks.call_args[0][0]
+    assert len(stored_chunks) > 0
+    assert stored_chunks[0]['document_id'] == 'doc1'
 
 @pytest.mark.asyncio
 async def test_process_empty_text(

@@ -19,11 +19,11 @@ indexer:
   db_config:
     tables:
       documents: "documents"
-      chunks: "chunks"
+      chunks: "hybrid_search_chunks"  # Use own table with 384 dimensions
     fields:
       chunk_id: "id"
       document_id: "document_id"
-      content: "content"
+      text: "content"  # Map text field to content column
       embedding: "embedding"
       metadata: "metadata"
   
@@ -40,7 +40,7 @@ retriever:
   
   db_config:
     tables:
-      chunks: "chunks"
+      chunks: "hybrid_search_chunks"
   
   config:
     top_k: 10

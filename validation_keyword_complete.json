@@ -1,0 +1,21 @@
+{
+  "summary": {
+    "total_strategies": 1,
+    "successful": 0,
+    "failed": 1,
+    "timestamp": "2025-12-21T23:34:58.243090"
+  },
+  "results": [
+    {
+      "strategy_name": "keyword-pair",
+      "test_case_id": "fact_001",
+      "indexer": "KeywordIndexing",
+      "retriever": "KeywordRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [],
+      "error": "AttributeError: 'DatabaseContext' object has no attribute 'store_keyword_index'",
+      "timestamp": "2025-12-21T23:34:57.392849",
+      "traceback": "Traceback (most recent call last):\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategy_validation/validate_strategies.py\", line 145, in validate_strategy\n    indexing_result = await indexing_strategy.process([doc], indexing_context)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategies/indexing/keyword_indexing.py\", line 167, in process\n    await context.database.store_keyword_index(inverted_index)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'DatabaseContext' object has no attribute 'store_keyword_index'\n"
+    }
+  ]
+}

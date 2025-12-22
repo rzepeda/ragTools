@@ -160,7 +160,8 @@ class VectorEmbeddingIndexing(IIndexingStrategy):
                     "chunk_id": f"{doc_id}_{chunk_idx}",
                     "text": text,
                     "metadata": metadata,
-                    "document_id": doc_id
+                    "document_id": doc_id,
+                    "chunk_index": chunk_idx
                 })
                 continue
 

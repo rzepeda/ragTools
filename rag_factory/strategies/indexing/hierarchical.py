@@ -119,8 +119,19 @@ class HierarchicalIndexing(IIndexingStrategy):
                 chunk['embedding'] = embedding
 
         # Store chunks with hierarchy metadata
+        # The hierarchy information is already in the chunk metadata
         if all_chunks:
-            await context.database.store_chunks_with_hierarchy(all_chunks)
+            # Add required fields for database storage
+            for chunk in all_chunks:
+                if 'chunk_id' not in chunk:
+                    chunk['chunk_id'] = chunk.get('id')
+                if 'document_id' not in chunk:
+                    chunk['document_id'] = chunk.get('document_id', 'unknown')
+                if 'chunk_index' not in chunk:
+                    # Use level as chunk_index for hierarchical chunks
+                    chunk['chunk_index'] = chunk.get('level', 0)
+            
+            await context.database.store_chunks(all_chunks)
 
         # Calculate metrics
         avg_chunks_per_doc = len(all_chunks) / len(documents) if documents else 0

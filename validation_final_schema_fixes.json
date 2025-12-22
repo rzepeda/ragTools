@@ -1,0 +1,197 @@
+{
+  "summary": {
+    "total_strategies": 15,
+    "successful": 8,
+    "failed": 7,
+    "timestamp": "2025-12-21T23:24:20.879541"
+  },
+  "results": [
+    {
+      "strategy_name": "agentic-rag-pair",
+      "test_case_id": "fact_001",
+      "indexer": "VectorEmbeddingIndexing",
+      "retriever": "AgenticRAGStrategy",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [],
+      "error": "TypeError: object list can't be used in 'await' expression",
+      "timestamp": "2025-12-21T23:23:13.822379",
+      "traceback": "Traceback (most recent call last):\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategy_validation/validate_strategies.py\", line 158, in validate_strategy\n    chunks = await retrieval_strategy.retrieve(test_case[\"query\"], retrieval_context)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: object list can't be used in 'await' expression\n"
+    },
+    {
+      "strategy_name": "context-aware-chunking-pair",
+      "test_case_id": "fact_001",
+      "indexer": "ContextAwareChunkingIndexing",
+      "retriever": "SemanticRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [
+        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
+      ],
+      "error": null,
+      "timestamp": "2025-12-21T23:23:25.822518"
+    },
+    {
+      "strategy_name": "contextual-retrieval-pair",
+      "test_case_id": "fact_001",
+      "indexer": "ContextAwareChunkingIndexing",
+      "retriever": "SemanticRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [
+        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
+      ],
+      "error": null,
+      "timestamp": "2025-12-21T23:23:32.719247"
+    },
+    {
+      "strategy_name": "fine-tuned-embeddings-pair",
+      "test_case_id": "fact_001",
+      "indexer": "VectorEmbeddingIndexing",
+      "retriever": "SemanticRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [
+        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth.",
+        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
+      ],
+      "error": null,
+      "timestamp": "2025-12-21T23:23:38.410530"
+    },
+    {
+      "strategy_name": "hierarchical-rag-pair",
+      "test_case_id": "fact_001",
+      "indexer": "HierarchicalIndexing",
+      "retriever": "SemanticRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [],
+      "error": "AttributeError: 'DatabaseContext' object has no attribute 'store_chunks_with_hierarchy'",
+      "timestamp": "2025-12-21T23:23:45.121376",
+      "traceback": "Traceback (most recent call last):\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategy_validation/validate_strategies.py\", line 145, in validate_strategy\n    indexing_result = await indexing_strategy.process([doc], indexing_context)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategies/indexing/hierarchical.py\", line 123, in process\n    await context.database.store_chunks_with_hierarchy(all_chunks)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'DatabaseContext' object has no attribute 'store_chunks_with_hierarchy'\n"
+    },
+    {
+      "strategy_name": "hybrid-search-pair",
+      "test_case_id": "fact_001",
+      "indexer": "VectorEmbeddingIndexing",
+      "retriever": "HybridSearchRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [],
+      "error": "StatementError: (builtins.ValueError) expected 1536 dimensions, not 384\n[SQL: INSERT INTO chunks (document_id, chunk_index, text, embedding, metadata) VALUES (%(document_id)s::UUID, %(chunk_index)s, %(text)s, %(embedding)s, %(metadata)s)]",
+      "timestamp": "2025-12-21T23:23:48.288326",
+      "traceback": "Traceback (most recent call last):\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py\", line 1814, in _execute_context\n    context = constructor(\n              ^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py\", line 1488, in _init_compiled\n    key: flattened_processors[key](compiled_params[key])\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/pgvector/sqlalchemy/__init__.py\", line 22, in process\n    return to_db(value, self.dim)\n           ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/pgvector/utils/__init__.py\", line 35, in to_db\n    raise ValueError('expected %d dimensions, not %d' % (dim, len(value)))\nValueError: expected 1536 dimensions, not 384\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategy_validation/validate_strategies.py\", line 145, in validate_strategy\n    indexing_result = await indexing_strategy.process([doc], indexing_context)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategies/indexing/vector_embedding.py\", line 110, in process\n    await context.database.store_chunks(chunks)\n  File \"/mnt/MCPProyects/ragTools/rag_factory/services/database/database_context.py\", line 339, in store_chunks\n    await loop.run_in_executor(None, self._store_chunks_sync, chunks)\n  File \"/usr/lib/python3.12/concurrent/futures/thread.py\", line 58, in run\n    result = self.fn(*self.args, **self.kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/services/database/database_context.py\", line 374, in _store_chunks_sync\n    conn.execute(stmt)\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py\", line 1416, in execute\n    return meth(\n           ^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py\", line 516, in _execute_on_connection\n    return connection._execute_clauseelement(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py\", line 1639, in _execute_clauseelement\n    ret = self._execute_context(\n          ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py\", line 1820, in _execute_context\n    self._handle_dbapi_exception(\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py\", line 2343, in _handle_dbapi_exception\n    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py\", line 1814, in _execute_context\n    context = constructor(\n              ^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py\", line 1488, in _init_compiled\n    key: flattened_processors[key](compiled_params[key])\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/pgvector/sqlalchemy/__init__.py\", line 22, in process\n    return to_db(value, self.dim)\n           ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/pgvector/utils/__init__.py\", line 35, in to_db\n    raise ValueError('expected %d dimensions, not %d' % (dim, len(value)))\nsqlalchemy.exc.StatementError: (builtins.ValueError) expected 1536 dimensions, not 384\n[SQL: INSERT INTO chunks (document_id, chunk_index, text, embedding, metadata) VALUES (%(document_id)s::UUID, %(chunk_index)s, %(text)s, %(embedding)s, %(metadata)s)]\n"
+    },
+    {
+      "strategy_name": "keyword-pair",
+      "test_case_id": "fact_001",
+      "indexer": "KeywordIndexing",
+      "retriever": "KeywordRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [],
+      "error": "KeyError: 'metadata'",
+      "timestamp": "2025-12-21T23:23:49.555011",
+      "traceback": "Traceback (most recent call last):\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategy_validation/validate_strategies.py\", line 145, in validate_strategy\n    indexing_result = await indexing_strategy.process([doc], indexing_context)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategies/indexing/keyword_indexing.py\", line 88, in process\n    chunks = await context.database.get_chunks_for_documents(document_ids)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/services/database/database_context.py\", line 517, in get_chunks_for_documents\n    return await loop.run_in_executor(None, self._get_chunks_for_docs_sync, document_ids)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/concurrent/futures/thread.py\", line 58, in run\n    result = self.fn(*self.args, **self.kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/services/database/database_context.py\", line 532, in _get_chunks_for_docs_sync\n    table.c[meta_col]['document_id'].astext.in_(document_ids)\n    ~~~~~~~^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/sqlalchemy/sql/base.py\", line 1624, in __getitem__\n    return self._index[key][1]\n           ~~~~~~~~~~~^^^^^\nKeyError: 'metadata'\n"
+    },
+    {
+      "strategy_name": "knowledge-graph-pair",
+      "test_case_id": "fact_001",
+      "indexer": "KnowledgeGraphIndexing",
+      "retriever": "KnowledgeGraphRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [
+        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth.",
+        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
+      ],
+      "error": null,
+      "timestamp": "2025-12-21T23:23:49.854890"
+    },
+    {
+      "strategy_name": "late-chunking-pair",
+      "test_case_id": "fact_001",
+      "indexer": "LateChunkingRAGStrategy",
+      "retriever": "SemanticRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [],
+      "error": "AttributeError: 'DatabaseContext' object has no attribute 'index_chunk'",
+      "timestamp": "2025-12-21T23:23:54.560679",
+      "traceback": "Traceback (most recent call last):\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategy_validation/validate_strategies.py\", line 145, in validate_strategy\n    indexing_result = await indexing_strategy.process([doc], indexing_context)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategies/late_chunking/strategy.py\", line 117, in process\n    self.index_document(text, doc_id)\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategies/late_chunking/strategy.py\", line 163, in index_document\n    self.vector_store.index_chunk(\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'DatabaseContext' object has no attribute 'index_chunk'\n"
+    },
+    {
+      "strategy_name": "multi-query-pair",
+      "test_case_id": "fact_001",
+      "indexer": "VectorEmbeddingIndexing",
+      "retriever": "MultiQueryRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [
+        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth.",
+        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
+      ],
+      "error": null,
+      "timestamp": "2025-12-21T23:23:57.746154"
+    },
+    {
+      "strategy_name": "query-expansion-pair",
+      "test_case_id": "fact_001",
+      "indexer": "VectorEmbeddingIndexing",
+      "retriever": "QueryExpansionRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [
+        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth.",
+        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
+      ],
+      "error": null,
+      "timestamp": "2025-12-21T23:24:01.168348"
+    },
+    {
+      "strategy_name": "reranking-pair",
+      "test_case_id": "fact_001",
+      "indexer": "VectorEmbeddingIndexing",
+      "retriever": "SemanticRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [
+        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth.",
+        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth."
+      ],
+      "error": null,
+      "timestamp": "2025-12-21T23:24:04.249096"
+    },
+    {
+      "strategy_name": "self-reflective-pair",
+      "test_case_id": "fact_001",
+      "indexer": "VectorEmbeddingIndexing",
+      "retriever": "SelfReflectiveRAGStrategy",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [],
+      "error": "AttributeError: 'DatabaseContext' object has no attribute 'retrieve'",
+      "timestamp": "2025-12-21T23:24:08.658333",
+      "traceback": "Traceback (most recent call last):\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategy_validation/validate_strategies.py\", line 158, in validate_strategy\n    chunks = await retrieval_strategy.retrieve(test_case[\"query\"], retrieval_context)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategies/self_reflective/strategy.py\", line 93, in retrieve\n    results = self.base_strategy.retrieve(\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'DatabaseContext' object has no attribute 'retrieve'\n"
+    },
+    {
+      "strategy_name": "semantic-api-pair",
+      "test_case_id": "fact_001",
+      "indexer": "VectorEmbeddingIndexing",
+      "retriever": "SemanticRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [],
+      "error": "RetryError: RetryError[<Future at 0x71c90c2dd190 state=finished raised AuthenticationError>]",
+      "timestamp": "2025-12-21T23:24:10.858044",
+      "traceback": "Traceback (most recent call last):\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/tenacity/__init__.py\", line 480, in __call__\n    result = fn(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/services/embedding/providers/openai.py\", line 88, in get_embeddings\n    response = self.client.embeddings.create(\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/openai/resources/embeddings.py\", line 132, in create\n    return self._post(\n           ^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/openai/_base_client.py\", line 1259, in post\n    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))\n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/openai/_base_client.py\", line 1047, in request\n    raise self._make_status_error_from_response(err.response) from None\nopenai.AuthenticationError: Error code: 401 - {'error': {'message': 'Incorrect API key provided: lm-studio. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}}\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategy_validation/validate_strategies.py\", line 145, in validate_strategy\n    indexing_result = await indexing_strategy.process([doc], indexing_context)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/strategies/indexing/vector_embedding.py\", line 97, in process\n    embeddings = await self.deps.embedding_service.embed_batch(texts)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/rag_factory/services/api/openai.py\", line 221, in embed_batch\n    result = await loop.run_in_executor(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/concurrent/futures/thread.py\", line 58, in run\n    result = self.fn(*self.args, **self.kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/tenacity/__init__.py\", line 338, in wrapped_f\n    return copy(f, *args, **kw)\n           ^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/tenacity/__init__.py\", line 477, in __call__\n    do = self.iter(retry_state=retry_state)\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/tenacity/__init__.py\", line 378, in iter\n    result = action(retry_state)\n             ^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/MCPProyects/ragTools/venv/lib/python3.12/site-packages/tenacity/__init__.py\", line 421, in exc_check\n    raise retry_exc from fut.exception()\ntenacity.RetryError: RetryError[<Future at 0x71c90c2dd190 state=finished raised AuthenticationError>]\n"
+    },
+    {
+      "strategy_name": "semantic-local-pair",
+      "test_case_id": "fact_001",
+      "indexer": "VectorEmbeddingIndexing",
+      "retriever": "SemanticRetriever",
+      "query": "What specific item does Voyager 1 carry to represent Earth's culture?",
+      "retrieved_chunks": [
+        " as driving a vehicle or playing a game against an opponent).\n",
+        " as driving a vehicle or playing a game against an opponent).\n",
+        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth.",
+        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth.",
+        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth.",
+        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth.",
+        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth.",
+        "The Voyager 1 spacecraft, launched by NASA in 1977, is currently the most distant human-made object from Earth. As of 2024, it is over 15 billion miles away. It carries the Golden Record, a 12-inch gold-plated copper disk containing sounds and images selected to portray the diversity of life and culture on Earth.",
+        "ficial intelligence, and scientific computing.\nKey features:\n- Easy to learn and read\n- Dynamic typing\n- Automatic memory management (garbage collection)\n- Extensive standard library\n- Support for multiple programming paradigms (procedural, object-oriented, functional)\n",
+        "ficial intelligence, and scientific computing.\nKey features:\n- Easy to learn and read\n- Dynamic typing\n- Automatic memory management (garbage collection)\n- Extensive standard library\n- Support for multiple programming paradigms (procedural, object-oriented, functional)\n"
+      ],
+      "error": null,
+      "timestamp": "2025-12-21T23:24:15.003827"
+    }
+  ]
+}

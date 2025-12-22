@@ -137,7 +137,8 @@ def test_strategy_initialization_with_config(
     assert len(strategy.tools) == 2  # Only enabled tools
 
 
-def test_strategy_retrieve(
+@pytest.mark.asyncio
+async def test_strategy_retrieve(
     mock_llm_service,
     mock_embedding_service,
     mock_database_service
@@ -167,14 +168,15 @@ def test_strategy_retrieve(
     }
     
     with patch.object(strategy.agent, 'run', return_value=mock_agent_result):
-        results = strategy.retrieve("test query", top_k=5)
+        results = await strategy.retrieve("test query", top_k=5)
     
     assert len(results) == 2
     assert results[0]["strategy"] == "agentic"
     assert "agent_trace" in results[0]
 
 
-def test_strategy_retrieve_with_query_analysis(
+@pytest.mark.asyncio
+async def test_strategy_retrieve_with_query_analysis(
     mock_llm_service,
     mock_embedding_service,
     mock_database_service
@@ -198,12 +200,13 @@ def test_strategy_retrieve_with_query_analysis(
     }
     
     with patch.object(strategy.agent, 'run', return_value=mock_agent_result):
-        results = strategy.retrieve("test query")
+        results = await strategy.retrieve("test query")
     
     assert len(results) >= 0
 
 
-def test_strategy_fallback_on_error(
+@pytest.mark.asyncio
+async def test_strategy_fallback_on_error(
     mock_llm_service,
     mock_embedding_service,
     mock_database_service
@@ -221,13 +224,14 @@ def test_strategy_fallback_on_error(
     
     # Mock agent to raise error
     with patch.object(strategy.agent, 'run', side_effect=Exception("Agent failed")):
-        results = strategy.retrieve("test query", top_k=5)
+        results = await strategy.retrieve("test query", top_k=5)
     
     # Should get fallback results
     assert len(results) >= 0
 
 
-def test_strategy_no_fallback_raises_error(
+@pytest.mark.asyncio
+async def test_strategy_no_fallback_raises_error(
     mock_llm_service,
     mock_embedding_service,
     mock_database_service
@@ -246,7 +250,7 @@ def test_strategy_no_fallback_raises_error(
     # Mock agent to raise error
     with patch.object(strategy.agent, 'run', side_effect=Exception("Agent failed")):
         with pytest.raises(Exception):
-            strategy.retrieve("test query")
+            await strategy.retrieve("test query")
 
 
 def test_strategy_get_stats(
@@ -273,7 +277,8 @@ def test_strategy_get_stats(
     assert "config" in stats
 
 
-def test_strategy_top_k_limit(
+@pytest.mark.asyncio
+async def test_strategy_top_k_limit(
     mock_llm_service,
     mock_embedding_service,
     mock_database_service
@@ -295,6 +300,6 @@ def test_strategy_top_k_limit(
     }
     
     with patch.object(strategy.agent, 'run', return_value=mock_agent_result):
-        results = strategy.retrieve("test query", top_k=5)
+        results = await strategy.retrieve("test query", top_k=5)
     
     assert len(results) <= 5

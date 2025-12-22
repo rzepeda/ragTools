@@ -18,14 +18,15 @@ class MockVectorStore:
     def __init__(self):
         self.chunks = []
 
-    def index_chunk(self, chunk_id, text, embedding, metadata):
-        """Store chunk."""
-        self.chunks.append({
-            "chunk_id": chunk_id,
-            "text": text,
-            "embedding": embedding,
-            "metadata": metadata
-        })
+    async def store_chunks(self, chunks):
+        """Store chunks."""
+        for chunk in chunks:
+            self.chunks.append({
+                "chunk_id": chunk.get("chunk_id", chunk.get("id")),
+                "text": chunk.get("text", chunk.get("content", "")),
+                "embedding": chunk.get("embedding"),
+                "metadata": chunk.get("metadata", {})
+            })
 
     def search(self, query, top_k=5, **kwargs):
         """Return mock search results."""
@@ -60,7 +61,8 @@ def test_dependencies(test_vector_store):
 
 
 @pytest.mark.integration
-def test_late_chunking_workflow(test_dependencies, test_vector_store):
+@pytest.mark.asyncio
+async def test_late_chunking_workflow(test_dependencies, test_vector_store):
     """Test complete late chunking workflow."""
     config = {
         "model_name": EMBEDDING_MODEL,
@@ -80,7 +82,7 @@ def test_late_chunking_workflow(test_dependencies, test_vector_store):
     The training process involves adjusting network weights to minimize error.
     """
 
-    strategy.index_document(document, "ml_doc")
+    await strategy.index_document(document, "ml_doc")
 
     # Verify chunks were indexed
     assert len(test_vector_store.chunks) > 0
@@ -102,7 +104,8 @@ def test_late_chunking_workflow(test_dependencies, test_vector_store):
 
 
 @pytest.mark.integration
-def test_fixed_size_chunking_integration(test_dependencies, test_vector_store):
+@pytest.mark.asyncio
+async def test_fixed_size_chunking_integration(test_dependencies, test_vector_store):
     """Test integration with fixed-size chunking."""
     config = {
         "model_name": EMBEDDING_MODEL,
@@ -117,13 +120,14 @@ def test_fixed_size_chunking_integration(test_dependencies, test_vector_store):
 
     document = "This is a test document. " * 20
 
-    strategy.index_document(document, "test_doc")
+    await strategy.index_document(document, "test_doc")
 
     assert len(test_vector_store.chunks) > 0
 
 
 @pytest.mark.integration
-def test_adaptive_chunking_integration(test_dependencies, test_vector_store):
+@pytest.mark.asyncio
+async def test_adaptive_chunking_integration(test_dependencies, test_vector_store):
     """Test integration with adaptive chunking."""
     config = {
         "model_name": EMBEDDING_MODEL,
@@ -140,7 +144,7 @@ def test_adaptive_chunking_integration(test_dependencies, test_vector_store):
     Libraries like NumPy and Pandas make data manipulation easy. TensorFlow and PyTorch are popular ML frameworks.
     """
 
-    strategy.index_document(document, "python_doc")
+    await strategy.index_document(document, "python_doc")
 
     assert len(test_vector_store.chunks) > 0
 
@@ -151,7 +155,8 @@ def test_adaptive_chunking_integration(test_dependencies, test_vector_store):
 
 
 @pytest.mark.integration
-def test_multiple_documents(test_dependencies, test_vector_store):
+@pytest.mark.asyncio
+async def test_multiple_documents(test_dependencies, test_vector_store):
     """Test indexing multiple documents."""
     config = {
         "model_name": EMBEDDING_MODEL,
@@ -168,7 +173,7 @@ def test_multiple_documents(test_dependencies, test_vector_store):
     ]
 
     for text, doc_id in documents:
-        strategy.index_document(text, doc_id)
+        await strategy.index_document(text, doc_id)
 
     # Should have chunks from all documents
     assert len(test_vector_store.chunks) >= 3
@@ -218,7 +223,8 @@ def test_coherence_scores_computed(test_dependencies, test_vector_store):
 
 
 @pytest.mark.integration
-def test_short_document(test_dependencies, test_vector_store):
+@pytest.mark.asyncio
+async def test_short_document(test_dependencies, test_vector_store):
     """Test handling of very short documents."""
     config = {
         "model_name": EMBEDDING_MODEL,
@@ -229,7 +235,7 @@ def test_short_document(test_dependencies, test_vector_store):
 
     short_doc = "Short."
 
-    strategy.index_document(short_doc, "short_doc")
+    await strategy.index_document(short_doc, "short_doc")
 
     # Should create at least one chunk
     assert len(test_vector_store.chunks) >= 1
