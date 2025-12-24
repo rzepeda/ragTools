@@ -4,6 +4,7 @@ This module implements the repository pattern for Chunk entities,
 providing CRUD operations and advanced vector similarity search using pgvector.
 """
 
+import logging
 from typing import Optional, List, Tuple, Dict, Any
 from uuid import UUID
 from sqlalchemy import func, text
@@ -17,13 +18,42 @@ from .exceptions import (
 )
 from ..database.models import Chunk
 
+logger = logging.getLogger(__name__)
+
 
 class ChunkRepository(BaseRepository[Chunk]):
     """Repository for Chunk CRUD operations with vector search.
 
     This repository provides standard CRUD operations as well as
     specialized vector similarity search methods using cosine distance.
+    
+    Attributes:
+        table_name: Name of the chunks table to query (default: "chunks")
+        field_mapping: Dict mapping logical field names to physical column names
     """
+
+    def __init__(self, session, table_name: str = "chunks", field_mapping: Optional[Dict[str, str]] = None):
+        """Initialize repository with session, table name, and field mappings.
+        
+        Args:
+            session: SQLAlchemy session for database operations
+            table_name: Name of the chunks table (default: "chunks")
+            field_mapping: Dict mapping logical -> physical field names (optional)
+        """
+        super().__init__(session)
+        self.table_name = table_name
+        self.field_mapping = field_mapping or {}
+    
+    def _map_field(self, logical_field: str) -> str:
+        """Map logical field name to physical column name.
+        
+        Args:
+            logical_field: Logical field name (e.g., 'text', 'embedding')
+        
+        Returns:
+            Physical column name from mapping, or logical name if no mapping
+        """
+        return self.field_mapping.get(logical_field, logical_field)
 
     def get_by_id(self, chunk_id: UUID) -> Optional[Chunk]:
         """Retrieve a chunk by its ID.
@@ -293,34 +323,74 @@ class ChunkRepository(BaseRepository[Chunk]):
             # Convert embedding to pgvector format string
             embedding_str = "[" + ",".join(map(str, embedding)) + "]"
 
-            # Query with cosine distance
-            # <=> is pgvector's cosine distance operator
-            # Note: We use string formatting for the vector literal to avoid parameter binding issues
-            query = text(f"""
-                SELECT chunk_id, document_id, chunk_index, text, embedding,
-                       metadata, created_at, updated_at,
-                       1 - (embedding <=> '{embedding_str}'::vector) as similarity
-                FROM chunks
-                WHERE embedding IS NOT NULL
-                  AND 1 - (embedding <=> '{embedding_str}'::vector) >= :threshold
-                ORDER BY embedding <=> '{embedding_str}'::vector
-                LIMIT :top_k
-            """)
+            # Map field names to physical column names
+            chunk_id_col = self._map_field("chunk_id")
+            document_id_col = self._map_field("document_id")
+            chunk_index_col = self._map_field("chunk_index")
+            text_col = self._map_field("text")
+            embedding_col = self._map_field("embedding")
+            metadata_col = self._map_field("metadata")
+            created_at_col = self._map_field("created_at")
+            updated_at_col = self._map_field("updated_at")
+
+            # Check if we need to join with vectors table (multi-table design)
+            # If table_name ends with '_chunks', assume separate vectors table
+            if self.table_name.endswith('_chunks'):
+                # Multi-table design: JOIN with vectors table
+                vectors_table = self.table_name.replace('_chunks', '_vectors')
+                
+                # Log the query for debugging
+                logger.info(f"Using multi-table JOIN: {self.table_name} + {vectors_table}")
+                logger.info(f"Mapped fields: chunk_id={chunk_id_col}, embedding={embedding_col}")
+                
+                query = text(f"""
+                    SELECT c.{chunk_id_col}, c.{document_id_col}, c.{chunk_index_col}, c.{text_col},
+                           v.{embedding_col}, c.{metadata_col}, c.{created_at_col}, c.{updated_at_col},
+                           1 - (v.{embedding_col} <=> '{embedding_str}'::vector) as similarity
+                    FROM {self.table_name} c
+                    JOIN {vectors_table} v ON c.{chunk_id_col} = v.{chunk_id_col}
+                    WHERE v.{embedding_col} IS NOT NULL
+                      AND 1 - (v.{embedding_col} <=> '{embedding_str}'::vector) >= :threshold
+                    ORDER BY v.{embedding_col} <=> '{embedding_str}'::vector
+                    LIMIT :top_k
+                """)
+                
+                # Log the actual query
+                logger.debug(f"SQL Query: {query}")
+            else:
+                # Single-table design: embedding in same table
+                query = text(f"""
+                    SELECT {chunk_id_col}, {document_id_col}, {chunk_index_col}, {text_col}, {embedding_col},
+                           {metadata_col}, {created_at_col}, {updated_at_col},
+                           1 - ({embedding_col} <=> '{embedding_str}'::vector) as similarity
+                    FROM {self.table_name}
+                    WHERE {embedding_col} IS NOT NULL
+                      AND 1 - ({embedding_col} <=> '{embedding_str}'::vector) >= :threshold
+                    ORDER BY {embedding_col} <=> '{embedding_str}'::vector
+                    LIMIT :top_k
+                """)
 
             results = self.session.execute(
                 query,
                 {"threshold": threshold, "top_k": top_k}
             ).fetchall()
 
-            # Query chunks by ID to get proper ORM objects
+            # Create Chunk objects directly from raw SQL results
             chunks_with_scores = []
             for row in results:
-                chunk_id = row[0]
+                # Create Chunk object from row data
+                chunk = Chunk(
+                    chunk_id=row[0],
+                    document_id=row[1],
+                    chunk_index=row[2],
+                    text=row[3],
+                    embedding=row[4],
+                    metadata_=row[5] if row[5] else {},
+                    created_at=row[6],
+                    updated_at=row[7]
+                )
                 similarity = float(row[8])
-                # Query the chunk properly to avoid merge issues
-                chunk = self.session.query(Chunk).filter(Chunk.chunk_id == chunk_id).first()
-                if chunk:
-                    chunks_with_scores.append((chunk, similarity))
+                chunks_with_scores.append((chunk, similarity))
 
             return chunks_with_scores
 
@@ -363,15 +433,25 @@ class ChunkRepository(BaseRepository[Chunk]):
             embedding_str = "[" + ",".join(map(str, embedding)) + "]"
             doc_ids_str = ",".join([f"'{str(doc_id)}'" for doc_id in document_ids])
 
+            # Map field names to physical column names
+            chunk_id_col = self._map_field("chunk_id")
+            document_id_col = self._map_field("document_id")
+            chunk_index_col = self._map_field("chunk_index")
+            text_col = self._map_field("text")
+            embedding_col = self._map_field("embedding")
+            metadata_col = self._map_field("metadata")
+            created_at_col = self._map_field("created_at")
+            updated_at_col = self._map_field("updated_at")
+
             query = text(f"""
-                SELECT chunk_id, document_id, chunk_index, text, embedding,
-                       metadata, created_at, updated_at,
-                       1 - (embedding <=> '{embedding_str}'::vector) as similarity
-                FROM chunks
-                WHERE embedding IS NOT NULL
-                  AND document_id IN ({doc_ids_str})
-                  AND 1 - (embedding <=> '{embedding_str}'::vector) >= :threshold
-                ORDER BY embedding <=> '{embedding_str}'::vector
+                SELECT {chunk_id_col}, {document_id_col}, {chunk_index_col}, {text_col}, {embedding_col},
+                       {metadata_col}, {created_at_col}, {updated_at_col},
+                       1 - ({embedding_col} <=> '{embedding_str}'::vector) as similarity
+                FROM {self.table_name}
+                WHERE {embedding_col} IS NOT NULL
+                  AND {document_id_col} IN ({doc_ids_str})
+                  AND 1 - ({embedding_col} <=> '{embedding_str}'::vector) >= :threshold
+                ORDER BY {embedding_col} <=> '{embedding_str}'::vector
                 LIMIT :top_k
             """)
 
@@ -427,29 +507,39 @@ class ChunkRepository(BaseRepository[Chunk]):
         try:
             embedding_str = "[" + ",".join(map(str, embedding)) + "]"
 
+            # Map field names to physical column names
+            chunk_id_col = self._map_field("chunk_id")
+            document_id_col = self._map_field("document_id")
+            chunk_index_col = self._map_field("chunk_index")
+            text_col = self._map_field("text")
+            embedding_col = self._map_field("embedding")
+            metadata_col = self._map_field("metadata")
+            created_at_col = self._map_field("created_at")
+            updated_at_col = self._map_field("updated_at")
+
             # Build metadata filter conditions
             metadata_conditions = []
             for key, value in metadata_filter.items():
                 if isinstance(value, str):
                     metadata_conditions.append(
-                        f"metadata->>'{key}' = '{value}'"
+                        f"{metadata_col}->>'{key}' = '{value}'"
                     )
                 else:
                     metadata_conditions.append(
-                        f"metadata->>'{key}' = '{str(value)}'"
+                        f"{metadata_col}->>'{key}' = '{str(value)}'"
                     )
 
             where_clause = " AND ".join(metadata_conditions)
 
             query = text(f"""
-                SELECT chunk_id, document_id, chunk_index, text, embedding,
-                       metadata, created_at, updated_at,
-                       1 - (embedding <=> '{embedding_str}'::vector) as similarity
-                FROM chunks
-                WHERE embedding IS NOT NULL
+                SELECT {chunk_id_col}, {document_id_col}, {chunk_index_col}, {text_col}, {embedding_col},
+                       {metadata_col}, {created_at_col}, {updated_at_col},
+                       1 - ({embedding_col} <=> '{embedding_str}'::vector) as similarity
+                FROM {self.table_name}
+                WHERE {embedding_col} IS NOT NULL
                   AND {where_clause}
-                  AND 1 - (embedding <=> '{embedding_str}'::vector) >= :threshold
-                ORDER BY embedding <=> '{embedding_str}'::vector
+                  AND 1 - ({embedding_col} <=> '{embedding_str}'::vector) >= :threshold
+                ORDER BY {embedding_col} <=> '{embedding_str}'::vector
                 LIMIT :top_k
             """)
 

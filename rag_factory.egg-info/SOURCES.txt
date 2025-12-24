@@ -121,6 +121,7 @@ rag_factory/services/api/cohere.py
 rag_factory/services/api/openai.py
 rag_factory/services/database/__init__.py
 rag_factory/services/database/database_context.py
+rag_factory/services/database/database_context_additions.py
 rag_factory/services/database/migration_validator.py
 rag_factory/services/database/neo4j.py
 rag_factory/services/database/postgres.py
@@ -163,6 +164,7 @@ rag_factory/strategies/agentic/query_analyzer.py
 rag_factory/strategies/agentic/strategy.py
 rag_factory/strategies/agentic/tool_implementations.py
 rag_factory/strategies/agentic/tools.py
+rag_factory/strategies/agentic/workflows.py
 rag_factory/strategies/agentic/frameworks/__init__.py
 rag_factory/strategies/chunking/__init__.py
 rag_factory/strategies/chunking/base.py

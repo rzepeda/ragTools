@@ -92,217 +92,142 @@ class AgentState:
 
 class SimpleAgent:
     """
-    Simple agentic implementation using LLM for tool selection.
+    Workflow-based agentic implementation using LLM for workflow selection.
     
-    This agent uses an LLM to analyze queries and select appropriate
-    tools for retrieval. It supports multi-step retrieval where results
-    from one tool can inform the next tool selection.
+    This agent uses an LLM to select from 6 predefined workflows,
+    dramatically reducing context usage from 10K+ tokens to ~300 tokens.
     """
 
     def __init__(self, llm_service: LLMService, tools: List[Tool]):
         """Initialize agent.
         
         Args:
-            llm_service: LLM service for tool selection
+            llm_service: LLM service for workflow selection
             tools: List of available tools
         """
         self.llm_service = llm_service
         self.tools = {tool.name: tool for tool in tools}
-        self.tool_definitions = [tool.to_anthropic_tool() for tool in tools]
 
-    def run(self, query: str, max_iterations: int = 3) -> Dict[str, Any]:
-        """Run the agent to retrieve information.
+    async def run(self, query: str, max_iterations: int = 3) -> Dict[str, Any]:
+        """Run the agent to retrieve information using workflow-based approach.
         
         Args:
             query: User query
-            max_iterations: Maximum tool call iterations
+            max_iterations: Not used in workflow-based approach (kept for compatibility)
             
         Returns:
             Dict with results and execution trace
         """
-        state = AgentState(max_iterations=max_iterations)
-        state.query = query
-
+        from .workflows import WORKFLOWS, extract_plan_from_response, execute_workflow
+        
         logger.info(f"Agent starting for query: {query}")
 
-        # Planning phase: decide which tools to use
-        plan = self._plan_retrieval(query)
-        logger.info(f"Agent plan: {plan.get('reasoning', 'No reasoning provided')}")
+        # Select workflow using LLM
+        plan_selection = self._select_workflow(query)
+        plan_number = plan_selection["plan"]
+        reasoning = plan_selection["reasoning"]
+        
+        logger.info(f"Selected workflow {plan_number}: {WORKFLOWS[plan_number]['name']}")
+        logger.info(f"Reasoning: {reasoning}")
 
-        # Execution phase: run tools
-        while state.should_continue():
-            state.iterations += 1
-            logger.info(f"Agent iteration {state.iterations}/{max_iterations}")
-
-            # Get tool selection from LLM
-            tool_calls = self._select_tools(query, state)
-
-            if not tool_calls:
-                logger.info("No more tools to call, stopping")
-                break
-
-            # Execute tools
-            for tool_call in tool_calls:
-                result = self._execute_tool(tool_call)
-                state.add_tool_result(result)
-
-                if result.success:
-                    num_results = len(result.data) if isinstance(result.data, list) else 1
-                    logger.info(
-                        f"Tool {result.tool_name} succeeded in {result.execution_time:.2f}s, "
-                        f"returned {num_results} results"
-                    )
-                else:
-                    logger.warning(f"Tool {result.tool_name} failed: {result.error}")
-
-        # Synthesis phase: combine results
-        final_results = self._synthesize_results(state)
-
-        return {
-            "results": final_results,
-            "trace": {
-                "query": query,
-                "iterations": state.iterations,
-                "tool_calls": state.tool_calls,
-                "tool_results": [
-                    {
-                        "tool": r.tool_name,
-                        "success": r.success,
-                        "execution_time": r.execution_time,
-                        "num_results": len(r.data) if isinstance(r.data, list) else (1 if r.data else 0),
-                        "error": r.error
-                    }
-                    for r in state.tool_results
-                ],
-                "plan": plan
+        # Execute the selected workflow
+        try:
+            workflow_results = await execute_workflow(plan_number, query, self.tools)
+            
+            # Synthesize final results
+            final_results = self._synthesize_results(workflow_results)
+            
+            # Count successful steps
+            successful_steps = sum(1 for r in workflow_results if r.success)
+            
+            logger.info(
+                f"Workflow completed: {len(final_results)} results from "
+                f"{successful_steps}/{len(workflow_results)} successful steps"
+            )
+            
+            return {
+                "results": final_results,
+                "trace": {
+                    "query": query,
+                    "plan_number": plan_number,
+                    "plan_name": WORKFLOWS[plan_number]["name"],
+                    "reasoning": reasoning,
+                    "steps_executed": len(workflow_results),
+                    "steps_successful": successful_steps,
+                    "workflow_results": [
+                        {
+                            "tool": r.tool_name,
+                            "success": r.success,
+                            "execution_time": r.execution_time,
+                            "num_results": len(r.data) if isinstance(r.data, list) else (1 if r.data else 0),
+                            "error": r.error
+                        }
+                        for r in workflow_results
+                    ]
+                }
             }
-        }
+            
+        except Exception as e:
+            logger.error(f"Workflow execution failed: {e}", exc_info=True)
+            return {
+                "results": [],
+                "trace": {
+                    "query": query,
+                    "plan_number": plan_number,
+                    "error": str(e)
+                }
+            }
 
-    def _plan_retrieval(self, query: str) -> Dict[str, Any]:
-        """Plan retrieval strategy.
+    def _select_workflow(self, query: str) -> Dict[str, Any]:
+        """Select which workflow to use based on query.
         
         Args:
             query: User query
             
         Returns:
-            Dict with reasoning and cost
+            Dict with "plan" (int 1-6) and "reasoning" (str)
         """
-        prompt = f"""Analyze this query and determine the best retrieval strategy:
+        from .workflows import WORKFLOWS, extract_plan_from_response
+        
+        # Build workflow selection prompt
+        workflow_descriptions = []
+        for num, workflow in WORKFLOWS.items():
+            workflow_descriptions.append(
+                f"{num}. {workflow['name']} - {workflow['description']}"
+            )
+        
+        prompt = f"""Choose the best retrieval workflow for this query.
 
 Query: {query}
 
-Available tools:
-{self._format_tool_descriptions()}
+Available Workflows:
+{chr(10).join(workflow_descriptions)}
 
-Provide a brief plan for how to retrieve the information. Consider:
-- What type of query is this? (factual, exploratory, specific document, metadata-based)
-- Which tools would be most appropriate?
-- Do you need multiple tools or multiple steps?
-
-Keep your response concise (2-3 sentences)."""
+Respond in JSON format:
+{{
+  "plan": <number 1-6>,
+  "reasoning": "<brief explanation>"
+}}
+"""
 
         messages = [Message(role=MessageRole.USER, content=prompt)]
         
         try:
             response = self.llm_service.complete(messages, temperature=0.3, max_tokens=200)
-            return {
-                "reasoning": response.content,
-                "cost": response.cost
-            }
+            return extract_plan_from_response(response.content)
         except Exception as e:
-            logger.error(f"Planning failed: {e}")
+            logger.error(f"Workflow selection failed: {e}")
+            # Fallback to plan 1 (simple semantic search)
             return {
-                "reasoning": "Planning failed, using default semantic search",
-                "cost": 0.0
+                "plan": 1,
+                "reasoning": f"Fallback due to error: {str(e)}"
             }
 
-    def _select_tools(self, query: str, state: AgentState) -> List[Dict[str, Any]]:
-        """Select which tools to call.
+    def _synthesize_results(self, workflow_results: List[ToolResult]) -> List[Any]:
+        """Combine and deduplicate results from workflow steps.
         
         Args:
-            query: User query
-            state: Current agent state
-            
-        Returns:
-            List of tool calls to execute
-        """
-        # Build context with previous results
-        context = self._build_context(state)
-
-        # Create prompt for tool selection
-        prompt = f"""You are a retrieval agent. Select the appropriate tool to answer this query.
-
-Query: {query}
-
-{context}
-
-Available tools:
-{self._format_tool_descriptions()}
-
-Based on the query and any previous results, which tool should we use next?
-If we already have sufficient results, respond with "DONE".
-
-Respond with ONLY the tool name and parameters in this format:
-TOOL: tool_name
-PARAMETERS: {{"param1": "value1", "param2": value2}}
-
-Or respond with: DONE"""
-
-        messages = [Message(role=MessageRole.USER, content=prompt)]
-
-        try:
-            response = self.llm_service.complete(messages, temperature=0.3, max_tokens=300)
-            
-            # Parse tool selections from response
-            tool_calls = self._parse_tool_calls(response.content, query)
-            
-            for call in tool_calls:
-                state.add_tool_call(call["tool"], call["parameters"])
-            
-            return tool_calls
-        except Exception as e:
-            logger.error(f"Tool selection failed: {e}")
-            return []
-
-    def _execute_tool(self, tool_call: Dict[str, Any]) -> ToolResult:
-        """Execute a tool.
-        
-        Args:
-            tool_call: Dict with 'tool' and 'parameters' keys
-            
-        Returns:
-            ToolResult from execution
-        """
-        tool_name = tool_call["tool"]
-        parameters = tool_call["parameters"]
-
-        if tool_name not in self.tools:
-            return ToolResult(
-                tool_name=tool_name,
-                success=False,
-                data=None,
-                error=f"Tool {tool_name} not found",
-                execution_time=0.0
-            )
-
-        tool = self.tools[tool_name]
-        try:
-            return tool.execute(**parameters)
-        except Exception as e:
-            logger.error(f"Tool execution failed: {e}")
-            return ToolResult(
-                tool_name=tool_name,
-                success=False,
-                data=None,
-                error=str(e),
-                execution_time=0.0
-            )
-
-    def _synthesize_results(self, state: AgentState) -> List[Any]:
-        """Combine and deduplicate results from all tool calls.
-        
-        Args:
-            state: Agent state with results
+            workflow_results: List of ToolResult from workflow execution
             
         Returns:
             List of deduplicated results
@@ -310,7 +235,7 @@ Or respond with: DONE"""
         all_results = []
         seen_ids = set()
 
-        for result in state.tool_results:
+        for result in workflow_results:
             if not result.success:
                 continue
 
@@ -330,91 +255,3 @@ Or respond with: DONE"""
 
         return all_results
 
-    def _format_tool_descriptions(self) -> str:
-        """Format tool descriptions for prompt.
-        
-        Returns:
-            Formatted string of tool descriptions
-        """
-        descriptions = []
-        for tool in self.tools.values():
-            params = ", ".join([
-                f"{p.name}({p.type}{'*' if p.required else ''})"
-                for p in tool.parameters
-            ])
-            descriptions.append(f"- {tool.name}({params}): {tool.description}")
-        return "\n".join(descriptions)
-
-    def _build_context(self, state: AgentState) -> str:
-        """Build context string from previous results.
-        
-        Args:
-            state: Agent state
-            
-        Returns:
-            Context string
-        """
-        if not state.tool_results:
-            return "This is the first retrieval step."
-
-        context = f"Previous tool calls (iteration {state.iterations}):\n"
-        for result in state.tool_results:
-            if result.success:
-                num_results = len(result.data) if isinstance(result.data, list) else 1
-                context += f"- {result.tool_name}: {num_results} results found\n"
-            else:
-                context += f"- {result.tool_name}: failed ({result.error})\n"
-
-        return context
-
-    def _parse_tool_calls(self, response: str, query: str) -> List[Dict[str, Any]]:
-        """Parse tool calls from LLM response.
-        
-        Args:
-            response: LLM response text
-            query: Original query (for fallback)
-            
-        Returns:
-            List of tool call dicts
-        """
-        # Check for DONE signal
-        if "DONE" in response.upper():
-            return []
-
-        tool_calls = []
-        
-        # Try to parse structured format
-        lines = response.strip().split("\n")
-        tool_name = None
-        parameters = {}
-        
-        for line in lines:
-            line = line.strip()
-            if line.startswith("TOOL:"):
-                tool_name = line.split(":", 1)[1].strip()
-            elif line.startswith("PARAMETERS:"):
-                param_str = line.split(":", 1)[1].strip()
-                try:
-                    import json
-                    parameters = json.loads(param_str)
-                except:
-                    # Fallback: extract query parameter
-                    parameters = {"query": query}
-        
-        if tool_name and tool_name in self.tools:
-            # Ensure required parameters are present
-            if "query" not in parameters:
-                parameters["query"] = query
-            tool_calls.append({
-                "tool": tool_name,
-                "parameters": parameters
-            })
-        else:
-            # Fallback to semantic search
-            logger.warning("Could not parse tool selection, falling back to semantic_search")
-            tool_calls.append({
-                "tool": "semantic_search",
-                "parameters": {"query": query, "top_k": 5}
-            })
-
-        return tool_calls

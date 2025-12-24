@@ -193,7 +193,7 @@ class AgenticRAGStrategy(IRAGStrategy):
                 )
 
             # Run agent
-            result = self.agent.run(query, max_iterations=self.strategy_config.max_iterations)
+            result = await self.agent.run(query, max_iterations=self.strategy_config.max_iterations)
 
             # Extract results
             # Ensure top_k is an integer (might be passed as RetrievalContext)
@@ -208,8 +208,8 @@ class AgenticRAGStrategy(IRAGStrategy):
 
             logger.info(
                 f"Agentic retrieval completed: {len(chunks)} results, "
-                f"{result['trace']['iterations']} iterations, "
-                f"{len(result['trace']['tool_calls'])} tool calls"
+                f"{result['trace'].get('steps_executed', 0)} steps, "
+                f"{result['trace'].get('steps_successful', 0)} successful"
             )
 
             return chunks
@@ -220,11 +220,11 @@ class AgenticRAGStrategy(IRAGStrategy):
             # Fallback to semantic search if enabled
             if self.strategy_config.fallback_to_semantic:
                 logger.info("Falling back to semantic search")
-                return self._fallback_search(query, top_k)
+                return await self._fallback_search(query, top_k)
 
             raise
 
-    def _fallback_search(self, query: str, top_k: int) -> List[Dict[str, Any]]:
+    async def _fallback_search(self, query: str, top_k: int) -> List[Dict[str, Any]]:
         """Fallback to simple semantic search.
         
         Args:
@@ -245,7 +245,7 @@ class AgenticRAGStrategy(IRAGStrategy):
                 logger.error("Semantic search tool not available for fallback")
                 return []
             
-            result = semantic_tool.execute(query=query, top_k=top_k)
+            result = await semantic_tool.execute(query=query, top_k=top_k)
 
             if result.success:
                 # Add strategy metadata

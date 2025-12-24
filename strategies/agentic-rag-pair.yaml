@@ -40,14 +40,19 @@ retriever:
       document_id: "document_id"
       text: "text_content"
       embedding: "vector_embedding"
+      chunk_index: "chunk_index"
+      metadata: "metadata"
+      created_at: "created_at"
+      updated_at: "updated_at"
   
   config:
     top_k: 5
     similarity_threshold: 0.7
     max_iterations: 3
-    tools: ["semantic_search", "keyword_search", "summarize"]
+    enabled_tools: ["semantic_search", "metadata_search", "hybrid_search", "read_document"]
     temperature: 0.7
-    enable_reflection: true
+    enable_reflection: false
+    fallback_to_semantic: true
 
 migrations:
   required_revisions:

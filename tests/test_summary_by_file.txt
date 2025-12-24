@@ -2,31 +2,36 @@
 TEST RESULTS SUMMARY - BY FILE
 ================================================================================
 
-Execution Date: Mon Dec 22 04:28:50 AM -03 2025
-Total test files: 206
-Total duration: 136m 50s
+Execution Date: Wed Dec 24 02:48:11 AM -03 2025
+Total test files: 209
+Total duration: 124m 24s
 
 FILE RESULTS:
-  ✅ PASSED FILES    : 195 (94.7%)
-  ❌ FAILED FILES    : 7 (3.4%)
+  ✅ PASSED FILES    : 193 (92.3%)
+  ❌ FAILED FILES    : 12 (5.7%)
   ⏭️  SKIPPED FILES   : 2 (1.0%)
   ⏱️  TIMEOUT FILES   : 2 (1.0%)
 
 TEST RESULTS:
-  ✅ PASSED TESTS    : 2175 (94.7%)
-  ❌ FAILED TESTS    : 68 (3.0%)
-  ⏭️  SKIPPED TESTS   : 54 (2.4%)
-  📊 TOTAL TESTS     : 2297
+  ✅ PASSED TESTS    : 2207 (93.2%)
+  ❌ FAILED TESTS    : 108 (4.6%)
+  ⏭️  SKIPPED TESTS   : 54 (2.3%)
+  📊 TOTAL TESTS     : 2369
 
 ================================================================================
-FAILED TEST FILES (7)
+FAILED TEST FILES (12)
 ================================================================================
 tests/integration/database/test_migration_integration.py
 tests/integration/database/test_migration_validator_integration.py
-tests/integration/repositories/test_repository_integration.py
+tests/integration_real/test_database_real.py
 tests/integration/strategies/test_self_reflective_integration.py
 tests/test_mock_registry.py
 tests/unit/database/test_migrations.py
+tests/unit/strategies/agentic/test_agent.py
+tests/unit/strategies/agentic/test_strategy.py
+tests/unit/strategies/agentic/test_tools.py
+tests/unit/strategies/agentic/test_workflow_definitions.py
+tests/unit/strategies/agentic/test_workflow_execution.py
 tests/unit/strategies/self_reflective/test_strategy.py
 
 ================================================================================

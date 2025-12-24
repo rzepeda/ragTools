@@ -121,6 +121,57 @@ class PostgresqlDatabaseService(IDatabaseService):
         logger.info(
             f"Initialized PostgreSQL service for {host}:{port}/{database}"
         )
+        
+        # Repository instances (lazy-loaded for agentic strategy)
+        self._chunk_repository = None
+        self._document_repository = None
+        self._session = None
+
+    @property
+    def chunk_repository(self):
+        """Get or create ChunkRepository instance.
+        
+        This property provides access to the ChunkRepository for strategies
+        that need ORM-based chunk operations (e.g., agentic strategy tools).
+        
+        Returns:
+            ChunkRepository instance with active session
+        """
+        if self._chunk_repository is None:
+            from rag_factory.repositories.chunk import ChunkRepository
+            from sqlalchemy.orm import Session
+            
+            # Create a session from the sync engine
+            if self._session is None:
+                self._session = Session(bind=self._get_sync_engine())
+            
+            self._chunk_repository = ChunkRepository(self._session)
+            logger.debug("Created ChunkRepository instance")
+        
+        return self._chunk_repository
+    
+    @property
+    def document_repository(self):
+        """Get or create DocumentRepository instance.
+        
+        This property provides access to the DocumentRepository for strategies
+        that need ORM-based document operations (e.g., agentic strategy tools).
+        
+        Returns:
+            DocumentRepository instance with active session
+        """
+        if self._document_repository is None:
+            from rag_factory.repositories.document import DocumentRepository
+            from sqlalchemy.orm import Session
+            
+            # Create a session from the sync engine (shared with chunk_repository)
+            if self._session is None:
+                self._session = Session(bind=self._get_sync_engine())
+            
+            self._document_repository = DocumentRepository(self._session)
+            logger.debug("Created DocumentRepository instance")
+        
+        return self._document_repository
 
     async def _get_pool(self) -> "asyncpg.Pool":  # type: ignore
         """Get or create connection pool.

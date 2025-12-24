@@ -407,9 +407,13 @@ class DatabaseContext:
                             data[mapped_k] = v
                             
                     if len(data) > 1: # contains more than just chunk_id
+                         # Log what we're storing
+                         logger.debug(f"Storing vector data: chunk_id={data.get(chunk_id_mapped)}, fields={list(data.keys())}")
                          # Try simple insert for now
                          stmt = pg_insert(table).values(**data)
                          conn.execute(stmt)
+                    else:
+                         logger.warning(f"Skipping vector insert for chunk {chunk.get('chunk_id')} - no vector data found")
 
     async def search_chunks(
         self,
@@ -654,3 +658,42 @@ class DatabaseContext:
         except Exception as e:
             logger.error(f"Keyword search failed: {e}")
             return []
+
+    @property
+    def chunk_repository(self):
+        """Get or create ChunkRepository instance with strategy-specific table and fields."""
+        if not hasattr(self, '_chunk_repository') or self._chunk_repository is None:
+            from rag_factory.repositories.chunk import ChunkRepository
+            from sqlalchemy.orm import Session
+            
+            if not hasattr(self, '_session') or self._session is None:
+                self._session = Session(bind=self.engine)
+            
+            # Get table name from mapping, default to 'chunks'
+            chunk_table = self.tables.get('chunks', 'chunks')
+            # Pass field mappings to repository
+            self._chunk_repository = ChunkRepository(
+                self._session, 
+                table_name=chunk_table,
+                field_mapping=self.fields
+            )
+            logger.debug(f"Created ChunkRepository in DatabaseContext with table '{chunk_table}' and {len(self.fields)} field mappings")
+        
+        return self._chunk_repository
+    
+    @property
+    def document_repository(self):
+        """Get or create DocumentRepository instance with strategy-specific table."""
+        if not hasattr(self, '_document_repository') or self._document_repository is None:
+            from rag_factory.repositories.document import DocumentRepository
+            from sqlalchemy.orm import Session
+            
+            if not hasattr(self, '_session') or self._session is None:
+                self._session = Session(bind=self.engine)
+            
+            # Get table name from mapping, default to 'documents'
+            doc_table = self.tables.get('documents', 'documents')
+            self._document_repository = DocumentRepository(self._session, table_name=doc_table)
+            logger.debug(f"Created DocumentRepository in DatabaseContext with table '{doc_table}'")
+        
+        return self._document_repository

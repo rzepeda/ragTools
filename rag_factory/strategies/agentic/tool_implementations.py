@@ -72,7 +72,7 @@ class SemanticSearchTool(Tool):
             )
         ]
 
-    def execute(self, query: str, top_k: int = 5, min_score: float = 0.7) -> ToolResult:
+    async def execute(self, query: str, top_k: int = 5, min_score: float = 0.7) -> ToolResult:
         """Execute semantic search.
         
         Args:
@@ -88,7 +88,7 @@ class SemanticSearchTool(Tool):
 
         try:
             # Generate embedding for query
-            embedding = self.embedding_service.embed_text(query)
+            embedding = await self.embedding_service.embed(query)
             
             # Search for similar chunks
             results = self.chunk_repository.search_similar(
@@ -308,7 +308,7 @@ class MetadataSearchTool(Tool):
             )
         ]
 
-    def execute(
+    async def execute(
         self,
         query: str,
         metadata_filter: Dict[str, Any],
@@ -331,7 +331,7 @@ class MetadataSearchTool(Tool):
 
         try:
             # Generate embedding for query
-            embedding = self.embedding_service.embed_text(query)
+            embedding = await self.embedding_service.embed(query)
             
             # Search with metadata filter
             results = self.chunk_repository.search_similar_with_metadata(
@@ -427,7 +427,7 @@ class HybridSearchTool(Tool):
             )
         ]
 
-    def execute(
+    async def execute(
         self,
         query: str,
         top_k: int = 5,
@@ -448,7 +448,7 @@ class HybridSearchTool(Tool):
 
         try:
             # Generate embedding for query
-            embedding = self.embedding_service.embed_text(query)
+            embedding = await self.embedding_service.embed(query)
             
             # Get semantic results (more than needed for reranking)
             semantic_results = self.chunk_repository.search_similar(

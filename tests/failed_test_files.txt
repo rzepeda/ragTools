@@ -1,7 +1,12 @@
 tests/integration/database/test_migration_integration.py
 tests/integration/database/test_migration_validator_integration.py
-tests/integration/repositories/test_repository_integration.py
+tests/integration_real/test_database_real.py
 tests/integration/strategies/test_self_reflective_integration.py
 tests/test_mock_registry.py
 tests/unit/database/test_migrations.py
+tests/unit/strategies/agentic/test_agent.py
+tests/unit/strategies/agentic/test_strategy.py
+tests/unit/strategies/agentic/test_tools.py
+tests/unit/strategies/agentic/test_workflow_definitions.py
+tests/unit/strategies/agentic/test_workflow_execution.py
 tests/unit/strategies/self_reflective/test_strategy.py

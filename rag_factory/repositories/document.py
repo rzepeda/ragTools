@@ -24,7 +24,20 @@ class DocumentRepository(BaseRepository[Document]):
     This repository provides methods for creating, reading, updating,
     and deleting documents, as well as specialized queries for
     deduplication and status filtering.
+    
+    Attributes:
+        table_name: Name of the documents table (default: "documents")
     """
+
+    def __init__(self, session, table_name: str = "documents"):
+        """Initialize repository with session and table name.
+        
+        Args:
+            session: SQLAlchemy session for database operations
+            table_name: Name of the documents table (default: "documents")
+        """
+        super().__init__(session)
+        self.table_name = table_name
 
     def get_by_id(self, document_id: UUID) -> Optional[Document]:
         """Retrieve a document by its ID.

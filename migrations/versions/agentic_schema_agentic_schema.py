@@ -28,7 +28,9 @@ def upgrade() -> None:
         sa.Column('document_id', sa.String(255), nullable=False),
         sa.Column('text_content', sa.Text(), nullable=False),
         sa.Column('chunk_index', sa.Integer(), nullable=False),
-        sa.Column('created_at', sa.TIMESTAMP(), server_default=sa.func.now())
+        sa.Column('metadata', sa.JSON(), nullable=False, server_default='{}'),
+        sa.Column('created_at', sa.TIMESTAMP(), server_default=sa.func.now()),
+        sa.Column('updated_at', sa.TIMESTAMP(), server_default=sa.func.now(), onupdate=sa.func.now())
     )
     
     # Vectors table
