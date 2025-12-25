@@ -1,5 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/strategies/reranking/cache.py
-test_files:
-- tests/unit/strategies/reranking/test_cache.py
-mocks: []

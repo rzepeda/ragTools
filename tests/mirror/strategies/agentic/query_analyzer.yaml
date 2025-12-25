@@ -1,0 +1,10 @@
+target_file: rag_factory/strategies/agentic/query_analyzer.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/strategies/agentic/test_query_analyzer.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/unit/strategies/agentic/test_query_analyzer.py
+impacted_mocks: []

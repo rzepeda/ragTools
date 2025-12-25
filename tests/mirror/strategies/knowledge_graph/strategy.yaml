@@ -1,0 +1,12 @@
+target_file: rag_factory/strategies/knowledge_graph/strategy.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/strategies/test_knowledge_graph_integration.py
+- tests/integration/test_knowledge_graph_pair.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/integration/strategies/test_knowledge_graph_integration.py
+- tests/integration/test_knowledge_graph_pair.py
+impacted_mocks: []

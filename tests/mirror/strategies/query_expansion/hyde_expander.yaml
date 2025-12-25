@@ -1,0 +1,10 @@
+target_file: rag_factory/strategies/query_expansion/hyde_expander.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/strategies/query_expansion/test_expander_service.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/unit/strategies/query_expansion/test_expander_service.py
+impacted_mocks: []

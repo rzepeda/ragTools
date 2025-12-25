@@ -98,15 +98,17 @@ class SimpleAgent:
     dramatically reducing context usage from 10K+ tokens to ~300 tokens.
     """
 
-    def __init__(self, llm_service: LLMService, tools: List[Tool]):
+    def __init__(self, llm_service: LLMService, tools: List[Tool], schema: Dict[str, str]):
         """Initialize agent.
         
         Args:
             llm_service: LLM service for workflow selection
             tools: List of available tools
+            schema: Metadata schema for extraction
         """
         self.llm_service = llm_service
         self.tools = {tool.name: tool for tool in tools}
+        self.schema = schema
 
     async def run(self, query: str, max_iterations: int = 3) -> Dict[str, Any]:
         """Run the agent to retrieve information using workflow-based approach.
@@ -132,7 +134,9 @@ class SimpleAgent:
 
         # Execute the selected workflow
         try:
-            workflow_results = await execute_workflow(plan_number, query, self.tools)
+            workflow_results = await execute_workflow(
+                plan_number, query, self.tools, self.llm_service, self.schema
+            )
             
             # Synthesize final results
             final_results = self._synthesize_results(workflow_results)

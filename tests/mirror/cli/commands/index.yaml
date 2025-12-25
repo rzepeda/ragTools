@@ -1,0 +1,10 @@
+target_file: rag_factory/cli/commands/index.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/cli/test_index_command.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/unit/cli/test_index_command.py
+impacted_mocks: []

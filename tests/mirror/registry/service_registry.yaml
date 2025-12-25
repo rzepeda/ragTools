@@ -1,0 +1,20 @@
+target_file: rag_factory/registry/service_registry.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/test_agentic_workflow.py
+- tests/unit/config/test_strategy_pair_manager.py
+- tests/unit/registry/test_service_registry.py
+- tests/unit/registry/test_threading.py
+mock_files: []
+impacted_source:
+- rag_factory/cli/commands/validate_e2e.py
+- rag_factory/config/strategy_pair_manager.py
+- rag_factory/gui/main_window.py
+- rag_factory/strategy_validation/validate_strategies.py
+impacted_tests:
+- tests/test_agentic_workflow.py
+- tests/unit/config/test_strategy_pair_manager.py
+- tests/unit/registry/test_service_registry.py
+- tests/unit/registry/test_threading.py
+impacted_mocks: []

@@ -1,6 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/cli/commands/config.py
-test_files:
-- tests/integration/cli/test_config_validation_integration.py
-- tests/unit/cli/test_config_validation_command.py
-mocks: []

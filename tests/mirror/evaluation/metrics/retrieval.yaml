@@ -1,0 +1,11 @@
+target_file: rag_factory/evaluation/metrics/retrieval.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/evaluation/test_retrieval_metrics.py
+mock_files: []
+impacted_source:
+- rag_factory/evaluation/metrics/__init__.py
+impacted_tests:
+- tests/unit/evaluation/test_retrieval_metrics.py
+impacted_mocks: []

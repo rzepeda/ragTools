@@ -1,7 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/core/pipeline.py
-test_files:
-- tests/unit/cli/test_validation_formatter.py
-- tests/unit/core/test_factory_validation.py
-- tests/unit/core/test_pipeline.py
-mocks: []

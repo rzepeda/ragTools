@@ -1,0 +1,13 @@
+target_file: rag_factory/services/embedding/providers/openai.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration_real/conftest.py
+- tests/unit/services/embedding/test_openai_provider.py
+mock_files: []
+impacted_source:
+- rag_factory/services/api/openai.py
+impacted_tests:
+- tests/integration_real/conftest.py
+- tests/unit/services/embedding/test_openai_provider.py
+impacted_mocks: []

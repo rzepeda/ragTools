@@ -1,0 +1,11 @@
+target_file: rag_factory/cli/formatters/output.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/cli/test_formatters.py
+mock_files: []
+impacted_source:
+- rag_factory/cli/formatters/__init__.py
+impacted_tests:
+- tests/unit/cli/test_formatters.py
+impacted_mocks: []

@@ -1,0 +1,40 @@
+target_file: rag_factory/repositories/chunk.py
+depth_level: 2
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration_real/test_database_real.py
+- tests/integration_real/test_end_to_end_real.py
+- tests/unit/repositories/test_chunk_repository.py
+mock_files: []
+impacted_source:
+- rag_factory/services/database/database_context.py
+- rag_factory/services/database/postgres.py
+impacted_tests:
+- tests/integration_real/test_database_real.py
+- tests/integration_real/test_end_to_end_real.py
+- tests/unit/repositories/test_chunk_repository.py
+impacted_mocks: []
+impact_by_level:
+  1:
+    source:
+    - rag_factory/services/database/__init__.py
+    - rag_factory/services/database/migration_validator.py
+    - rag_factory/services/database/postgres.py
+    tests:
+    - tests/conftest.py
+    - tests/integration/services/test_service_integration.py
+    - tests/integration_real/conftest.py
+    - tests/unit/database/test_batch_operations.py
+    - tests/unit/database/test_pgvector.py
+    - tests/unit/services/database/test_migration_validator.py
+    - tests/unit/services/test_database_service.py
+    mocks: []
+  2:
+    source:
+    - rag_factory/config/strategy_pair_manager.py
+    - rag_factory/services/database/__init__.py
+    tests:
+    - tests/integration/database/test_migration_validator_integration.py
+    - tests/unit/services/database/test_migration_validator.py
+    mocks: []

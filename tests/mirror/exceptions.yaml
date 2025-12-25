@@ -1,0 +1,13 @@
+target_file: rag_factory/exceptions.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/test_factory_integration.py
+mock_files: []
+impacted_source:
+- rag_factory/__init__.py
+- rag_factory/factory.py
+- rag_factory/legacy_config.py
+impacted_tests:
+- tests/integration/test_factory_integration.py
+impacted_mocks: []

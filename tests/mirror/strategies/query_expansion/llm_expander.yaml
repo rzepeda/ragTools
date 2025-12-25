@@ -1,0 +1,12 @@
+target_file: rag_factory/strategies/query_expansion/llm_expander.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/strategies/query_expansion/test_expander_service.py
+- tests/unit/strategies/query_expansion/test_llm_expander.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/unit/strategies/query_expansion/test_expander_service.py
+- tests/unit/strategies/query_expansion/test_llm_expander.py
+impacted_mocks: []

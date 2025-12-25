@@ -1,4 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/evaluation/exporters/html_exporter.py
-test_files: []
-mocks: []

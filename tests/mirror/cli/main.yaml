@@ -1,0 +1,15 @@
+target_file: rag_factory/cli/main.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/cli/test_index_query_flow.py
+- tests/unit/cli/test_check_consistency_command.py
+- tests/unit/cli/test_validate_pipeline_command.py
+mock_files: []
+impacted_source:
+- rag_factory/cli/__init__.py
+impacted_tests:
+- tests/integration/cli/test_index_query_flow.py
+- tests/unit/cli/test_check_consistency_command.py
+- tests/unit/cli/test_validate_pipeline_command.py
+impacted_mocks: []

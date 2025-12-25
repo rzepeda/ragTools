@@ -1,0 +1,13 @@
+target_file: rag_factory/strategies/agentic/strategy.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/test_agentic_rag_pair.py
+- tests/unit/strategies/agentic/test_strategy.py
+mock_files: []
+impacted_source:
+- rag_factory/strategies/auto_register.py
+impacted_tests:
+- tests/integration/test_agentic_rag_pair.py
+- tests/unit/strategies/agentic/test_strategy.py
+impacted_mocks: []

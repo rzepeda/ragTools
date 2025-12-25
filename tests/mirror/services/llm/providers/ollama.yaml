@@ -1,0 +1,10 @@
+target_file: rag_factory/services/llm/providers/ollama.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/services/llm/test_ollama_provider.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/unit/services/llm/test_ollama_provider.py
+impacted_mocks: []

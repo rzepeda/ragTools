@@ -1,5 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/registry/service_factory.py
-test_files:
-- tests/unit/registry/test_service_factory.py
-mocks: []

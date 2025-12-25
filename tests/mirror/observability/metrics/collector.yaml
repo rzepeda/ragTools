@@ -1,0 +1,16 @@
+target_file: rag_factory/observability/metrics/collector.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/observability/test_monitoring_integration.py
+- tests/unit/observability/test_metrics_collector.py
+mock_files: []
+impacted_source:
+- rag_factory/observability/__init__.py
+- rag_factory/observability/integrations/prometheus.py
+- rag_factory/observability/metrics/__init__.py
+- rag_factory/observability/monitoring/api.py
+impacted_tests:
+- tests/integration/observability/test_monitoring_integration.py
+- tests/unit/observability/test_metrics_collector.py
+impacted_mocks: []

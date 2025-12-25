@@ -1,0 +1,11 @@
+target_file: rag_factory/config/validator.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/config/test_validator.py
+mock_files: []
+impacted_source:
+- rag_factory/registry/service_registry.py
+impacted_tests:
+- tests/unit/config/test_validator.py
+impacted_mocks: []

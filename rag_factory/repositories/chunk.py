@@ -16,7 +16,7 @@ from .exceptions import (
     DatabaseConnectionError,
     InvalidQueryError
 )
-from ..database.models import Chunk
+from ..database.models import Chunk, AgenticChunk
 
 logger = logging.getLogger(__name__)
 
@@ -32,17 +32,19 @@ class ChunkRepository(BaseRepository[Chunk]):
         field_mapping: Dict mapping logical field names to physical column names
     """
 
-    def __init__(self, session, table_name: str = "chunks", field_mapping: Optional[Dict[str, str]] = None):
+    def __init__(self, session, table_name: str = "chunks", field_mapping: Optional[Dict[str, str]] = None, chunk_class: type = Chunk):
         """Initialize repository with session, table name, and field mappings.
         
         Args:
             session: SQLAlchemy session for database operations
             table_name: Name of the chunks table (default: "chunks")
             field_mapping: Dict mapping logical -> physical field names (optional)
+            chunk_class: The ORM class to use for chunks (default: Chunk)
         """
         super().__init__(session)
         self.table_name = table_name
         self.field_mapping = field_mapping or {}
+        self.chunk_class = chunk_class
     
     def _map_field(self, logical_field: str) -> str:
         """Map logical field name to physical column name.
@@ -68,8 +70,8 @@ class ChunkRepository(BaseRepository[Chunk]):
             DatabaseConnectionError: If database query fails
         """
         try:
-            return self.session.query(Chunk).filter(
-                Chunk.chunk_id == chunk_id
+            return self.session.query(self.chunk_class).filter(
+                self.chunk_class.chunk_id == chunk_id
             ).first()
         except SQLAlchemyError as e:
             raise DatabaseConnectionError(f"Failed to query chunk: {str(e)}")
@@ -96,9 +98,9 @@ class ChunkRepository(BaseRepository[Chunk]):
             DatabaseConnectionError: If query fails
         """
         try:
-            return self.session.query(Chunk)\
-                .filter(Chunk.document_id == document_id)\
-                .order_by(Chunk.chunk_index)\
+            return self.session.query(self.chunk_class)\
+                .filter(self.chunk_class.document_id == document_id)\
+                .order_by(self.chunk_class.chunk_index)\
                 .offset(skip)\
                 .limit(limit)\
                 .all()
@@ -118,8 +120,8 @@ class ChunkRepository(BaseRepository[Chunk]):
             DatabaseConnectionError: If count query fails
         """
         try:
-            return self.session.query(func.count(Chunk.chunk_id))\
-                .filter(Chunk.document_id == document_id)\
+            return self.session.query(func.count(self.chunk_class.chunk_id))\
+                .filter(self.chunk_class.document_id == document_id)\
                 .scalar()
         except SQLAlchemyError as e:
             raise DatabaseConnectionError(f"Failed to count chunks: {str(e)}")
@@ -148,7 +150,7 @@ class ChunkRepository(BaseRepository[Chunk]):
             DatabaseConnectionError: If creation fails
         """
         try:
-            chunk = Chunk(
+            chunk = self.chunk_class(
                 document_id=document_id,
                 chunk_index=chunk_index,
                 text=text,
@@ -184,7 +186,7 @@ class ChunkRepository(BaseRepository[Chunk]):
         """
         try:
             chunk_objects = [
-                Chunk(
+                self.chunk_class(
                     document_id=chunk["document_id"],
                     chunk_index=chunk["chunk_index"],
                     text=chunk["text"],
@@ -280,8 +282,8 @@ class ChunkRepository(BaseRepository[Chunk]):
         try:
             count = 0
             for chunk_id, embedding in updates:
-                result = self.session.query(Chunk).filter(
-                    Chunk.chunk_id == chunk_id
+                result = self.session.query(self.chunk_class).filter(
+                    self.chunk_class.chunk_id == chunk_id
                 ).update({"embedding": embedding}, synchronize_session=False)
                 count += result
             self.session.flush()
@@ -333,62 +335,37 @@ class ChunkRepository(BaseRepository[Chunk]):
             created_at_col = self._map_field("created_at")
             updated_at_col = self._map_field("updated_at")
 
-            # Check if we need to join with vectors table (multi-table design)
-            # If table_name ends with '_chunks', assume separate vectors table
-            if self.table_name.endswith('_chunks'):
-                # Multi-table design: JOIN with vectors table
-                vectors_table = self.table_name.replace('_chunks', '_vectors')
-                
-                # Log the query for debugging
-                logger.info(f"Using multi-table JOIN: {self.table_name} + {vectors_table}")
-                logger.info(f"Mapped fields: chunk_id={chunk_id_col}, embedding={embedding_col}")
-                
-                query = text(f"""
-                    SELECT c.{chunk_id_col}, c.{document_id_col}, c.{chunk_index_col}, c.{text_col},
-                           v.{embedding_col}, c.{metadata_col}, c.{created_at_col}, c.{updated_at_col},
-                           1 - (v.{embedding_col} <=> '{embedding_str}'::vector) as similarity
-                    FROM {self.table_name} c
-                    JOIN {vectors_table} v ON c.{chunk_id_col} = v.{chunk_id_col}
-                    WHERE v.{embedding_col} IS NOT NULL
-                      AND 1 - (v.{embedding_col} <=> '{embedding_str}'::vector) >= :threshold
-                    ORDER BY v.{embedding_col} <=> '{embedding_str}'::vector
-                    LIMIT :top_k
-                """)
-                
-                # Log the actual query
-                logger.debug(f"SQL Query: {query}")
-            else:
-                # Single-table design: embedding in same table
-                query = text(f"""
-                    SELECT {chunk_id_col}, {document_id_col}, {chunk_index_col}, {text_col}, {embedding_col},
-                           {metadata_col}, {created_at_col}, {updated_at_col},
-                           1 - ({embedding_col} <=> '{embedding_str}'::vector) as similarity
-                    FROM {self.table_name}
-                    WHERE {embedding_col} IS NOT NULL
-                      AND 1 - ({embedding_col} <=> '{embedding_str}'::vector) >= :threshold
-                    ORDER BY {embedding_col} <=> '{embedding_str}'::vector
-                    LIMIT :top_k
-                """)
+            # Single-table design: embedding in same table
+            query = text(f"""
+                SELECT {chunk_id_col}, {document_id_col}, {chunk_index_col}, {text_col}, {embedding_col},
+                       {metadata_col}, {created_at_col}, {updated_at_col},
+                       1 - ({embedding_col} <=> '{embedding_str}'::vector) as similarity
+                FROM {self.table_name}
+                WHERE {embedding_col} IS NOT NULL
+                  AND 1 - ({embedding_col} <=> '{embedding_str}'::vector) >= :threshold
+                ORDER BY {embedding_col} <=> '{embedding_str}'::vector
+                LIMIT :top_k
+            """)
 
             results = self.session.execute(
                 query,
                 {"threshold": threshold, "top_k": top_k}
             ).fetchall()
 
-            # Create Chunk objects directly from raw SQL results
+            # Construct Chunk objects directly from the raw query results
             chunks_with_scores = []
             for row in results:
-                # Create Chunk object from row data
-                chunk = Chunk(
-                    chunk_id=row[0],
-                    document_id=row[1],
-                    chunk_index=row[2],
-                    text=row[3],
-                    embedding=row[4],
-                    metadata_=row[5] if row[5] else {},
-                    created_at=row[6],
-                    updated_at=row[7]
-                )
+                chunk_data = {
+                    "chunk_id": row[0],
+                    "document_id": row[1],
+                    "chunk_index": row[2],
+                    "text": row[3],
+                    "embedding": row[4],
+                    "metadata_": row[5] or {}, # Ensure metadata is a dict
+                    "created_at": row[6],
+                    "updated_at": row[7],
+                }
+                chunk = self.chunk_class(**chunk_data)
                 similarity = float(row[8])
                 chunks_with_scores.append((chunk, similarity))
 
@@ -460,15 +437,22 @@ class ChunkRepository(BaseRepository[Chunk]):
                 {"threshold": threshold, "top_k": top_k}
             ).fetchall()
 
-            # Query chunks by ID to get proper ORM objects
+            # Construct Chunk objects directly from the raw query results
             chunks_with_scores = []
             for row in results:
-                chunk_id = row[0]
+                chunk_data = {
+                    "chunk_id": row[0],
+                    "document_id": row[1],
+                    "chunk_index": row[2],
+                    "text": row[3],
+                    "embedding": row[4],
+                    "metadata_": row[5] or {}, # Ensure metadata is a dict
+                    "created_at": row[6],
+                    "updated_at": row[7],
+                }
+                chunk = self.chunk_class(**chunk_data)
                 similarity = float(row[8])
-                # Query the chunk properly to avoid merge issues
-                chunk = self.session.query(Chunk).filter(Chunk.chunk_id == chunk_id).first()
-                if chunk:
-                    chunks_with_scores.append((chunk, similarity))
+                chunks_with_scores.append((chunk, similarity))
 
             return chunks_with_scores
 
@@ -531,6 +515,7 @@ class ChunkRepository(BaseRepository[Chunk]):
 
             where_clause = " AND ".join(metadata_conditions)
 
+            # Single-table design
             query = text(f"""
                 SELECT {chunk_id_col}, {document_id_col}, {chunk_index_col}, {text_col}, {embedding_col},
                        {metadata_col}, {created_at_col}, {updated_at_col},
@@ -548,15 +533,22 @@ class ChunkRepository(BaseRepository[Chunk]):
                 {"threshold": threshold, "top_k": top_k}
             ).fetchall()
 
-            # Query chunks by ID to get proper ORM objects
+            # Construct Chunk objects directly from the raw query results
             chunks_with_scores = []
             for row in results:
-                chunk_id = row[0]
+                chunk_data = {
+                    "chunk_id": row[0],
+                    "document_id": row[1],
+                    "chunk_index": row[2],
+                    "text": row[3],
+                    "embedding": row[4],
+                    "metadata_": row[5] or {}, # Ensure metadata is a dict
+                    "created_at": row[6],
+                    "updated_at": row[7],
+                }
+                chunk = self.chunk_class(**chunk_data)
                 similarity = float(row[8])
-                # Query the chunk properly to avoid merge issues
-                chunk = self.session.query(Chunk).filter(Chunk.chunk_id == chunk_id).first()
-                if chunk:
-                    chunks_with_scores.append((chunk, similarity))
+                chunks_with_scores.append((chunk, similarity))
 
             return chunks_with_scores
 
@@ -601,8 +593,8 @@ class ChunkRepository(BaseRepository[Chunk]):
             DatabaseConnectionError: If deletion fails
         """
         try:
-            count = self.session.query(Chunk).filter(
-                Chunk.document_id == document_id
+            count = self.session.query(self.chunk_class).filter(
+                self.chunk_class.document_id == document_id
             ).delete(synchronize_session=False)
             self.session.flush()
             return count
@@ -645,9 +637,9 @@ class ChunkRepository(BaseRepository[Chunk]):
             DatabaseConnectionError: If query fails
         """
         try:
-            return self.session.query(Chunk)\
-                .filter(Chunk.parent_chunk_id == chunk_id)\
-                .order_by(Chunk.chunk_index)\
+            return self.session.query(self.chunk_class)\
+                .filter(self.chunk_class.parent_chunk_id == chunk_id)\
+                .order_by(self.chunk_class.chunk_index)\
                 .all()
         except SQLAlchemyError as e:
             raise DatabaseConnectionError(f"Failed to get children chunks: {str(e)}")
@@ -669,9 +661,9 @@ class ChunkRepository(BaseRepository[Chunk]):
             if not chunk or not chunk.parent_chunk_id:
                 return []
             
-            return self.session.query(Chunk)\
-                .filter(Chunk.parent_chunk_id == chunk.parent_chunk_id)\
-                .order_by(Chunk.chunk_index)\
+            return self.session.query(self.chunk_class)\
+                .filter(self.chunk_class.parent_chunk_id == chunk.parent_chunk_id)\
+                .order_by(self.chunk_class.chunk_index)\
                 .all()
         except SQLAlchemyError as e:
             raise DatabaseConnectionError(f"Failed to get sibling chunks: {str(e)}")

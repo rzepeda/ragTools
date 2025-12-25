@@ -1,0 +1,10 @@
+target_file: rag_factory/strategies/late_chunking/coherence_analyzer.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/strategies/late_chunking/test_coherence_analyzer.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/unit/strategies/late_chunking/test_coherence_analyzer.py
+impacted_mocks: []

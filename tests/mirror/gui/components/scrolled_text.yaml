@@ -1,0 +1,9 @@
+target_file: rag_factory/gui/components/scrolled_text.py
+has_tests: false
+has_mocks: false
+test_files: []
+mock_files: []
+impacted_source:
+- rag_factory/gui/components/__init__.py
+impacted_tests: []
+impacted_mocks: []

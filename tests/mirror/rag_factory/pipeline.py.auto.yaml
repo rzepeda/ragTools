@@ -1,9 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/pipeline.py
-test_files:
-- tests/integration/test_config_integration.py
-- tests/integration/test_package_integration.py
-- tests/integration/test_pipeline_integration.py
-- tests/unit/test_package.py
-- tests/unit/test_pipeline.py
-mocks: []

@@ -1,7 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/repositories/chunk.py
-test_files:
-- tests/integration_real/test_database_real.py
-- tests/integration_real/test_end_to_end_real.py
-- tests/unit/repositories/test_chunk_repository.py
-mocks: []

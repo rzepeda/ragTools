@@ -1,0 +1,9 @@
+target_file: rag_factory/strategies/reranking/cohere_reranker.py
+has_tests: false
+has_mocks: false
+test_files: []
+mock_files: []
+impacted_source:
+- rag_factory/services/utils/reranker_selector.py
+impacted_tests: []
+impacted_mocks: []

@@ -1,0 +1,40 @@
+target_file: rag_factory/services/interfaces.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/registry/test_registry_integration.py
+- tests/integration/services/test_service_implementations.py
+- tests/integration/strategies/test_vector_embedding_indexing.py
+- tests/unit/services/test_dependencies.py
+- tests/unit/services/test_graph_interface.py
+- tests/unit/services/test_interfaces.py
+- tests/unit/services/test_reranking_interface.py
+- tests/unit/strategies/test_base_strategy_di.py
+- tests/unit/test_factory_di.py
+mock_files: []
+impacted_source:
+- rag_factory/core/indexing_interface.py
+- rag_factory/core/retrieval_interface.py
+- rag_factory/database/vector_indexing.py
+- rag_factory/factory.py
+- rag_factory/registry/service_factory.py
+- rag_factory/services/__init__.py
+- rag_factory/services/api/anthropic.py
+- rag_factory/services/api/cohere.py
+- rag_factory/services/api/openai.py
+- rag_factory/services/database/neo4j.py
+- rag_factory/services/database/postgres.py
+- rag_factory/services/dependencies.py
+- rag_factory/services/local/reranker.py
+- rag_factory/services/onnx/embedding.py
+impacted_tests:
+- tests/integration/registry/test_registry_integration.py
+- tests/integration/services/test_service_implementations.py
+- tests/integration/strategies/test_vector_embedding_indexing.py
+- tests/unit/services/test_dependencies.py
+- tests/unit/services/test_graph_interface.py
+- tests/unit/services/test_interfaces.py
+- tests/unit/services/test_reranking_interface.py
+- tests/unit/strategies/test_base_strategy_di.py
+- tests/unit/test_factory_di.py
+impacted_mocks: []

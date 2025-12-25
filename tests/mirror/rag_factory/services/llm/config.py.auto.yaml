@@ -1,8 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/services/llm/config.py
-test_files:
-- tests/conftest.py
-- tests/integration/services/test_service_integration.py
-- tests/integration_real/conftest.py
-- tests/unit/services/llm/test_service.py
-mocks: []

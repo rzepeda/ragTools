@@ -1,0 +1,10 @@
+target_file: rag_factory/strategies/contextual/storage.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/strategies/contextual/test_storage.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/unit/strategies/contextual/test_storage.py
+impacted_mocks: []

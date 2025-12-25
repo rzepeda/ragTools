@@ -1,5 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/database/env_validator.py
-test_files:
-- tests/unit/config/test_env_validator.py
-mocks: []

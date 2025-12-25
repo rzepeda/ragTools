@@ -1,0 +1,12 @@
+target_file: rag_factory/repositories/document.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/repositories/test_document_repository.py
+mock_files: []
+impacted_source:
+- rag_factory/services/database/database_context.py
+- rag_factory/services/database/postgres.py
+impacted_tests:
+- tests/unit/repositories/test_document_repository.py
+impacted_mocks: []

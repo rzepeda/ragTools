@@ -1,0 +1,10 @@
+target_file: rag_factory/strategies/multi_query/strategy.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/test_multi_query_pair.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/integration/test_multi_query_pair.py
+impacted_mocks: []

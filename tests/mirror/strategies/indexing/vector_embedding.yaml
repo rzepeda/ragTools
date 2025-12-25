@@ -1,0 +1,32 @@
+target_file: rag_factory/strategies/indexing/vector_embedding.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/strategies/test_vector_embedding_indexing.py
+- tests/integration/test_agentic_rag_pair.py
+- tests/integration/test_fine_tuned_embeddings_pair.py
+- tests/integration/test_hybrid_search_pair.py
+- tests/integration/test_multi_query_pair.py
+- tests/integration/test_query_expansion_pair.py
+- tests/integration/test_reranking_pair.py
+- tests/integration/test_self_reflective_pair.py
+- tests/integration/test_semantic_api_pair.py
+- tests/integration/test_semantic_local_pair.py
+- tests/integration_real/test_end_to_end_real.py
+mock_files: []
+impacted_source:
+- rag_factory/cli/commands/validate_e2e.py
+- rag_factory/strategies/auto_register.py
+impacted_tests:
+- tests/integration/strategies/test_vector_embedding_indexing.py
+- tests/integration/test_agentic_rag_pair.py
+- tests/integration/test_fine_tuned_embeddings_pair.py
+- tests/integration/test_hybrid_search_pair.py
+- tests/integration/test_multi_query_pair.py
+- tests/integration/test_query_expansion_pair.py
+- tests/integration/test_reranking_pair.py
+- tests/integration/test_self_reflective_pair.py
+- tests/integration/test_semantic_api_pair.py
+- tests/integration/test_semantic_local_pair.py
+- tests/integration_real/test_end_to_end_real.py
+impacted_mocks: []

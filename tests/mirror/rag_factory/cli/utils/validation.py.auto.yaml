@@ -1,5 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/cli/utils/validation.py
-test_files:
-- tests/unit/cli/test_validation.py
-mocks: []

@@ -1,0 +1,14 @@
+target_file: rag_factory/services/database/migration_validator.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/database/test_migration_validator_integration.py
+- tests/unit/services/database/test_migration_validator.py
+mock_files: []
+impacted_source:
+- rag_factory/config/strategy_pair_manager.py
+- rag_factory/services/database/__init__.py
+impacted_tests:
+- tests/integration/database/test_migration_validator_integration.py
+- tests/unit/services/database/test_migration_validator.py
+impacted_mocks: []

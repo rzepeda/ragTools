@@ -1,0 +1,16 @@
+target_file: rag_factory/cli/utils/validation.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/cli/test_validation.py
+mock_files: []
+impacted_source:
+- rag_factory/cli/commands/benchmark.py
+- rag_factory/cli/commands/check_consistency.py
+- rag_factory/cli/commands/query.py
+- rag_factory/cli/commands/repl.py
+- rag_factory/cli/commands/validate_pipeline.py
+- rag_factory/cli/utils/__init__.py
+impacted_tests:
+- tests/unit/cli/test_validation.py
+impacted_mocks: []

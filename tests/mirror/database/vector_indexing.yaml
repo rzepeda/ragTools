@@ -1,0 +1,10 @@
+target_file: rag_factory/database/vector_indexing.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/database/test_vector_indexing.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/unit/database/test_vector_indexing.py
+impacted_mocks: []

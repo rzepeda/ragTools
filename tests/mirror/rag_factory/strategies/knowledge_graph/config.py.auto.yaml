@@ -1,7 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/strategies/knowledge_graph/config.py
-test_files:
-- tests/integration/strategies/test_knowledge_graph_integration.py
-- tests/unit/strategies/knowledge_graph/test_entity_extractor.py
-- tests/unit/strategies/knowledge_graph/test_hybrid_retriever.py
-mocks: []

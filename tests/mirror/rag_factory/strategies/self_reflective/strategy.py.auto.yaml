@@ -1,6 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/strategies/self_reflective/strategy.py
-test_files:
-- tests/integration/test_self_reflective_pair.py
-- tests/unit/strategies/self_reflective/test_strategy.py
-mocks: []

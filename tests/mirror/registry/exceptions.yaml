@@ -1,0 +1,16 @@
+target_file: rag_factory/registry/exceptions.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/registry/test_registry_integration.py
+- tests/unit/registry/test_exceptions.py
+- tests/unit/registry/test_service_factory.py
+- tests/unit/registry/test_service_registry.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/integration/registry/test_registry_integration.py
+- tests/unit/registry/test_exceptions.py
+- tests/unit/registry/test_service_factory.py
+- tests/unit/registry/test_service_registry.py
+impacted_mocks: []

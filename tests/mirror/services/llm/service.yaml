@@ -1,0 +1,17 @@
+target_file: rag_factory/services/llm/service.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/conftest.py
+- tests/integration/services/test_service_integration.py
+- tests/integration_real/conftest.py
+- tests/unit/services/llm/test_service.py
+mock_files: []
+impacted_source:
+- rag_factory/registry/service_factory.py
+impacted_tests:
+- tests/conftest.py
+- tests/integration/services/test_service_integration.py
+- tests/integration_real/conftest.py
+- tests/unit/services/llm/test_service.py
+impacted_mocks: []

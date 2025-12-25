@@ -1,7 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/services/embedding/base.py
-test_files:
-- tests/integration/services/test_service_integration.py
-- tests/unit/services/embedding/test_service.py
-- tests/unit/services/embeddings/test_onnx_local.py
-mocks: []

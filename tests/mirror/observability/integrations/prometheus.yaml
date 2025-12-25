@@ -1,0 +1,10 @@
+target_file: rag_factory/observability/integrations/prometheus.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/observability/test_monitoring_integration.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/integration/observability/test_monitoring_integration.py
+impacted_mocks: []

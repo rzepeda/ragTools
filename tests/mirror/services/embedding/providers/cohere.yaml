@@ -1,0 +1,10 @@
+target_file: rag_factory/services/embedding/providers/cohere.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration_real/conftest.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/integration_real/conftest.py
+impacted_mocks: []

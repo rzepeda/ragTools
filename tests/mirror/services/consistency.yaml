@@ -1,0 +1,12 @@
+target_file: rag_factory/services/consistency.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/services/test_consistency.py
+mock_files: []
+impacted_source:
+- rag_factory/factory.py
+- rag_factory/services/__init__.py
+impacted_tests:
+- tests/unit/services/test_consistency.py
+impacted_mocks: []

@@ -1,0 +1,11 @@
+target_file: rag_factory/cli/formatters/consistency.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/cli/test_consistency_formatter.py
+mock_files: []
+impacted_source:
+- rag_factory/cli/commands/check_consistency.py
+impacted_tests:
+- tests/unit/cli/test_consistency_formatter.py
+impacted_mocks: []

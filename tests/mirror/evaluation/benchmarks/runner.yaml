@@ -1,0 +1,22 @@
+target_file: rag_factory/evaluation/benchmarks/runner.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/evaluation/test_evaluation_integration.py
+- tests/unit/evaluation/test_benchmark_suite.py
+- tests/unit/evaluation/test_comparison.py
+- tests/unit/evaluation/test_export.py
+mock_files: []
+impacted_source:
+- rag_factory/evaluation/__init__.py
+- rag_factory/evaluation/analysis/comparison.py
+- rag_factory/evaluation/benchmarks/__init__.py
+- rag_factory/evaluation/exporters/csv_exporter.py
+- rag_factory/evaluation/exporters/html_exporter.py
+- rag_factory/evaluation/exporters/json_exporter.py
+impacted_tests:
+- tests/integration/evaluation/test_evaluation_integration.py
+- tests/unit/evaluation/test_benchmark_suite.py
+- tests/unit/evaluation/test_comparison.py
+- tests/unit/evaluation/test_export.py
+impacted_mocks: []

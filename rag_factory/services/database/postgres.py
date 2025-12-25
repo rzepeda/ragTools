@@ -139,14 +139,25 @@ class PostgresqlDatabaseService(IDatabaseService):
         """
         if self._chunk_repository is None:
             from rag_factory.repositories.chunk import ChunkRepository
+            from rag_factory.database.models import Chunk, AgenticChunk
             from sqlalchemy.orm import Session
             
             # Create a session from the sync engine
             if self._session is None:
                 self._session = Session(bind=self._get_sync_engine())
             
-            self._chunk_repository = ChunkRepository(self._session)
-            logger.debug("Created ChunkRepository instance")
+            # Determine which chunk class to use
+            if self.table_name == "agentic_chunks":
+                chunk_class = AgenticChunk
+            else:
+                chunk_class = Chunk
+
+            self._chunk_repository = ChunkRepository(
+                self._session, 
+                table_name=self.table_name, 
+                chunk_class=chunk_class
+            )
+            logger.debug(f"Created ChunkRepository instance for table '{self.table_name}' using {chunk_class.__name__}")
         
         return self._chunk_repository
     
@@ -251,13 +262,14 @@ class PostgresqlDatabaseService(IDatabaseService):
 
             logger.info(f"Ensured table {self.table_name} exists")
 
-    async def store_chunks(self, chunks: List[Dict[str, Any]]) -> None:
+    async def store_chunks(self, chunks: List[Dict[str, Any]], table_name: Optional[str] = None) -> None:
         """Store document chunks.
 
         Args:
             chunks: List of chunk dictionaries. Each chunk should contain
                    at minimum: text content and embedding vector. Additional
                    fields like metadata, chunk_id, etc. are implementation-specific.
+            table_name: Optional table name to override the service's default.
 
         Raises:
             Exception: If storage fails
@@ -265,6 +277,7 @@ class PostgresqlDatabaseService(IDatabaseService):
         if not chunks:
             return
 
+        target_table = table_name or self.table_name
         pool = await self._get_pool()
 
         async with pool.acquire() as conn:
@@ -304,7 +317,7 @@ class PostgresqlDatabaseService(IDatabaseService):
                 # Insert or update chunk
                 await conn.execute(
                     f"""
-                    INSERT INTO {self.table_name} (chunk_id, text, embedding, metadata)
+                    INSERT INTO {target_table} (chunk_id, text, embedding, metadata)
                     VALUES ($1, $2, '{embedding_str}'::vector, $3)
                     ON CONFLICT (chunk_id)
                     DO UPDATE SET
@@ -317,7 +330,7 @@ class PostgresqlDatabaseService(IDatabaseService):
                     json.dumps(metadata)
                 )
 
-        logger.debug(f"Stored {len(chunks)} chunks")
+        logger.debug(f"Stored {len(chunks)} chunks in {target_table}")
 
     async def search_chunks(
         self,

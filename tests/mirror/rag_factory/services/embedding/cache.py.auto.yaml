@@ -1,5 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/services/embedding/cache.py
-test_files:
-- tests/unit/services/embedding/test_cache.py
-mocks: []

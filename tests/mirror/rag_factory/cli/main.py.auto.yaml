@@ -1,7 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/cli/main.py
-test_files:
-- tests/integration/cli/test_index_query_flow.py
-- tests/unit/cli/test_check_consistency_command.py
-- tests/unit/cli/test_validate_pipeline_command.py
-mocks: []

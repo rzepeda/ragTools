@@ -1,0 +1,10 @@
+target_file: rag_factory/strategies/late_chunking/embedding_chunker.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/strategies/late_chunking/test_embedding_chunker.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/unit/strategies/late_chunking/test_embedding_chunker.py
+impacted_mocks: []

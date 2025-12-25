@@ -1,5 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/strategies/indexing/in_memory.py
-test_files:
-- tests/integration/strategies/test_in_memory_indexing.py
-mocks: []

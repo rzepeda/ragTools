@@ -1,0 +1,11 @@
+target_file: rag_factory/strategies/reranking/cross_encoder_reranker.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/strategies/reranking/test_cross_encoder_reranker.py
+mock_files: []
+impacted_source:
+- rag_factory/services/utils/reranker_selector.py
+impacted_tests:
+- tests/unit/strategies/reranking/test_cross_encoder_reranker.py
+impacted_mocks: []

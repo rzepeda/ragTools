@@ -1,0 +1,13 @@
+target_file: rag_factory/observability/metrics/performance.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/observability/test_monitoring_integration.py
+- tests/unit/observability/test_performance_monitor.py
+mock_files: []
+impacted_source:
+- rag_factory/observability/monitoring/api.py
+impacted_tests:
+- tests/integration/observability/test_monitoring_integration.py
+- tests/unit/observability/test_performance_monitor.py
+impacted_mocks: []

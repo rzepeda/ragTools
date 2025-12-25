@@ -1,0 +1,17 @@
+target_file: rag_factory/core/pipeline.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/cli/test_validation_formatter.py
+- tests/unit/core/test_factory_validation.py
+- tests/unit/core/test_pipeline.py
+mock_files: []
+impacted_source:
+- rag_factory/cli/commands/validate_pipeline.py
+- rag_factory/cli/formatters/validation.py
+- rag_factory/factory.py
+impacted_tests:
+- tests/unit/cli/test_validation_formatter.py
+- tests/unit/core/test_factory_validation.py
+- tests/unit/core/test_pipeline.py
+impacted_mocks: []

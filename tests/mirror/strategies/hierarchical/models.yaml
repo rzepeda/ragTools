@@ -1,0 +1,12 @@
+target_file: rag_factory/strategies/hierarchical/models.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/strategies/hierarchical/test_hierarchy_builder.py
+- tests/unit/strategies/hierarchical/test_parent_retriever.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/unit/strategies/hierarchical/test_hierarchy_builder.py
+- tests/unit/strategies/hierarchical/test_parent_retriever.py
+impacted_mocks: []

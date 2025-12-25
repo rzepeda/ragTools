@@ -1,5 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/utils/token_counter.py
-test_files:
-- tests/unit/utils/test_token_counter.py
-mocks: []

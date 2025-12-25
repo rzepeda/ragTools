@@ -1,0 +1,11 @@
+target_file: rag_factory/config/strategy_loader.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/config/test_strategy_loader.py
+mock_files: []
+impacted_source:
+- rag_factory/config/strategy_pair_manager.py
+impacted_tests:
+- tests/unit/config/test_strategy_loader.py
+impacted_mocks: []

@@ -1,0 +1,13 @@
+target_file: rag_factory/utils/tokenization.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/test_tokenization_integration.py
+- tests/unit/utils/test_tokenization.py
+mock_files: []
+impacted_source:
+- rag_factory/services/embedding/providers/onnx_local.py
+impacted_tests:
+- tests/integration/test_tokenization_integration.py
+- tests/unit/utils/test_tokenization.py
+impacted_mocks: []

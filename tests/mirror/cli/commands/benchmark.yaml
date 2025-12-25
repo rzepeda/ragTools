@@ -1,0 +1,12 @@
+target_file: rag_factory/cli/commands/benchmark.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/cli/test_benchmark_integration.py
+- tests/unit/cli/test_benchmark_command.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/integration/cli/test_benchmark_integration.py
+- tests/unit/cli/test_benchmark_command.py
+impacted_mocks: []

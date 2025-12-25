@@ -1,0 +1,11 @@
+target_file: rag_factory/services/llm/providers/openai.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/services/llm/test_openai_provider.py
+mock_files: []
+impacted_source:
+- rag_factory/services/api/openai.py
+impacted_tests:
+- tests/unit/services/llm/test_openai_provider.py
+impacted_mocks: []

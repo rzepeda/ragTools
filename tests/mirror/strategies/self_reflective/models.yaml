@@ -1,0 +1,14 @@
+target_file: rag_factory/strategies/self_reflective/models.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/strategies/self_reflective/test_grader.py
+- tests/unit/strategies/self_reflective/test_refiner.py
+- tests/unit/strategies/self_reflective/test_strategy.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/unit/strategies/self_reflective/test_grader.py
+- tests/unit/strategies/self_reflective/test_refiner.py
+- tests/unit/strategies/self_reflective/test_strategy.py
+impacted_mocks: []

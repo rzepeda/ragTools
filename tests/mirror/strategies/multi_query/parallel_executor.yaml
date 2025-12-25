@@ -1,0 +1,10 @@
+target_file: rag_factory/strategies/multi_query/parallel_executor.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/strategies/multi_query/test_parallel_executor.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/unit/strategies/multi_query/test_parallel_executor.py
+impacted_mocks: []

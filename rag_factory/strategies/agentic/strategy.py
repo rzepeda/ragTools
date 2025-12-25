@@ -56,8 +56,19 @@ class AgenticRAGStrategy(IRAGStrategy):
         # Initialize tools
         self.tools = self._initialize_tools()
         
+        # Define metadata schema for the agent
+        # In a real application, this would come from the document index or a schema registry
+        self.metadata_schema = {
+            "document_id": "specific document identifier or reference number",
+            "year": "publication or event year (YYYY format)",
+            "author": "author, organization, or publisher name",
+            "publisher": "publishing organization",
+            "document_type": "type of document (report, paper, specification, etc.)",
+            "language": "document language code (en, es, etc.)"
+        }
+        
         # Initialize agent
-        self.agent = SimpleAgent(self.deps.llm_service, self.tools)
+        self.agent = SimpleAgent(self.deps.llm_service, self.tools, self.metadata_schema)
         
         # Initialize query analyzer if enabled
         self.query_analyzer = (

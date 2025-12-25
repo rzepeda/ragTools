@@ -1,0 +1,20 @@
+target_file: rag_factory/evaluation/metrics/base.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/evaluation/test_evaluation_integration.py
+- tests/unit/evaluation/test_benchmark_suite.py
+mock_files: []
+impacted_source:
+- rag_factory/evaluation/__init__.py
+- rag_factory/evaluation/benchmarks/config.py
+- rag_factory/evaluation/benchmarks/runner.py
+- rag_factory/evaluation/metrics/__init__.py
+- rag_factory/evaluation/metrics/cost.py
+- rag_factory/evaluation/metrics/performance.py
+- rag_factory/evaluation/metrics/quality.py
+- rag_factory/evaluation/metrics/retrieval.py
+impacted_tests:
+- tests/integration/evaluation/test_evaluation_integration.py
+- tests/unit/evaluation/test_benchmark_suite.py
+impacted_mocks: []

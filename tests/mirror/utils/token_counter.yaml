@@ -1,0 +1,10 @@
+target_file: rag_factory/utils/token_counter.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/utils/test_token_counter.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/unit/utils/test_token_counter.py
+impacted_mocks: []

@@ -1,0 +1,12 @@
+target_file: rag_factory/strategies/reranking/reranker_service.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/strategies/test_reranking_integration.py
+- tests/unit/strategies/reranking/test_reranker_service.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/integration/strategies/test_reranking_integration.py
+- tests/unit/strategies/reranking/test_reranker_service.py
+impacted_mocks: []

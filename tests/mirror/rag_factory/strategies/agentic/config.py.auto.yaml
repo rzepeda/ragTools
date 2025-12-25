@@ -1,5 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/strategies/agentic/config.py
-test_files:
-- tests/unit/strategies/agentic/test_strategy.py
-mocks: []

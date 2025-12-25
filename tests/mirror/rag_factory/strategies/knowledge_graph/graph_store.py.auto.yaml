@@ -1,4 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/strategies/knowledge_graph/graph_store.py
-test_files: []
-mocks: []

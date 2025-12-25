@@ -1,0 +1,13 @@
+target_file: rag_factory/evaluation/exporters/csv_exporter.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/evaluation/test_evaluation_integration.py
+- tests/unit/evaluation/test_export.py
+mock_files: []
+impacted_source:
+- rag_factory/evaluation/exporters/__init__.py
+impacted_tests:
+- tests/integration/evaluation/test_evaluation_integration.py
+- tests/unit/evaluation/test_export.py
+impacted_mocks: []

@@ -1,0 +1,12 @@
+target_file: rag_factory/strategies/fine_tuned/custom_loader.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/services/test_fine_tuned_onnx_integration.py
+- tests/unit/strategies/fine_tuned/test_custom_loader.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/integration/services/test_fine_tuned_onnx_integration.py
+- tests/unit/strategies/fine_tuned/test_custom_loader.py
+impacted_mocks: []

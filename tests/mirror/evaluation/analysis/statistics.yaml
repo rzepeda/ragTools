@@ -1,0 +1,14 @@
+target_file: rag_factory/evaluation/analysis/statistics.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/evaluation/test_evaluation_integration.py
+- tests/unit/evaluation/test_statistical_testing.py
+mock_files: []
+impacted_source:
+- rag_factory/evaluation/analysis/__init__.py
+- rag_factory/evaluation/analysis/comparison.py
+impacted_tests:
+- tests/integration/evaluation/test_evaluation_integration.py
+- tests/unit/evaluation/test_statistical_testing.py
+impacted_mocks: []

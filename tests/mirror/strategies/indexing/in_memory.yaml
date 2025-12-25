@@ -1,0 +1,10 @@
+target_file: rag_factory/strategies/indexing/in_memory.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/strategies/test_in_memory_indexing.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/integration/strategies/test_in_memory_indexing.py
+impacted_mocks: []

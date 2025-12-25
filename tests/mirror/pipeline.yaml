@@ -1,0 +1,18 @@
+target_file: rag_factory/pipeline.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/test_config_integration.py
+- tests/integration/test_package_integration.py
+- tests/integration/test_pipeline_integration.py
+- tests/unit/test_package.py
+- tests/unit/test_pipeline.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/integration/test_config_integration.py
+- tests/integration/test_package_integration.py
+- tests/integration/test_pipeline_integration.py
+- tests/unit/test_package.py
+- tests/unit/test_pipeline.py
+impacted_mocks: []

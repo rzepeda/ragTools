@@ -1,0 +1,13 @@
+target_file: rag_factory/strategies/indexing/keyword_indexing.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/strategies/test_keyword_indexing.py
+- tests/integration/test_keyword_pair.py
+mock_files: []
+impacted_source:
+- rag_factory/strategies/auto_register.py
+impacted_tests:
+- tests/integration/strategies/test_keyword_indexing.py
+- tests/integration/test_keyword_pair.py
+impacted_mocks: []

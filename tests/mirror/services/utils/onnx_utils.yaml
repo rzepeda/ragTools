@@ -1,0 +1,11 @@
+target_file: rag_factory/services/utils/onnx_utils.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/services/utils/test_onnx_utils.py
+mock_files: []
+impacted_source:
+- rag_factory/strategies/late_chunking/document_embedder.py
+impacted_tests:
+- tests/unit/services/utils/test_onnx_utils.py
+impacted_mocks: []

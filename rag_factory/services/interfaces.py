@@ -270,7 +270,7 @@ class IDatabaseService(ABC):
     """
 
     @abstractmethod
-    async def store_chunks(self, chunks: List[Dict[str, Any]]) -> None:
+    async def store_chunks(self, chunks: List[Dict[str, Any]], table_name: Optional[str] = None) -> None:
         """Store document chunks.
 
         Args:

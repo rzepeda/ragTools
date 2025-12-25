@@ -1,0 +1,12 @@
+target_file: rag_factory/strategies/contextual/context_generator.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/benchmarks/test_contextual_performance.py
+- tests/unit/strategies/contextual/test_context_generator.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/benchmarks/test_contextual_performance.py
+- tests/unit/strategies/contextual/test_context_generator.py
+impacted_mocks: []

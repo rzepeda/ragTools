@@ -1,0 +1,20 @@
+target_file: rag_factory/strategies/contextual/config.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/benchmarks/test_contextual_performance.py
+- tests/integration/strategies/test_contextual_integration.py
+- tests/unit/strategies/contextual/test_batch_processor.py
+- tests/unit/strategies/contextual/test_context_generator.py
+- tests/unit/strategies/contextual/test_cost_tracker.py
+- tests/unit/strategies/contextual/test_storage.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/benchmarks/test_contextual_performance.py
+- tests/integration/strategies/test_contextual_integration.py
+- tests/unit/strategies/contextual/test_batch_processor.py
+- tests/unit/strategies/contextual/test_context_generator.py
+- tests/unit/strategies/contextual/test_cost_tracker.py
+- tests/unit/strategies/contextual/test_storage.py
+impacted_mocks: []

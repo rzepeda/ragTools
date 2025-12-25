@@ -1,0 +1,10 @@
+target_file: rag_factory/strategies/knowledge_graph/hybrid_retriever.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/strategies/knowledge_graph/test_hybrid_retriever.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/unit/strategies/knowledge_graph/test_hybrid_retriever.py
+impacted_mocks: []

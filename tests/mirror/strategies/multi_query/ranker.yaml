@@ -1,0 +1,10 @@
+target_file: rag_factory/strategies/multi_query/ranker.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/strategies/multi_query/test_ranker.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/unit/strategies/multi_query/test_ranker.py
+impacted_mocks: []

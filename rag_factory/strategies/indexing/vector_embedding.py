@@ -1,5 +1,6 @@
 """Vector embedding indexing strategy."""
 import logging
+import uuid
 from typing import List, Set, Dict, Any
 
 from rag_factory.core.indexing_interface import IIndexingStrategy, IndexingContext
@@ -66,6 +67,32 @@ class VectorEmbeddingIndexing(IIndexingStrategy):
 
         logger.info(f"Using embedding service: {type(self.deps.embedding_service).__name__}")
 
+        # Store documents first to satisfy foreign key constraints
+        logger.info(f"Storing {len(documents)} documents...")
+        for doc in documents:
+            doc_id = doc.get("id")
+            if not doc_id:
+                logger.warning("Document is missing an 'id', skipping.")
+                continue
+            
+            doc_data = {
+                "document_id": doc_id,
+                "filename": doc.get("metadata", {}).get("filename", str(doc_id)),
+                "source_path": doc.get("metadata", {}).get("source_path", str(doc_id)),
+                "content_hash": str(uuid.uuid4()),  # Placeholder
+                "total_chunks": 0,  # Will be updated after chunking
+                "metadata": doc.get("metadata", {}),
+                "status": "indexing",
+            }
+            try:
+                context.database.insert("documents", doc_data)
+            except Exception as e:
+                logger.error(f"Failed to insert document {doc_id}: {e}")
+                # Depending on desired behavior, we might want to skip this doc
+                # or raise the exception. For now, we log and continue.
+        logger.info("Document storage complete.")
+
+
         # 1. Chunk documents
         logger.info("Starting document chunking...")
         chunks = self._chunk_documents(documents, chunk_size, overlap)
@@ -106,7 +133,8 @@ class VectorEmbeddingIndexing(IIndexingStrategy):
         for chunk, embedding in zip(chunks, all_embeddings):
             chunk['embedding'] = embedding
 
-        logger.info(f"Storing {len(chunks)} chunks to database...")
+        chunks_table = self.config.get('db_config', {}).get('tables', {}).get('chunks')
+        logger.info(f"Storing {len(chunks)} chunks to table: {chunks_table or 'default'}...")
         await context.database.store_chunks(chunks)
         logger.info("Database storage complete")
 
@@ -157,7 +185,7 @@ class VectorEmbeddingIndexing(IIndexingStrategy):
             if len(text) <= chunk_size:
                 logger.debug(f"Document {doc_id} fits in single chunk (length={len(text)} <= {chunk_size})")
                 chunks.append({
-                    "chunk_id": f"{doc_id}_{chunk_idx}",
+                    "chunk_id": str(uuid.uuid4()),
                     "text": text,
                     "metadata": metadata,
                     "document_id": doc_id,
@@ -193,7 +221,7 @@ class VectorEmbeddingIndexing(IIndexingStrategy):
 
                 if end == len(text):
                     chunks.append({
-                        "chunk_id": f"{doc_id}_{chunk_idx}", # Retain original chunk_id format
+                        "chunk_id": str(uuid.uuid4()),
                         "text": chunk_text,
                         "document_id": doc_id, # Use doc_id directly
                         "chunk_index": chunk_idx,
@@ -202,7 +230,7 @@ class VectorEmbeddingIndexing(IIndexingStrategy):
                     break 
 
                 chunks.append({
-                    "chunk_id": f"{doc_id}_{chunk_idx}", # Retain original chunk_id format
+                    "chunk_id": str(uuid.uuid4()),
                     "text": chunk_text,
                     "document_id": doc_id, # Use doc_id directly
                     "chunk_index": chunk_idx,

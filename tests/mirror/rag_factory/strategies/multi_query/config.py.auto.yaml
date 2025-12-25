@@ -1,8 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/strategies/multi_query/config.py
-test_files:
-- tests/unit/strategies/multi_query/test_deduplicator.py
-- tests/unit/strategies/multi_query/test_parallel_executor.py
-- tests/unit/strategies/multi_query/test_ranker.py
-- tests/unit/strategies/multi_query/test_variant_generator.py
-mocks: []

@@ -1,0 +1,18 @@
+target_file: rag_factory/evaluation/datasets/schema.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/evaluation/test_evaluation_integration.py
+- tests/unit/evaluation/test_benchmark_suite.py
+- tests/unit/evaluation/test_dataset_loader.py
+mock_files: []
+impacted_source:
+- rag_factory/evaluation/benchmarks/runner.py
+- rag_factory/evaluation/datasets/__init__.py
+- rag_factory/evaluation/datasets/loader.py
+- rag_factory/evaluation/datasets/statistics.py
+impacted_tests:
+- tests/integration/evaluation/test_evaluation_integration.py
+- tests/unit/evaluation/test_benchmark_suite.py
+- tests/unit/evaluation/test_dataset_loader.py
+impacted_mocks: []

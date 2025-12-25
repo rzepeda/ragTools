@@ -1,0 +1,11 @@
+target_file: rag_factory/evaluation/datasets/loader.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/evaluation/test_dataset_loader.py
+mock_files: []
+impacted_source:
+- rag_factory/evaluation/datasets/__init__.py
+impacted_tests:
+- tests/unit/evaluation/test_dataset_loader.py
+impacted_mocks: []

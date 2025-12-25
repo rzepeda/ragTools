@@ -1,0 +1,12 @@
+target_file: rag_factory/cli/commands/config.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/cli/test_config_validation_integration.py
+- tests/unit/cli/test_config_validation_command.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/integration/cli/test_config_validation_integration.py
+- tests/unit/cli/test_config_validation_command.py
+impacted_mocks: []

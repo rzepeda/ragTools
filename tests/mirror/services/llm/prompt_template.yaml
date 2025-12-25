@@ -1,0 +1,12 @@
+target_file: rag_factory/services/llm/prompt_template.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/services/test_llm_integration.py
+- tests/unit/services/llm/test_prompt_template.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/integration/services/test_llm_integration.py
+- tests/unit/services/llm/test_prompt_template.py
+impacted_mocks: []

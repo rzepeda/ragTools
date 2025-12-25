@@ -1,5 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/cli/commands/gui.py
-test_files:
-- tests/integration/gui/test_gui_launch.py
-mocks: []

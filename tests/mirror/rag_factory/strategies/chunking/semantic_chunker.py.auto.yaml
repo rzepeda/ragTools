@@ -1,5 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/strategies/chunking/semantic_chunker.py
-test_files:
-- tests/unit/strategies/chunking/test_semantic_chunker.py
-mocks: []

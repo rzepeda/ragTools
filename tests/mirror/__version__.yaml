@@ -1,0 +1,10 @@
+target_file: rag_factory/__version__.py
+has_tests: false
+has_mocks: false
+test_files: []
+mock_files: []
+impacted_source:
+- rag_factory/__init__.py
+- rag_factory/cli/main.py
+impacted_tests: []
+impacted_mocks: []

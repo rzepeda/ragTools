@@ -1,6 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/strategies/knowledge_graph/strategy.py
-test_files:
-- tests/integration/strategies/test_knowledge_graph_integration.py
-- tests/integration/test_knowledge_graph_pair.py
-mocks: []

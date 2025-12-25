@@ -1,5 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/services/embedding/rate_limiter.py
-test_files:
-- tests/unit/services/embedding/test_rate_limiter.py
-mocks: []

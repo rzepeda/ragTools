@@ -1,0 +1,11 @@
+target_file: rag_factory/config/env_resolver.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/config/test_env_resolver.py
+mock_files: []
+impacted_source:
+- rag_factory/registry/service_registry.py
+impacted_tests:
+- tests/unit/config/test_env_resolver.py
+impacted_mocks: []

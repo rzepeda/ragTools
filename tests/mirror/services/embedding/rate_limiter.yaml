@@ -1,0 +1,10 @@
+target_file: rag_factory/services/embedding/rate_limiter.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/services/embedding/test_rate_limiter.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/unit/services/embedding/test_rate_limiter.py
+impacted_mocks: []

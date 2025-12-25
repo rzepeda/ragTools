@@ -186,6 +186,43 @@ class Document(Base):
         )
 
 
+class AgenticDocument(Base):
+    """Document metadata model for agentic strategies."""
+
+    __tablename__ = "agentic_documents"
+
+    document_id = Column(
+        GUID,
+        primary_key=True,
+        default=uuid.uuid4,
+        nullable=False
+    )
+    filename = Column(String(255), nullable=False, index=True)
+    source_path = Column(Text, nullable=False)
+    content_hash = Column(String(64), nullable=False, index=True, comment="SHA-256 hash for deduplication")
+    total_chunks = Column(Integer, default=0, nullable=False)
+    metadata_ = Column("metadata", JSONType, default=dict, nullable=False, comment="Flexible metadata storage")
+    status = Column(String(50), default="pending", nullable=False, index=True, comment="Processing status: pending, processing, completed, failed")
+    created_at = Column(TIMESTAMP, nullable=False, default=datetime.utcnow, server_default="NOW()")
+    updated_at = Column(TIMESTAMP, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow, server_default="NOW()")
+
+    chunks = relationship(
+        "AgenticChunk",
+        back_populates="document",
+        cascade="all, delete-orphan",
+        lazy="dynamic"
+    )
+
+    def __repr__(self) -> str:
+        """String representation of AgenticDocument."""
+        return (
+            f"<AgenticDocument(id={self.document_id}, "
+            f"filename='{self.filename}', "
+            f"status='{self.status}', "
+            f"chunks={self.total_chunks})>"
+        )
+
+
 class Chunk(Base):
     """Text chunk model with vector embeddings.
 
@@ -329,3 +366,125 @@ class Chunk(Base):
             f"embedding={has_embedding}, "
             f"text='{text_preview}')>"
         )
+
+
+class AgenticChunk(Base):
+    """Text chunk model for agentic strategies."""
+
+    __tablename__ = "agentic_chunks"
+
+    chunk_id = Column(
+        GUID,
+        primary_key=True,
+        default=uuid.uuid4,
+        nullable=False
+    )
+
+    document_id = Column(
+        GUID,
+        ForeignKey("agentic_documents.document_id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+
+    chunk_index = Column(
+        Integer,
+        nullable=False,
+        comment="Order within document (0-indexed)"
+    )
+
+    text = Column(
+        Text,
+        nullable=False
+    )
+
+    embedding = Column(
+        Vector(1536),
+        nullable=True,
+        comment="Vector embedding for similarity search"
+    )
+
+    metadata_ = Column(
+        "metadata",
+        JSONType,
+        default=dict,
+        nullable=False,
+        comment="Flexible metadata storage"
+    )
+
+    parent_chunk_id = Column(
+        GUID,
+        ForeignKey("agentic_chunks.chunk_id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+        comment="Parent chunk in hierarchy (null for root chunks)"
+    )
+
+    hierarchy_level = Column(
+        Integer,
+        nullable=False,
+        default=0,
+        server_default="0",
+        comment="Depth in hierarchy: 0=document, 1=section, 2=paragraph, 3=sentence"
+    )
+
+    hierarchy_metadata = Column(
+        "hierarchy_metadata",
+        JSONType,
+        default=dict,
+        nullable=False,
+        server_default="{}",
+        comment="Hierarchy metadata: position_in_parent, total_siblings, depth_from_root"
+    )
+
+    created_at = Column(
+        TIMESTAMP,
+        nullable=False,
+        default=datetime.utcnow,
+        server_default="NOW()"
+    )
+
+    updated_at = Column(
+        TIMESTAMP,
+        nullable=False,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow,
+        server_default="NOW()"
+    )
+
+    document = relationship(
+        "AgenticDocument",
+        back_populates="chunks"
+    )
+
+    parent = relationship(
+        "AgenticChunk",
+        remote_side=[chunk_id],
+        back_populates="children",
+        foreign_keys=[parent_chunk_id]
+    )
+
+    children = relationship(
+        "AgenticChunk",
+        back_populates="parent",
+        foreign_keys=[parent_chunk_id],
+        cascade="all, delete-orphan"
+    )
+
+    __table_args__ = (
+        Index("idx_agentic_chunks_document_id_index", "document_id", "chunk_index"),
+        Index("idx_agentic_chunks_created_at", "created_at"),
+    )
+
+    def __repr__(self) -> str:
+        """String representation of AgenticChunk."""
+        has_embedding = "yes" if self.embedding is not None else "no"
+        text_preview = self.text[:50] + "..." if len(self.text) > 50 else self.text
+        return (
+            f"<AgenticChunk(id={self.chunk_id}, "
+            f"doc_id={self.document_id}, "
+            f"index={self.chunk_index}, "
+            f"embedding={has_embedding}, "
+            f"text='{text_preview}')>"
+        )
+

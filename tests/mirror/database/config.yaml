@@ -1,0 +1,16 @@
+target_file: rag_factory/database/config.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/conftest.py
+- tests/integration/database/test_database_integration.py
+- tests/unit/database/test_connection.py
+mock_files: []
+impacted_source:
+- rag_factory/database/__init__.py
+- rag_factory/database/connection.py
+impacted_tests:
+- tests/conftest.py
+- tests/integration/database/test_database_integration.py
+- tests/unit/database/test_connection.py
+impacted_mocks: []

@@ -1,0 +1,10 @@
+target_file: rag_factory/cli/commands/gui.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/gui/test_gui_launch.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/integration/gui/test_gui_launch.py
+impacted_mocks: []

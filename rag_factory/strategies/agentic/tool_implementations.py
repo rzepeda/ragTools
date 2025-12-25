@@ -170,7 +170,7 @@ class DocumentReaderTool(Tool):
             )
         ]
 
-    def execute(self, document_id: str) -> ToolResult:
+    async def execute(self, document_id: str) -> ToolResult:
         """Read document by ID.
         
         Args:

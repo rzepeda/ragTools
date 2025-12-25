@@ -1,0 +1,12 @@
+target_file: rag_factory/services/embedding/service.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/services/test_service_integration.py
+- tests/unit/services/embedding/test_service.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/integration/services/test_service_integration.py
+- tests/unit/services/embedding/test_service.py
+impacted_mocks: []

@@ -1,0 +1,14 @@
+target_file: rag_factory/strategies/agentic/tools.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/strategies/agentic/test_agent.py
+- tests/unit/strategies/agentic/test_tools.py
+- tests/unit/strategies/agentic/test_workflow_execution.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/unit/strategies/agentic/test_agent.py
+- tests/unit/strategies/agentic/test_tools.py
+- tests/unit/strategies/agentic/test_workflow_execution.py
+impacted_mocks: []

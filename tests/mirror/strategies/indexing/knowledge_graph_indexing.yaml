@@ -1,0 +1,9 @@
+target_file: rag_factory/strategies/indexing/knowledge_graph_indexing.py
+has_tests: false
+has_mocks: false
+test_files: []
+mock_files: []
+impacted_source:
+- rag_factory/strategies/auto_register.py
+impacted_tests: []
+impacted_mocks: []

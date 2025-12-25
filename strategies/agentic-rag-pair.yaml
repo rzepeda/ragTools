@@ -10,12 +10,11 @@ indexer:
   
   db_config:
     tables:
+      documents: "agentic_documents"
       chunks: "agentic_chunks"
-      vectors: "agentic_vectors"
-      metadata: "agentic_metadata"
     fields:
-      text: "text_content"
-      embedding: "vector_embedding"
+      embedding: "embedding" # Mapped to vectors table column
+      text: "text" # Mapped to chunks table column
       doc_id: "document_id"
       chunk_id: "chunk_id"
   
@@ -33,13 +32,13 @@ retriever:
   
   db_config:
     tables:
+      documents: "agentic_documents"
       chunks: "agentic_chunks"
-      vectors: "agentic_vectors"
     fields:
       chunk_id: "chunk_id"
       document_id: "document_id"
-      text: "text_content"
-      embedding: "vector_embedding"
+      text: "text"
+      embedding: "embedding"
       chunk_index: "chunk_index"
       metadata: "metadata"
       created_at: "created_at"
@@ -60,11 +59,10 @@ migrations:
 
 expected_schema:
   tables:
+    - "agentic_documents"
     - "agentic_chunks"
-    - "agentic_vectors"
-    - "agentic_metadata"
   indexes:
-    - "idx_agentic_vectors_embedding"
+    - "idx_agentic_chunks_document_id"
   extensions:
     - "vector"
 

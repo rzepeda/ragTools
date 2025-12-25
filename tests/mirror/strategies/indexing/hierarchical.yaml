@@ -1,0 +1,11 @@
+target_file: rag_factory/strategies/indexing/hierarchical.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/strategies/test_hierarchical_indexing.py
+mock_files: []
+impacted_source:
+- rag_factory/strategies/auto_register.py
+impacted_tests:
+- tests/integration/strategies/test_hierarchical_indexing.py
+impacted_mocks: []

@@ -1,0 +1,17 @@
+target_file: rag_factory/strategies/query_expansion/base.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/strategies/query_expansion/test_base.py
+- tests/unit/strategies/query_expansion/test_expander_service.py
+- tests/unit/strategies/query_expansion/test_llm_expander.py
+- tests/unit/strategies/query_expansion/test_prompts.py
+mock_files: []
+impacted_source:
+- rag_factory/strategies/retrieval/query_expansion_retriever.py
+impacted_tests:
+- tests/unit/strategies/query_expansion/test_base.py
+- tests/unit/strategies/query_expansion/test_expander_service.py
+- tests/unit/strategies/query_expansion/test_llm_expander.py
+- tests/unit/strategies/query_expansion/test_prompts.py
+impacted_mocks: []

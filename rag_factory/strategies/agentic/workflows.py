@@ -11,6 +11,7 @@ from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
 
 from .tools import ToolResult
+from rag_factory.services.interfaces import ILLMService
 
 logger = logging.getLogger(__name__)
 
@@ -215,10 +216,12 @@ def extract_plan_from_response(response: Optional[str]) -> Dict[str, Any]:
     }
 
 
-def substitute_params(
+async def substitute_params(
     params: Dict[str, Any],
     query: str,
-    previous_results: List[ToolResult]
+    previous_results: List[ToolResult],
+    llm_service: ILLMService,
+    schema: Dict[str, str],
 ) -> Dict[str, Any]:
     """
     Substitute placeholders in parameters with actual values.
@@ -233,12 +236,17 @@ def substitute_params(
         params: Parameter dict with placeholders
         query: User query string
         previous_results: List of results from previous workflow steps
+        llm_service: LLM service for metadata extraction.
+        schema: Metadata schema for extraction.
         
     Returns:
         Parameter dict with substituted values
     """
     result = {}
     
+    # Call LLM once to get all metadata
+    extracted_metadata = await extract_metadata_from_query(query, schema, llm_service)
+
     for key, value in params.items():
         if not isinstance(value, str):
             result[key] = value
@@ -258,39 +266,34 @@ def substitute_params(
             if step_num < len(previous_results):
                 prev_result = previous_results[step_num]
                 if prev_result.success and prev_result.data:
-                    # Get first item from data if it's a list
                     data_item = prev_result.data[0] if isinstance(prev_result.data, list) else prev_result.data
                     
-                    # Debug logging
                     logger.debug(f"Trying to extract {field_name} from step {step_num + 1} result")
-                    logger.debug(f"Data item type: {type(data_item)}, keys: {data_item.keys() if isinstance(data_item, dict) else 'N/A'}")
                     
                     if isinstance(data_item, dict) and field_name in data_item:
                         result[key] = data_item[field_name]
                         logger.info(f"Successfully substituted {value} with {data_item[field_name]}")
                         continue
                     else:
-                        logger.warning(f"Field {field_name} not found in data item. Available fields: {list(data_item.keys()) if isinstance(data_item, dict) else 'N/A'}")
+                        logger.warning(f"Field {field_name} not found in step {step_num+1} result.")
                 else:
                     logger.warning(f"Step {step_num + 1} failed or has no data")
             else:
                 logger.warning(f"Step {step_num + 1} has not been executed yet")
             
-            # If we couldn't substitute, log warning and skip this param
-            # This will cause the tool to fail with missing required parameter
             logger.warning(f"Could not substitute {value}, skipping parameter {key}")
             continue
         
-        # Substitute {extracted_metadata} - simple extraction from query
+        # Substitute {extracted_metadata}
         if "{extracted_metadata}" in value:
-            metadata = extract_metadata_from_query(query)
-            result[key] = metadata
+            metadata_filter = extracted_metadata.copy()
+            metadata_filter.pop("document_id", None)
+            result[key] = metadata_filter
             continue
         
         # Substitute {extracted_document_id}
         if "{extracted_document_id}" in value:
-            doc_id = extract_document_id_from_query(query)
-            result[key] = doc_id
+            result[key] = extracted_metadata.get("document_id")
             continue
         
         # No substitution needed
@@ -299,75 +302,125 @@ def substitute_params(
     return result
 
 
-def extract_metadata_from_query(query: str) -> Dict[str, Any]:
-    """
-    Extract metadata filters from natural language query.
-    
-    This is a simple heuristic-based extraction. In production,
-    you might want to use an LLM for this.
-    
-    Args:
-        query: User query string
-        
-    Returns:
-        Dict of metadata filters
-    """
-    metadata = {}
-    
-    # Extract year/date patterns
-    year_match = re.search(r'\b(19|20)\d{2}\b', query)
-    if year_match:
-        metadata["date"] = year_match.group(0)
-    
-    # Extract common organizations (simple keyword matching)
-    orgs = ["NASA", "ESA", "SpaceX", "JPL"]
-    for org in orgs:
-        if org.lower() in query.lower():
-            metadata["author"] = org
-            break
-    
-    # Extract document types
-    doc_types = ["report", "paper", "specification", "manual", "guide"]
-    for doc_type in doc_types:
-        if doc_type in query.lower():
-            metadata["type"] = doc_type
-            break
-    
-    return metadata
+METADATA_EXTRACTION_PROMPT_TEMPLATE = """
+You are a metadata extraction assistant. Extract structured metadata from the user query based on the provided schema.
+
+USER QUERY:
+"{query}"
+
+METADATA SCHEMA:
+{formatted_schema_fields}
+
+INSTRUCTIONS:
+1. Extract ONLY metadata that is explicitly mentioned or clearly implied in the query.
+2. Match extracted values to the schema field names exactly.
+3. Pay special attention to document identifiers, reference numbers, or document IDs (e.g., "DOC-123", "document 456", "report ABC-2023").
+4. Return ONLY valid JSON with extracted fields.
+5. If no metadata matches, return empty JSON: {{}}.
+6. Do not include explanations, markdown formatting, or additional text.
+
+OUTPUT FORMAT:
+Return only the JSON object, nothing else.
+"""
 
 
-def extract_document_id_from_query(query: str) -> Optional[str]:
+def _format_schema_for_prompt(schema: Dict[str, str]) -> str:
+    """Formats the metadata schema for inclusion in the LLM prompt."""
+    return "\n".join([f"- {name}: {description}" for name, description in schema.items()])
+
+
+def _parse_llm_json_response(response: str) -> Dict[str, Any]:
     """
-    Extract document ID from query.
+    Flexibly parses a JSON object from an LLM's text response.
+    Handles markdown code blocks and other surrounding text.
+    """
+    if not response:
+        return {}
+
+    try:
+        return json.loads(response)
+    except json.JSONDecodeError:
+        # Fallback to regex if direct parsing fails
+        match = re.search(r'\{.*\}', response, re.DOTALL)
+        if match:
+            try:
+                return json.loads(match.group(0))
+            except json.JSONDecodeError:
+                logger.warning(f"Could not parse extracted JSON from LLM response: {match.group(0)}")
     
-    Looks for patterns like:
-    - "document ABC-123"
-    - "doc_12345"
-    - "file://path/to/doc.pdf"
-    
+    logger.warning(f"Could not parse JSON from LLM response: {response}")
+    return {}
+
+
+async def extract_metadata_from_query(
+    query: str,
+    schema: Dict[str, str],
+    llm_service: ILLMService,
+) -> Dict[str, Any]:
+    """
+    Extract metadata from natural language query using LLM-based parsing.
+
     Args:
-        query: User query string
-        
+        query: Natural language query string.
+        schema: Dictionary mapping field names to descriptions.
+            Example: {
+                "document_id": "document identifier or reference",
+                "year": "publication year",
+                "author": "author or organization"
+            }
+        llm_service: LLM service instance for extraction.
+
     Returns:
-        Extracted document ID or None
+        Dictionary of extracted metadata matching schema fields.
+        Empty dict if no metadata found or extraction fails.
+    
+    Examples:
+        query = "show me NASA report DOC-2023-001 from last year"
+        schema = {"document_id": "document ID", "author": "organization"}
+        # result = {"document_id": "DOC-2023-001", "author": "NASA"}
+
+    Note:
+        - Document IDs preserve exact format/casing as extracted.
+        - Unmatched schema fields are omitted from result.
+        - LLM failures return empty dict gracefully.
     """
-    # Pattern 1: document/doc followed by ID
-    doc_match = re.search(r'(?:document|doc)\s+([A-Za-z0-9_-]+)', query, re.IGNORECASE)
-    if doc_match:
-        return doc_match.group(1)
-    
-    # Pattern 2: Standalone ID-like pattern
-    id_match = re.search(r'\b([A-Za-z0-9]{8,})\b', query)
-    if id_match:
-        return id_match.group(1)
-    
-    return None
+    if not query or not schema:
+        return {}
+
+    formatted_schema = _format_schema_for_prompt(schema)
+    prompt = METADATA_EXTRACTION_PROMPT_TEMPLATE.format(
+        query=query, formatted_schema_fields=formatted_schema
+    )
+
+    try:
+        response_text = await llm_service.complete_async(prompt, temperature=0.0, max_tokens=512)
+        extracted_data = _parse_llm_json_response(response_text)
+
+        if not isinstance(extracted_data, dict):
+            logger.warning(f"LLM returned non-dict data: {type(extracted_data)}")
+            return {}
+
+        # Filter out keys not in schema to prevent hallucinated fields
+        validated_data = {
+            k: v for k, v in extracted_data.items() if k in schema
+        }
+
+        if len(validated_data) < len(extracted_data):
+            removed_keys = set(extracted_data.keys()) - set(validated_data.keys())
+            logger.warning(f"Removed hallucinated keys not in schema: {removed_keys}")
+            
+        return validated_data
+    except Exception as e:
+        logger.error(f"Error during LLM metadata extraction: {e}", exc_info=True)
+        return {}
 
 
 async def execute_workflow(
     plan_number: int,
     query: str,
-    tools: Dict[str, Any]
+    tools: Dict[str, Any],
+    llm_service: ILLMService,
+    schema: Dict[str, str],
 ) -> List[ToolResult]:
     """
     Execute a predefined workflow.
@@ -376,6 +429,8 @@ async def execute_workflow(
         plan_number: Workflow number (1-6)
         query: User query
         tools: Dict of available tools {tool_name: tool_instance}
+        llm_service: LLM service for metadata extraction.
+        schema: Metadata schema for extraction.
         
     Returns:
         List of ToolResult from each step
@@ -393,7 +448,7 @@ async def execute_workflow(
         params_template = step["params"]
         
         # Substitute parameters
-        params = substitute_params(params_template, query, results)
+        params = await substitute_params(params_template, query, results, llm_service, schema)
         
         # Get tool
         if tool_name not in tools:

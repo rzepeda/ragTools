@@ -1,0 +1,3175 @@
+rag_factory/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/__version__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/__init__.py
+  - rag_factory/cli/main.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/cli/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/cli/commands/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/cli/commands/benchmark.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/cli/test_benchmark_integration.py
+  - tests/unit/cli/test_benchmark_command.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration/cli/test_benchmark_integration.py
+  - tests/unit/cli/test_benchmark_command.py
+  impacted_mocks: []
+rag_factory/cli/commands/check_consistency.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/cli/commands/config.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/cli/test_config_validation_integration.py
+  - tests/unit/cli/test_config_validation_command.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration/cli/test_config_validation_integration.py
+  - tests/unit/cli/test_config_validation_command.py
+  impacted_mocks: []
+rag_factory/cli/commands/gui.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/gui/test_gui_launch.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration/gui/test_gui_launch.py
+  impacted_mocks: []
+rag_factory/cli/commands/index.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/cli/test_index_command.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/cli/test_index_command.py
+  impacted_mocks: []
+rag_factory/cli/commands/query.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/cli/test_query_command.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/cli/test_query_command.py
+  impacted_mocks: []
+rag_factory/cli/commands/repl.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/cli/test_repl_command.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/cli/test_repl_command.py
+  impacted_mocks: []
+rag_factory/cli/commands/strategies.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/cli/test_list_strategies_command.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/cli/test_list_strategies_command.py
+  impacted_mocks: []
+rag_factory/cli/commands/validate_e2e.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/cli/commands/validate_pipeline.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/cli/formatters/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/cli/formatters/consistency.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/cli/test_consistency_formatter.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/cli/commands/check_consistency.py
+  impacted_tests:
+  - tests/unit/cli/test_consistency_formatter.py
+  impacted_mocks: []
+rag_factory/cli/formatters/output.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/cli/test_formatters.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/cli/formatters/__init__.py
+  impacted_tests:
+  - tests/unit/cli/test_formatters.py
+  impacted_mocks: []
+rag_factory/cli/formatters/results.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/cli/test_formatters.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/cli/commands/benchmark.py
+  - rag_factory/cli/commands/index.py
+  - rag_factory/cli/commands/query.py
+  - rag_factory/cli/commands/strategies.py
+  - rag_factory/cli/formatters/__init__.py
+  impacted_tests:
+  - tests/unit/cli/test_formatters.py
+  impacted_mocks: []
+rag_factory/cli/formatters/validation.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/cli/test_validation_formatter.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/cli/commands/validate_pipeline.py
+  - rag_factory/cli/formatters/__init__.py
+  impacted_tests:
+  - tests/unit/cli/test_validation_formatter.py
+  impacted_mocks: []
+rag_factory/cli/main.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/cli/test_index_query_flow.py
+  - tests/unit/cli/test_check_consistency_command.py
+  - tests/unit/cli/test_validate_pipeline_command.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/cli/__init__.py
+  impacted_tests:
+  - tests/integration/cli/test_index_query_flow.py
+  - tests/unit/cli/test_check_consistency_command.py
+  - tests/unit/cli/test_validate_pipeline_command.py
+  impacted_mocks: []
+rag_factory/cli/utils/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/cli/utils/progress.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/cli/utils/__init__.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/cli/utils/validation.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/cli/test_validation.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/cli/commands/benchmark.py
+  - rag_factory/cli/commands/check_consistency.py
+  - rag_factory/cli/commands/query.py
+  - rag_factory/cli/commands/repl.py
+  - rag_factory/cli/commands/validate_pipeline.py
+  - rag_factory/cli/utils/__init__.py
+  impacted_tests:
+  - tests/unit/cli/test_validation.py
+  impacted_mocks: []
+rag_factory/config/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/config/env_resolver.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/config/test_env_resolver.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/registry/service_registry.py
+  impacted_tests:
+  - tests/unit/config/test_env_resolver.py
+  impacted_mocks: []
+rag_factory/config/schemas/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/config/schemas/version.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/config/strategy_loader.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/config/test_strategy_loader.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/config/strategy_pair_manager.py
+  impacted_tests:
+  - tests/unit/config/test_strategy_loader.py
+  impacted_mocks: []
+rag_factory/config/strategy_pair_manager.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/test_agentic_rag_pair.py
+  - tests/integration/test_context_aware_chunking_pair.py
+  - tests/integration/test_contextual_retrieval_pair.py
+  - tests/integration/test_fine_tuned_embeddings_pair.py
+  - tests/integration/test_hierarchical_rag_pair.py
+  - tests/integration/test_hybrid_search_pair.py
+  - tests/integration/test_keyword_pair.py
+  - tests/integration/test_knowledge_graph_pair.py
+  - tests/integration/test_late_chunking_pair.py
+  - tests/integration/test_multi_query_pair.py
+  - tests/integration/test_query_expansion_pair.py
+  - tests/integration/test_reranking_pair.py
+  - tests/integration/test_self_reflective_pair.py
+  - tests/integration/test_semantic_api_pair.py
+  - tests/integration/test_semantic_local_pair.py
+  - tests/test_agentic_workflow.py
+  - tests/unit/config/test_strategy_pair_manager.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/cli/commands/validate_e2e.py
+  - rag_factory/gui/main_window.py
+  - rag_factory/strategy_validation/validate_strategies.py
+  impacted_tests:
+  - tests/integration/test_agentic_rag_pair.py
+  - tests/integration/test_context_aware_chunking_pair.py
+  - tests/integration/test_contextual_retrieval_pair.py
+  - tests/integration/test_fine_tuned_embeddings_pair.py
+  - tests/integration/test_hierarchical_rag_pair.py
+  - tests/integration/test_hybrid_search_pair.py
+  - tests/integration/test_keyword_pair.py
+  - tests/integration/test_knowledge_graph_pair.py
+  - tests/integration/test_late_chunking_pair.py
+  - tests/integration/test_multi_query_pair.py
+  - tests/integration/test_query_expansion_pair.py
+  - tests/integration/test_reranking_pair.py
+  - tests/integration/test_self_reflective_pair.py
+  - tests/integration/test_semantic_api_pair.py
+  - tests/integration/test_semantic_local_pair.py
+  - tests/test_agentic_workflow.py
+  - tests/unit/config/test_strategy_pair_manager.py
+  impacted_mocks: []
+rag_factory/config/validator.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/config/test_validator.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/registry/service_registry.py
+  impacted_tests:
+  - tests/unit/config/test_validator.py
+  impacted_mocks: []
+rag_factory/core/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/core/capabilities.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/strategies/test_hierarchical_indexing.py
+  - tests/integration/strategies/test_in_memory_indexing.py
+  - tests/integration/strategies/test_keyword_indexing.py
+  - tests/integration/strategies/test_vector_embedding_indexing.py
+  - tests/integration/test_agentic_rag_pair.py
+  - tests/integration/test_context_aware_chunking_pair.py
+  - tests/integration/test_contextual_retrieval_pair.py
+  - tests/integration/test_factory_consistency.py
+  - tests/integration/test_fine_tuned_embeddings_pair.py
+  - tests/integration/test_hierarchical_rag_pair.py
+  - tests/integration/test_hybrid_search_pair.py
+  - tests/integration/test_keyword_pair.py
+  - tests/integration/test_knowledge_graph_pair.py
+  - tests/integration/test_late_chunking_pair.py
+  - tests/integration/test_multi_query_pair.py
+  - tests/integration/test_query_expansion_pair.py
+  - tests/integration/test_reranking_pair.py
+  - tests/integration/test_self_reflective_pair.py
+  - tests/integration/test_semantic_api_pair.py
+  - tests/integration/test_semantic_local_pair.py
+  - tests/unit/cli/test_validate_pipeline_command.py
+  - tests/unit/cli/test_validation_formatter.py
+  - tests/unit/core/test_capabilities.py
+  - tests/unit/core/test_factory_validation.py
+  - tests/unit/core/test_indexing_interface.py
+  - tests/unit/core/test_pipeline.py
+  - tests/unit/core/test_retrieval_interface.py
+  - tests/unit/services/test_consistency.py
+  - tests/unit/strategies/indexing/test_context_aware.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/cli/formatters/validation.py
+  - rag_factory/config/strategy_pair_manager.py
+  - rag_factory/core/__init__.py
+  - rag_factory/core/indexing_interface.py
+  - rag_factory/core/pipeline.py
+  - rag_factory/core/retrieval_interface.py
+  - rag_factory/factory.py
+  - rag_factory/services/consistency.py
+  - rag_factory/strategies/indexing/context_aware.py
+  - rag_factory/strategies/indexing/hierarchical.py
+  - rag_factory/strategies/indexing/in_memory.py
+  - rag_factory/strategies/indexing/keyword_indexing.py
+  - rag_factory/strategies/indexing/knowledge_graph_indexing.py
+  - rag_factory/strategies/indexing/vector_embedding.py
+  - rag_factory/strategies/retrieval/hybrid_retriever.py
+  - rag_factory/strategies/retrieval/keyword_retriever.py
+  - rag_factory/strategies/retrieval/knowledge_graph_retriever.py
+  - rag_factory/strategies/retrieval/multi_query_retriever.py
+  - rag_factory/strategies/retrieval/query_expansion_retriever.py
+  - rag_factory/strategies/retrieval/semantic_retriever.py
+  impacted_tests:
+  - tests/integration/strategies/test_hierarchical_indexing.py
+  - tests/integration/strategies/test_in_memory_indexing.py
+  - tests/integration/strategies/test_keyword_indexing.py
+  - tests/integration/strategies/test_vector_embedding_indexing.py
+  - tests/integration/test_agentic_rag_pair.py
+  - tests/integration/test_context_aware_chunking_pair.py
+  - tests/integration/test_contextual_retrieval_pair.py
+  - tests/integration/test_factory_consistency.py
+  - tests/integration/test_fine_tuned_embeddings_pair.py
+  - tests/integration/test_hierarchical_rag_pair.py
+  - tests/integration/test_hybrid_search_pair.py
+  - tests/integration/test_keyword_pair.py
+  - tests/integration/test_knowledge_graph_pair.py
+  - tests/integration/test_late_chunking_pair.py
+  - tests/integration/test_multi_query_pair.py
+  - tests/integration/test_query_expansion_pair.py
+  - tests/integration/test_reranking_pair.py
+  - tests/integration/test_self_reflective_pair.py
+  - tests/integration/test_semantic_api_pair.py
+  - tests/integration/test_semantic_local_pair.py
+  - tests/unit/cli/test_validate_pipeline_command.py
+  - tests/unit/cli/test_validation_formatter.py
+  - tests/unit/core/test_capabilities.py
+  - tests/unit/core/test_factory_validation.py
+  - tests/unit/core/test_indexing_interface.py
+  - tests/unit/core/test_pipeline.py
+  - tests/unit/core/test_retrieval_interface.py
+  - tests/unit/services/test_consistency.py
+  - tests/unit/strategies/indexing/test_context_aware.py
+  impacted_mocks: []
+rag_factory/core/indexing_interface.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/strategies/test_hierarchical_indexing.py
+  - tests/integration/strategies/test_in_memory_indexing.py
+  - tests/integration/strategies/test_keyword_indexing.py
+  - tests/integration/strategies/test_vector_embedding_indexing.py
+  - tests/integration/test_agentic_rag_pair.py
+  - tests/integration/test_context_aware_chunking_pair.py
+  - tests/integration/test_contextual_retrieval_pair.py
+  - tests/integration/test_fine_tuned_embeddings_pair.py
+  - tests/integration/test_hierarchical_rag_pair.py
+  - tests/integration/test_hybrid_search_pair.py
+  - tests/integration/test_keyword_pair.py
+  - tests/integration/test_knowledge_graph_pair.py
+  - tests/integration/test_late_chunking_pair.py
+  - tests/integration/test_multi_query_pair.py
+  - tests/integration/test_query_expansion_pair.py
+  - tests/integration/test_reranking_pair.py
+  - tests/integration/test_self_reflective_pair.py
+  - tests/integration/test_semantic_api_pair.py
+  - tests/integration/test_semantic_local_pair.py
+  - tests/integration_real/test_end_to_end_real.py
+  - tests/test_agentic_workflow.py
+  - tests/unit/cli/test_validation_formatter.py
+  - tests/unit/core/test_factory_validation.py
+  - tests/unit/core/test_indexing_interface.py
+  - tests/unit/core/test_pipeline.py
+  - tests/unit/strategies/indexing/test_context_aware.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/cli/commands/validate_e2e.py
+  - rag_factory/cli/commands/validate_pipeline.py
+  - rag_factory/config/strategy_pair_manager.py
+  - rag_factory/core/__init__.py
+  - rag_factory/core/pipeline.py
+  - rag_factory/gui/main_window.py
+  - rag_factory/strategies/indexing/context_aware.py
+  - rag_factory/strategies/indexing/hierarchical.py
+  - rag_factory/strategies/indexing/in_memory.py
+  - rag_factory/strategies/indexing/keyword_indexing.py
+  - rag_factory/strategies/indexing/knowledge_graph_indexing.py
+  - rag_factory/strategies/indexing/vector_embedding.py
+  - rag_factory/strategy_validation/validate_strategies.py
+  impacted_tests:
+  - tests/integration/strategies/test_hierarchical_indexing.py
+  - tests/integration/strategies/test_in_memory_indexing.py
+  - tests/integration/strategies/test_keyword_indexing.py
+  - tests/integration/strategies/test_vector_embedding_indexing.py
+  - tests/integration/test_agentic_rag_pair.py
+  - tests/integration/test_context_aware_chunking_pair.py
+  - tests/integration/test_contextual_retrieval_pair.py
+  - tests/integration/test_fine_tuned_embeddings_pair.py
+  - tests/integration/test_hierarchical_rag_pair.py
+  - tests/integration/test_hybrid_search_pair.py
+  - tests/integration/test_keyword_pair.py
+  - tests/integration/test_knowledge_graph_pair.py
+  - tests/integration/test_late_chunking_pair.py
+  - tests/integration/test_multi_query_pair.py
+  - tests/integration/test_query_expansion_pair.py
+  - tests/integration/test_reranking_pair.py
+  - tests/integration/test_self_reflective_pair.py
+  - tests/integration/test_semantic_api_pair.py
+  - tests/integration/test_semantic_local_pair.py
+  - tests/integration_real/test_end_to_end_real.py
+  - tests/test_agentic_workflow.py
+  - tests/unit/cli/test_validation_formatter.py
+  - tests/unit/core/test_factory_validation.py
+  - tests/unit/core/test_indexing_interface.py
+  - tests/unit/core/test_pipeline.py
+  - tests/unit/strategies/indexing/test_context_aware.py
+  impacted_mocks: []
+rag_factory/core/pipeline.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/cli/test_validation_formatter.py
+  - tests/unit/core/test_factory_validation.py
+  - tests/unit/core/test_pipeline.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/cli/commands/validate_pipeline.py
+  - rag_factory/cli/formatters/validation.py
+  - rag_factory/factory.py
+  impacted_tests:
+  - tests/unit/cli/test_validation_formatter.py
+  - tests/unit/core/test_factory_validation.py
+  - tests/unit/core/test_pipeline.py
+  impacted_mocks: []
+rag_factory/core/retrieval_interface.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/test_agentic_rag_pair.py
+  - tests/integration/test_context_aware_chunking_pair.py
+  - tests/integration/test_contextual_retrieval_pair.py
+  - tests/integration/test_fine_tuned_embeddings_pair.py
+  - tests/integration/test_hierarchical_rag_pair.py
+  - tests/integration/test_hybrid_search_pair.py
+  - tests/integration/test_keyword_pair.py
+  - tests/integration/test_knowledge_graph_pair.py
+  - tests/integration/test_late_chunking_pair.py
+  - tests/integration/test_multi_query_pair.py
+  - tests/integration/test_query_expansion_pair.py
+  - tests/integration/test_reranking_pair.py
+  - tests/integration/test_self_reflective_pair.py
+  - tests/integration/test_semantic_api_pair.py
+  - tests/integration/test_semantic_local_pair.py
+  - tests/integration_real/test_end_to_end_real.py
+  - tests/unit/cli/test_validation_formatter.py
+  - tests/unit/core/test_factory_validation.py
+  - tests/unit/core/test_pipeline.py
+  - tests/unit/core/test_retrieval_interface.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/cli/commands/validate_e2e.py
+  - rag_factory/cli/commands/validate_pipeline.py
+  - rag_factory/config/strategy_pair_manager.py
+  - rag_factory/core/__init__.py
+  - rag_factory/core/pipeline.py
+  - rag_factory/gui/main_window.py
+  - rag_factory/strategies/retrieval/hybrid_retriever.py
+  - rag_factory/strategies/retrieval/keyword_retriever.py
+  - rag_factory/strategies/retrieval/knowledge_graph_retriever.py
+  - rag_factory/strategies/retrieval/multi_query_retriever.py
+  - rag_factory/strategies/retrieval/query_expansion_retriever.py
+  - rag_factory/strategies/retrieval/semantic_retriever.py
+  - rag_factory/strategy_validation/validate_strategies.py
+  impacted_tests:
+  - tests/integration/test_agentic_rag_pair.py
+  - tests/integration/test_context_aware_chunking_pair.py
+  - tests/integration/test_contextual_retrieval_pair.py
+  - tests/integration/test_fine_tuned_embeddings_pair.py
+  - tests/integration/test_hierarchical_rag_pair.py
+  - tests/integration/test_hybrid_search_pair.py
+  - tests/integration/test_keyword_pair.py
+  - tests/integration/test_knowledge_graph_pair.py
+  - tests/integration/test_late_chunking_pair.py
+  - tests/integration/test_multi_query_pair.py
+  - tests/integration/test_query_expansion_pair.py
+  - tests/integration/test_reranking_pair.py
+  - tests/integration/test_self_reflective_pair.py
+  - tests/integration/test_semantic_api_pair.py
+  - tests/integration/test_semantic_local_pair.py
+  - tests/integration_real/test_end_to_end_real.py
+  - tests/unit/cli/test_validation_formatter.py
+  - tests/unit/core/test_factory_validation.py
+  - tests/unit/core/test_pipeline.py
+  - tests/unit/core/test_retrieval_interface.py
+  impacted_mocks: []
+rag_factory/database/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/database/config.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/conftest.py
+  - tests/integration/database/test_database_integration.py
+  - tests/unit/database/test_connection.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/database/__init__.py
+  - rag_factory/database/connection.py
+  impacted_tests:
+  - tests/conftest.py
+  - tests/integration/database/test_database_integration.py
+  - tests/unit/database/test_connection.py
+  impacted_mocks: []
+rag_factory/database/connection.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/conftest.py
+  - tests/integration/database/test_database_integration.py
+  - tests/unit/database/test_connection.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/database/__init__.py
+  impacted_tests:
+  - tests/conftest.py
+  - tests/integration/database/test_database_integration.py
+  - tests/unit/database/test_connection.py
+  impacted_mocks: []
+rag_factory/database/env_validator.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/config/test_env_validator.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/config/test_env_validator.py
+  impacted_mocks: []
+rag_factory/database/models.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/conftest.py
+  - tests/integration/database/test_database_integration.py
+  - tests/unit/database/test_models.py
+  - tests/unit/repositories/test_chunk_repository.py
+  - tests/unit/repositories/test_document_repository.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/database/__init__.py
+  - rag_factory/database/connection.py
+  impacted_tests:
+  - tests/conftest.py
+  - tests/integration/database/test_database_integration.py
+  - tests/unit/database/test_models.py
+  - tests/unit/repositories/test_chunk_repository.py
+  - tests/unit/repositories/test_document_repository.py
+  impacted_mocks: []
+rag_factory/database/vector_indexing.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/database/test_vector_indexing.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/database/test_vector_indexing.py
+  impacted_mocks: []
+rag_factory/evaluation/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/evaluation/analysis/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/evaluation/analysis/comparison.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/evaluation/test_evaluation_integration.py
+  - tests/unit/evaluation/test_comparison.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/evaluation/analysis/__init__.py
+  impacted_tests:
+  - tests/integration/evaluation/test_evaluation_integration.py
+  - tests/unit/evaluation/test_comparison.py
+  impacted_mocks: []
+rag_factory/evaluation/analysis/statistics.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/evaluation/test_evaluation_integration.py
+  - tests/unit/evaluation/test_statistical_testing.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/evaluation/analysis/__init__.py
+  - rag_factory/evaluation/analysis/comparison.py
+  impacted_tests:
+  - tests/integration/evaluation/test_evaluation_integration.py
+  - tests/unit/evaluation/test_statistical_testing.py
+  impacted_mocks: []
+rag_factory/evaluation/benchmarks/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/evaluation/benchmarks/config.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/evaluation/test_evaluation_integration.py
+  - tests/unit/evaluation/test_benchmark_suite.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/evaluation/benchmarks/__init__.py
+  - rag_factory/evaluation/benchmarks/runner.py
+  impacted_tests:
+  - tests/integration/evaluation/test_evaluation_integration.py
+  - tests/unit/evaluation/test_benchmark_suite.py
+  impacted_mocks: []
+rag_factory/evaluation/benchmarks/runner.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/evaluation/test_evaluation_integration.py
+  - tests/unit/evaluation/test_benchmark_suite.py
+  - tests/unit/evaluation/test_comparison.py
+  - tests/unit/evaluation/test_export.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/evaluation/__init__.py
+  - rag_factory/evaluation/analysis/comparison.py
+  - rag_factory/evaluation/benchmarks/__init__.py
+  - rag_factory/evaluation/exporters/csv_exporter.py
+  - rag_factory/evaluation/exporters/html_exporter.py
+  - rag_factory/evaluation/exporters/json_exporter.py
+  impacted_tests:
+  - tests/integration/evaluation/test_evaluation_integration.py
+  - tests/unit/evaluation/test_benchmark_suite.py
+  - tests/unit/evaluation/test_comparison.py
+  - tests/unit/evaluation/test_export.py
+  impacted_mocks: []
+rag_factory/evaluation/datasets/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/evaluation/datasets/loader.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/evaluation/test_dataset_loader.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/evaluation/datasets/__init__.py
+  impacted_tests:
+  - tests/unit/evaluation/test_dataset_loader.py
+  impacted_mocks: []
+rag_factory/evaluation/datasets/schema.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/evaluation/test_evaluation_integration.py
+  - tests/unit/evaluation/test_benchmark_suite.py
+  - tests/unit/evaluation/test_dataset_loader.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/evaluation/benchmarks/runner.py
+  - rag_factory/evaluation/datasets/__init__.py
+  - rag_factory/evaluation/datasets/loader.py
+  - rag_factory/evaluation/datasets/statistics.py
+  impacted_tests:
+  - tests/integration/evaluation/test_evaluation_integration.py
+  - tests/unit/evaluation/test_benchmark_suite.py
+  - tests/unit/evaluation/test_dataset_loader.py
+  impacted_mocks: []
+rag_factory/evaluation/datasets/statistics.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/evaluation/exporters/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/evaluation/exporters/csv_exporter.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/evaluation/test_evaluation_integration.py
+  - tests/unit/evaluation/test_export.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/evaluation/exporters/__init__.py
+  impacted_tests:
+  - tests/integration/evaluation/test_evaluation_integration.py
+  - tests/unit/evaluation/test_export.py
+  impacted_mocks: []
+rag_factory/evaluation/exporters/html_exporter.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/evaluation/exporters/__init__.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/evaluation/exporters/json_exporter.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/evaluation/test_evaluation_integration.py
+  - tests/unit/evaluation/test_export.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/evaluation/exporters/__init__.py
+  impacted_tests:
+  - tests/integration/evaluation/test_evaluation_integration.py
+  - tests/unit/evaluation/test_export.py
+  impacted_mocks: []
+rag_factory/evaluation/metrics/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/evaluation/metrics/base.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/evaluation/test_evaluation_integration.py
+  - tests/unit/evaluation/test_benchmark_suite.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/evaluation/__init__.py
+  - rag_factory/evaluation/benchmarks/config.py
+  - rag_factory/evaluation/benchmarks/runner.py
+  - rag_factory/evaluation/metrics/__init__.py
+  - rag_factory/evaluation/metrics/cost.py
+  - rag_factory/evaluation/metrics/performance.py
+  - rag_factory/evaluation/metrics/quality.py
+  - rag_factory/evaluation/metrics/retrieval.py
+  impacted_tests:
+  - tests/integration/evaluation/test_evaluation_integration.py
+  - tests/unit/evaluation/test_benchmark_suite.py
+  impacted_mocks: []
+rag_factory/evaluation/metrics/cost.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/evaluation/metrics/performance.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/evaluation/metrics/quality.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/evaluation/metrics/retrieval.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/evaluation/test_retrieval_metrics.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/evaluation/metrics/__init__.py
+  impacted_tests:
+  - tests/unit/evaluation/test_retrieval_metrics.py
+  impacted_mocks: []
+rag_factory/exceptions.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/test_factory_integration.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/__init__.py
+  - rag_factory/factory.py
+  - rag_factory/legacy_config.py
+  impacted_tests:
+  - tests/integration/test_factory_integration.py
+  impacted_mocks: []
+rag_factory/factory.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/test_config_integration.py
+  - tests/integration/test_factory_consistency.py
+  - tests/integration/test_factory_integration.py
+  - tests/integration/test_package_integration.py
+  - tests/integration/test_pipeline_integration.py
+  - tests/unit/core/test_factory_validation.py
+  - tests/unit/test_factory.py
+  - tests/unit/test_factory_di.py
+  - tests/unit/test_package.py
+  - tests/unit/test_pipeline.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/cli/commands/benchmark.py
+  - rag_factory/cli/commands/check_consistency.py
+  - rag_factory/cli/commands/index.py
+  - rag_factory/cli/commands/repl.py
+  - rag_factory/cli/commands/strategies.py
+  - rag_factory/cli/commands/validate_pipeline.py
+  - rag_factory/cli/utils/validation.py
+  - rag_factory/config/strategy_pair_manager.py
+  - rag_factory/pipeline.py
+  - rag_factory/strategies/indexing/context_aware.py
+  - rag_factory/strategies/indexing/hierarchical.py
+  - rag_factory/strategies/indexing/keyword_indexing.py
+  - rag_factory/strategies/indexing/knowledge_graph_indexing.py
+  - rag_factory/strategies/indexing/vector_embedding.py
+  - rag_factory/strategies/retrieval/hybrid_retriever.py
+  - rag_factory/strategies/retrieval/keyword_retriever.py
+  - rag_factory/strategies/retrieval/knowledge_graph_retriever.py
+  - rag_factory/strategies/retrieval/multi_query_retriever.py
+  - rag_factory/strategies/retrieval/query_expansion_retriever.py
+  - rag_factory/strategies/retrieval/semantic_retriever.py
+  impacted_tests:
+  - tests/integration/test_config_integration.py
+  - tests/integration/test_factory_consistency.py
+  - tests/integration/test_factory_integration.py
+  - tests/integration/test_package_integration.py
+  - tests/integration/test_pipeline_integration.py
+  - tests/unit/core/test_factory_validation.py
+  - tests/unit/test_factory.py
+  - tests/unit/test_factory_di.py
+  - tests/unit/test_package.py
+  - tests/unit/test_pipeline.py
+  impacted_mocks: []
+rag_factory/gui/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/gui/components/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/gui/components/scrolled_text.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/gui/components/__init__.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/gui/components/status_bar.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/gui/components/__init__.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/gui/main_window.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/gui/test_end_to_end_workflow.py
+  - tests/integration/gui/test_gui_launch.py
+  - tests/unit/gui/test_backend_integration.py
+  - tests/unit/gui/test_indexing_operations.py
+  - tests/unit/gui/test_main_window.py
+  - tests/unit/gui/test_polish_and_ux.py
+  - tests/unit/gui/test_retrieval_operations.py
+  - tests/unit/gui/test_utility_operations.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/cli/commands/gui.py
+  - rag_factory/gui/__init__.py
+  impacted_tests:
+  - tests/integration/gui/test_end_to_end_workflow.py
+  - tests/integration/gui/test_gui_launch.py
+  - tests/unit/gui/test_backend_integration.py
+  - tests/unit/gui/test_indexing_operations.py
+  - tests/unit/gui/test_main_window.py
+  - tests/unit/gui/test_polish_and_ux.py
+  - tests/unit/gui/test_retrieval_operations.py
+  - tests/unit/gui/test_utility_operations.py
+  impacted_mocks: []
+rag_factory/gui/main_window_additions.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/gui/utils/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/gui/utils/formatters.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/gui/utils/__init__.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/gui/utils/threading.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/gui/utils/__init__.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/legacy_config.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/test_config_integration.py
+  - tests/integration/test_package_integration.py
+  - tests/unit/test_config.py
+  - tests/unit/test_package.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration/test_config_integration.py
+  - tests/integration/test_package_integration.py
+  - tests/unit/test_config.py
+  - tests/unit/test_package.py
+  impacted_mocks: []
+rag_factory/models/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/models/embedding/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/models/embedding/loader.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/models/__init__.py
+  - rag_factory/models/embedding/__init__.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/models/embedding/models.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/models/embedding/test_registry.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/models/__init__.py
+  - rag_factory/models/embedding/__init__.py
+  - rag_factory/models/embedding/loader.py
+  - rag_factory/models/embedding/registry.py
+  impacted_tests:
+  - tests/unit/models/embedding/test_registry.py
+  impacted_mocks: []
+rag_factory/models/embedding/registry.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/models/embedding/test_registry.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/models/__init__.py
+  - rag_factory/models/embedding/__init__.py
+  impacted_tests:
+  - tests/unit/models/embedding/test_registry.py
+  impacted_mocks: []
+rag_factory/models/evaluation/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/models/evaluation/ab_testing.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/models/evaluation/test_ab_testing.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/models/__init__.py
+  - rag_factory/models/evaluation/__init__.py
+  impacted_tests:
+  - tests/unit/models/evaluation/test_ab_testing.py
+  impacted_mocks: []
+rag_factory/models/evaluation/models.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/models/evaluation/test_ab_testing.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/models/__init__.py
+  - rag_factory/models/evaluation/__init__.py
+  - rag_factory/models/evaluation/ab_testing.py
+  impacted_tests:
+  - tests/unit/models/evaluation/test_ab_testing.py
+  impacted_mocks: []
+rag_factory/observability/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/observability/integrations/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/observability/integrations/prometheus.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/observability/test_monitoring_integration.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration/observability/test_monitoring_integration.py
+  impacted_mocks: []
+rag_factory/observability/logging/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/observability/logging/config.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/observability/logging/filters.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/observability/test_filters.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/observability/test_filters.py
+  impacted_mocks: []
+rag_factory/observability/logging/logger.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/observability/test_monitoring_integration.py
+  - tests/unit/observability/test_logger.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/observability/__init__.py
+  - rag_factory/observability/logging/__init__.py
+  - rag_factory/observability/monitoring/api.py
+  impacted_tests:
+  - tests/integration/observability/test_monitoring_integration.py
+  - tests/unit/observability/test_logger.py
+  impacted_mocks: []
+rag_factory/observability/metrics/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/observability/metrics/collector.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/observability/test_monitoring_integration.py
+  - tests/unit/observability/test_metrics_collector.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/observability/__init__.py
+  - rag_factory/observability/integrations/prometheus.py
+  - rag_factory/observability/metrics/__init__.py
+  - rag_factory/observability/monitoring/api.py
+  impacted_tests:
+  - tests/integration/observability/test_monitoring_integration.py
+  - tests/unit/observability/test_metrics_collector.py
+  impacted_mocks: []
+rag_factory/observability/metrics/cost.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/observability/test_monitoring_integration.py
+  - tests/unit/observability/test_cost_calculator.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration/observability/test_monitoring_integration.py
+  - tests/unit/observability/test_cost_calculator.py
+  impacted_mocks: []
+rag_factory/observability/metrics/performance.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/observability/test_monitoring_integration.py
+  - tests/unit/observability/test_performance_monitor.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/observability/monitoring/api.py
+  impacted_tests:
+  - tests/integration/observability/test_monitoring_integration.py
+  - tests/unit/observability/test_performance_monitor.py
+  impacted_mocks: []
+rag_factory/observability/monitoring/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/observability/monitoring/api.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/observability/test_monitoring_integration.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration/observability/test_monitoring_integration.py
+  impacted_mocks: []
+rag_factory/pipeline.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/test_config_integration.py
+  - tests/integration/test_package_integration.py
+  - tests/integration/test_pipeline_integration.py
+  - tests/unit/test_package.py
+  - tests/unit/test_pipeline.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration/test_config_integration.py
+  - tests/integration/test_package_integration.py
+  - tests/integration/test_pipeline_integration.py
+  - tests/unit/test_package.py
+  - tests/unit/test_pipeline.py
+  impacted_mocks: []
+rag_factory/registry/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/registry/exceptions.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/registry/test_registry_integration.py
+  - tests/unit/registry/test_exceptions.py
+  - tests/unit/registry/test_service_factory.py
+  - tests/unit/registry/test_service_registry.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration/registry/test_registry_integration.py
+  - tests/unit/registry/test_exceptions.py
+  - tests/unit/registry/test_service_factory.py
+  - tests/unit/registry/test_service_registry.py
+  impacted_mocks: []
+rag_factory/registry/service_factory.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/registry/test_service_factory.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/registry/test_service_factory.py
+  impacted_mocks: []
+rag_factory/registry/service_registry.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/test_agentic_workflow.py
+  - tests/unit/config/test_strategy_pair_manager.py
+  - tests/unit/registry/test_service_registry.py
+  - tests/unit/registry/test_threading.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/cli/commands/validate_e2e.py
+  - rag_factory/config/strategy_pair_manager.py
+  - rag_factory/gui/main_window.py
+  - rag_factory/strategy_validation/validate_strategies.py
+  impacted_tests:
+  - tests/test_agentic_workflow.py
+  - tests/unit/config/test_strategy_pair_manager.py
+  - tests/unit/registry/test_service_registry.py
+  - tests/unit/registry/test_threading.py
+  impacted_mocks: []
+rag_factory/repositories/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/repositories/base.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/repositories/chunk.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration_real/test_database_real.py
+  - tests/integration_real/test_end_to_end_real.py
+  - tests/unit/repositories/test_chunk_repository.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/services/database/database_context.py
+  - rag_factory/services/database/postgres.py
+  impacted_tests:
+  - tests/integration_real/test_database_real.py
+  - tests/integration_real/test_end_to_end_real.py
+  - tests/unit/repositories/test_chunk_repository.py
+  impacted_mocks: []
+rag_factory/repositories/document.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/repositories/test_document_repository.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/services/database/database_context.py
+  - rag_factory/services/database/postgres.py
+  impacted_tests:
+  - tests/unit/repositories/test_document_repository.py
+  impacted_mocks: []
+rag_factory/repositories/exceptions.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/repositories/test_chunk_repository.py
+  - tests/unit/repositories/test_document_repository.py
+  - tests/unit/repositories/test_exceptions.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/repositories/test_chunk_repository.py
+  - tests/unit/repositories/test_document_repository.py
+  - tests/unit/repositories/test_exceptions.py
+  impacted_mocks: []
+rag_factory/services/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/services/api/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/services/api/anthropic.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/services/api/__init__.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/services/api/cohere.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/services/api/__init__.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/services/api/openai.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/services/api/__init__.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/services/consistency.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/services/test_consistency.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/factory.py
+  - rag_factory/services/__init__.py
+  impacted_tests:
+  - tests/unit/services/test_consistency.py
+  impacted_mocks: []
+rag_factory/services/database/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/services/database/database_context.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/services/database/__init__.py
+  - rag_factory/services/database/postgres.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/services/database/database_context_additions.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/services/database/migration_validator.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/database/test_migration_validator_integration.py
+  - tests/unit/services/database/test_migration_validator.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/config/strategy_pair_manager.py
+  - rag_factory/services/database/__init__.py
+  impacted_tests:
+  - tests/integration/database/test_migration_validator_integration.py
+  - tests/unit/services/database/test_migration_validator.py
+  impacted_mocks: []
+rag_factory/services/database/neo4j.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration_real/conftest.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/services/database/__init__.py
+  impacted_tests:
+  - tests/integration_real/conftest.py
+  impacted_mocks: []
+rag_factory/services/database/postgres.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/conftest.py
+  - tests/integration/services/test_service_integration.py
+  - tests/integration_real/conftest.py
+  - tests/unit/database/test_batch_operations.py
+  - tests/unit/database/test_pgvector.py
+  - tests/unit/services/database/test_migration_validator.py
+  - tests/unit/services/test_database_service.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/services/database/__init__.py
+  - rag_factory/services/database/migration_validator.py
+  impacted_tests:
+  - tests/conftest.py
+  - tests/integration/services/test_service_integration.py
+  - tests/integration_real/conftest.py
+  - tests/unit/database/test_batch_operations.py
+  - tests/unit/database/test_pgvector.py
+  - tests/unit/services/database/test_migration_validator.py
+  - tests/unit/services/test_database_service.py
+  impacted_mocks: []
+rag_factory/services/dependencies.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/strategies/test_base_integration.py
+  - tests/integration/strategies/test_contextual_integration.py
+  - tests/integration/strategies/test_hierarchical_indexing.py
+  - tests/integration/strategies/test_in_memory_indexing.py
+  - tests/integration/strategies/test_keyword_indexing.py
+  - tests/integration/strategies/test_knowledge_graph_integration.py
+  - tests/integration/strategies/test_multi_query_integration.py
+  - tests/integration/strategies/test_self_reflective_integration.py
+  - tests/integration/strategies/test_vector_embedding_indexing.py
+  - tests/integration/test_factory_consistency.py
+  - tests/integration/test_factory_integration.py
+  - tests/integration/test_package_integration.py
+  - tests/integration/test_pipeline_integration.py
+  - tests/integration_real/test_end_to_end_real.py
+  - tests/unit/cli/test_validate_pipeline_command.py
+  - tests/unit/cli/test_validation_formatter.py
+  - tests/unit/config/test_strategy_pair_manager.py
+  - tests/unit/core/test_capabilities.py
+  - tests/unit/core/test_factory_validation.py
+  - tests/unit/core/test_indexing_interface.py
+  - tests/unit/core/test_pipeline.py
+  - tests/unit/core/test_retrieval_interface.py
+  - tests/unit/services/test_consistency.py
+  - tests/unit/services/test_dependencies.py
+  - tests/unit/strategies/agentic/test_strategy.py
+  - tests/unit/strategies/indexing/test_context_aware.py
+  - tests/unit/strategies/test_base.py
+  - tests/unit/strategies/test_base_strategy_di.py
+  - tests/unit/test_factory.py
+  - tests/unit/test_factory_di.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/config/strategy_pair_manager.py
+  - rag_factory/core/capabilities.py
+  - rag_factory/core/indexing_interface.py
+  - rag_factory/core/pipeline.py
+  - rag_factory/core/retrieval_interface.py
+  - rag_factory/factory.py
+  - rag_factory/services/__init__.py
+  - rag_factory/services/consistency.py
+  - rag_factory/strategies/base.py
+  - rag_factory/strategies/indexing/context_aware.py
+  - rag_factory/strategies/indexing/hierarchical.py
+  - rag_factory/strategies/indexing/in_memory.py
+  - rag_factory/strategies/indexing/keyword_indexing.py
+  - rag_factory/strategies/indexing/knowledge_graph_indexing.py
+  - rag_factory/strategies/indexing/vector_embedding.py
+  - rag_factory/strategies/retrieval/hybrid_retriever.py
+  - rag_factory/strategies/retrieval/keyword_retriever.py
+  - rag_factory/strategies/retrieval/knowledge_graph_retriever.py
+  - rag_factory/strategies/retrieval/multi_query_retriever.py
+  - rag_factory/strategies/retrieval/query_expansion_retriever.py
+  - rag_factory/strategies/retrieval/semantic_retriever.py
+  impacted_tests:
+  - tests/integration/strategies/test_base_integration.py
+  - tests/integration/strategies/test_contextual_integration.py
+  - tests/integration/strategies/test_hierarchical_indexing.py
+  - tests/integration/strategies/test_in_memory_indexing.py
+  - tests/integration/strategies/test_keyword_indexing.py
+  - tests/integration/strategies/test_knowledge_graph_integration.py
+  - tests/integration/strategies/test_multi_query_integration.py
+  - tests/integration/strategies/test_self_reflective_integration.py
+  - tests/integration/strategies/test_vector_embedding_indexing.py
+  - tests/integration/test_factory_consistency.py
+  - tests/integration/test_factory_integration.py
+  - tests/integration/test_package_integration.py
+  - tests/integration/test_pipeline_integration.py
+  - tests/integration_real/test_end_to_end_real.py
+  - tests/unit/cli/test_validate_pipeline_command.py
+  - tests/unit/cli/test_validation_formatter.py
+  - tests/unit/config/test_strategy_pair_manager.py
+  - tests/unit/core/test_capabilities.py
+  - tests/unit/core/test_factory_validation.py
+  - tests/unit/core/test_indexing_interface.py
+  - tests/unit/core/test_pipeline.py
+  - tests/unit/core/test_retrieval_interface.py
+  - tests/unit/services/test_consistency.py
+  - tests/unit/services/test_dependencies.py
+  - tests/unit/strategies/agentic/test_strategy.py
+  - tests/unit/strategies/indexing/test_context_aware.py
+  - tests/unit/strategies/test_base.py
+  - tests/unit/strategies/test_base_strategy_di.py
+  - tests/unit/test_factory.py
+  - tests/unit/test_factory_di.py
+  impacted_mocks: []
+rag_factory/services/embedding/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/services/embedding/base.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/services/test_service_integration.py
+  - tests/unit/services/embedding/test_service.py
+  - tests/unit/services/embeddings/test_onnx_local.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration/services/test_service_integration.py
+  - tests/unit/services/embedding/test_service.py
+  - tests/unit/services/embeddings/test_onnx_local.py
+  impacted_mocks: []
+rag_factory/services/embedding/cache.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/services/embedding/test_cache.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/services/embedding/test_cache.py
+  impacted_mocks: []
+rag_factory/services/embedding/config.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/services/test_service_integration.py
+  - tests/unit/services/embedding/test_service.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration/services/test_service_integration.py
+  - tests/unit/services/embedding/test_service.py
+  impacted_mocks: []
+rag_factory/services/embedding/providers/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/services/embedding/providers/cohere.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration_real/conftest.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration_real/conftest.py
+  impacted_mocks: []
+rag_factory/services/embedding/providers/local.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/services/embedding/providers/onnx_local.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/services/test_onnx_embeddings_integration.py
+  - tests/integration_real/conftest.py
+  - tests/performance/benchmark_onnx_embeddings.py
+  - tests/unit/services/embedding/test_onnx_local_provider.py
+  - tests/unit/services/embeddings/test_onnx_local.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/services/onnx/embedding.py
+  impacted_tests:
+  - tests/integration/services/test_onnx_embeddings_integration.py
+  - tests/integration_real/conftest.py
+  - tests/performance/benchmark_onnx_embeddings.py
+  - tests/unit/services/embedding/test_onnx_local_provider.py
+  - tests/unit/services/embeddings/test_onnx_local.py
+  impacted_mocks: []
+rag_factory/services/embedding/providers/openai.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration_real/conftest.py
+  - tests/unit/services/embedding/test_openai_provider.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/services/api/openai.py
+  impacted_tests:
+  - tests/integration_real/conftest.py
+  - tests/unit/services/embedding/test_openai_provider.py
+  impacted_mocks: []
+rag_factory/services/embedding/rate_limiter.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/services/embedding/test_rate_limiter.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/services/embedding/test_rate_limiter.py
+  impacted_mocks: []
+rag_factory/services/embedding/service.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/services/test_service_integration.py
+  - tests/unit/services/embedding/test_service.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration/services/test_service_integration.py
+  - tests/unit/services/embedding/test_service.py
+  impacted_mocks: []
+rag_factory/services/interfaces.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/registry/test_registry_integration.py
+  - tests/integration/services/test_service_implementations.py
+  - tests/integration/strategies/test_vector_embedding_indexing.py
+  - tests/unit/services/test_dependencies.py
+  - tests/unit/services/test_graph_interface.py
+  - tests/unit/services/test_interfaces.py
+  - tests/unit/services/test_reranking_interface.py
+  - tests/unit/strategies/test_base_strategy_di.py
+  - tests/unit/test_factory_di.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/core/indexing_interface.py
+  - rag_factory/core/retrieval_interface.py
+  - rag_factory/database/vector_indexing.py
+  - rag_factory/factory.py
+  - rag_factory/registry/service_factory.py
+  - rag_factory/services/__init__.py
+  - rag_factory/services/api/anthropic.py
+  - rag_factory/services/api/cohere.py
+  - rag_factory/services/api/openai.py
+  - rag_factory/services/database/neo4j.py
+  - rag_factory/services/database/postgres.py
+  - rag_factory/services/dependencies.py
+  - rag_factory/services/local/reranker.py
+  - rag_factory/services/onnx/embedding.py
+  impacted_tests:
+  - tests/integration/registry/test_registry_integration.py
+  - tests/integration/services/test_service_implementations.py
+  - tests/integration/strategies/test_vector_embedding_indexing.py
+  - tests/unit/services/test_dependencies.py
+  - tests/unit/services/test_graph_interface.py
+  - tests/unit/services/test_interfaces.py
+  - tests/unit/services/test_reranking_interface.py
+  - tests/unit/strategies/test_base_strategy_di.py
+  - tests/unit/test_factory_di.py
+  impacted_mocks: []
+rag_factory/services/llm/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/services/llm/base.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/services/test_service_integration.py
+  - tests/integration/strategies/test_knowledge_graph_integration.py
+  - tests/integration_real/test_end_to_end_real.py
+  - tests/integration_real/test_llm_real.py
+  - tests/unit/services/llm/test_anthropic_provider.py
+  - tests/unit/services/llm/test_ollama_provider.py
+  - tests/unit/services/llm/test_openai_provider.py
+  - tests/unit/services/llm/test_prompt_template.py
+  - tests/unit/services/llm/test_service.py
+  - tests/unit/strategies/knowledge_graph/test_entity_extractor.py
+  - tests/unit/strategies/query_expansion/test_expander_service.py
+  - tests/unit/strategies/query_expansion/test_llm_expander.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/services/api/anthropic.py
+  - rag_factory/services/api/openai.py
+  - rag_factory/strategies/self_reflective/grader.py
+  - rag_factory/strategies/self_reflective/refiner.py
+  impacted_tests:
+  - tests/integration/services/test_service_integration.py
+  - tests/integration/strategies/test_knowledge_graph_integration.py
+  - tests/integration_real/test_end_to_end_real.py
+  - tests/integration_real/test_llm_real.py
+  - tests/unit/services/llm/test_anthropic_provider.py
+  - tests/unit/services/llm/test_ollama_provider.py
+  - tests/unit/services/llm/test_openai_provider.py
+  - tests/unit/services/llm/test_prompt_template.py
+  - tests/unit/services/llm/test_service.py
+  - tests/unit/strategies/knowledge_graph/test_entity_extractor.py
+  - tests/unit/strategies/query_expansion/test_expander_service.py
+  - tests/unit/strategies/query_expansion/test_llm_expander.py
+  impacted_mocks: []
+rag_factory/services/llm/config.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/conftest.py
+  - tests/integration/services/test_service_integration.py
+  - tests/integration_real/conftest.py
+  - tests/unit/services/llm/test_service.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/registry/service_factory.py
+  impacted_tests:
+  - tests/conftest.py
+  - tests/integration/services/test_service_integration.py
+  - tests/integration_real/conftest.py
+  - tests/unit/services/llm/test_service.py
+  impacted_mocks: []
+rag_factory/services/llm/prompt_template.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/services/test_llm_integration.py
+  - tests/unit/services/llm/test_prompt_template.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration/services/test_llm_integration.py
+  - tests/unit/services/llm/test_prompt_template.py
+  impacted_mocks: []
+rag_factory/services/llm/providers/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/services/llm/providers/anthropic.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/services/llm/test_anthropic_provider.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/services/api/anthropic.py
+  impacted_tests:
+  - tests/unit/services/llm/test_anthropic_provider.py
+  impacted_mocks: []
+rag_factory/services/llm/providers/ollama.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/services/llm/test_ollama_provider.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/services/llm/test_ollama_provider.py
+  impacted_mocks: []
+rag_factory/services/llm/providers/openai.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/services/llm/test_openai_provider.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/services/api/openai.py
+  impacted_tests:
+  - tests/unit/services/llm/test_openai_provider.py
+  impacted_mocks: []
+rag_factory/services/llm/service.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/conftest.py
+  - tests/integration/services/test_service_integration.py
+  - tests/integration_real/conftest.py
+  - tests/unit/services/llm/test_service.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/registry/service_factory.py
+  impacted_tests:
+  - tests/conftest.py
+  - tests/integration/services/test_service_integration.py
+  - tests/integration_real/conftest.py
+  - tests/unit/services/llm/test_service.py
+  impacted_mocks: []
+rag_factory/services/llm/token_counter.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/services/local/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/services/local/reranker.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/registry/service_factory.py
+  - rag_factory/services/local/__init__.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/services/onnx/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/services/onnx/embedding.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/services/onnx/__init__.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/services/utils/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/services/utils/model_converter.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/services/utils/onnx_utils.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/services/utils/test_onnx_utils.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/strategies/late_chunking/document_embedder.py
+  impacted_tests:
+  - tests/unit/services/utils/test_onnx_utils.py
+  impacted_mocks: []
+rag_factory/services/utils/reranker_selector.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/reranking/test_reranker_selector.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/reranking/test_reranker_selector.py
+  impacted_mocks: []
+rag_factory/strategies/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/agentic/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/agentic/agent.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/agentic/test_agent.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/agentic/test_agent.py
+  impacted_mocks: []
+rag_factory/strategies/agentic/config.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/agentic/test_strategy.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/agentic/test_strategy.py
+  impacted_mocks: []
+rag_factory/strategies/agentic/frameworks/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/agentic/query_analyzer.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/agentic/test_query_analyzer.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/agentic/test_query_analyzer.py
+  impacted_mocks: []
+rag_factory/strategies/agentic/strategy.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/test_agentic_rag_pair.py
+  - tests/unit/strategies/agentic/test_strategy.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/strategies/auto_register.py
+  impacted_tests:
+  - tests/integration/test_agentic_rag_pair.py
+  - tests/unit/strategies/agentic/test_strategy.py
+  impacted_mocks: []
+rag_factory/strategies/agentic/tool_implementations.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/agentic/test_tools.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/agentic/test_tools.py
+  impacted_mocks: []
+rag_factory/strategies/agentic/tools.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/agentic/test_agent.py
+  - tests/unit/strategies/agentic/test_tools.py
+  - tests/unit/strategies/agentic/test_workflow_execution.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/agentic/test_agent.py
+  - tests/unit/strategies/agentic/test_tools.py
+  - tests/unit/strategies/agentic/test_workflow_execution.py
+  impacted_mocks: []
+rag_factory/strategies/agentic/workflows.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/agentic/test_plan_selection.py
+  - tests/unit/strategies/agentic/test_workflow_definitions.py
+  - tests/unit/strategies/agentic/test_workflow_execution.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/agentic/test_plan_selection.py
+  - tests/unit/strategies/agentic/test_workflow_definitions.py
+  - tests/unit/strategies/agentic/test_workflow_execution.py
+  impacted_mocks: []
+rag_factory/strategies/auto_register.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/__init__.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/base.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/strategies/test_base_integration.py
+  - tests/integration/test_config_integration.py
+  - tests/integration/test_factory_consistency.py
+  - tests/integration/test_factory_integration.py
+  - tests/integration/test_package_integration.py
+  - tests/integration/test_pipeline_integration.py
+  - tests/integration_real/test_end_to_end_real.py
+  - tests/unit/core/test_retrieval_interface.py
+  - tests/unit/strategies/test_base.py
+  - tests/unit/strategies/test_base_strategy_di.py
+  - tests/unit/test_factory.py
+  - tests/unit/test_factory_di.py
+  - tests/unit/test_pipeline.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/cli/commands/validate_e2e.py
+  - rag_factory/core/retrieval_interface.py
+  - rag_factory/evaluation/benchmarks/runner.py
+  - rag_factory/factory.py
+  - rag_factory/pipeline.py
+  - rag_factory/strategies/__init__.py
+  - rag_factory/strategies/retrieval/hybrid_retriever.py
+  - rag_factory/strategies/retrieval/keyword_retriever.py
+  - rag_factory/strategies/retrieval/knowledge_graph_retriever.py
+  - rag_factory/strategies/retrieval/multi_query_retriever.py
+  - rag_factory/strategies/retrieval/query_expansion_retriever.py
+  - rag_factory/strategies/retrieval/semantic_retriever.py
+  impacted_tests:
+  - tests/integration/strategies/test_base_integration.py
+  - tests/integration/test_config_integration.py
+  - tests/integration/test_factory_consistency.py
+  - tests/integration/test_factory_integration.py
+  - tests/integration/test_package_integration.py
+  - tests/integration/test_pipeline_integration.py
+  - tests/integration_real/test_end_to_end_real.py
+  - tests/unit/core/test_retrieval_interface.py
+  - tests/unit/strategies/test_base.py
+  - tests/unit/strategies/test_base_strategy_di.py
+  - tests/unit/test_factory.py
+  - tests/unit/test_factory_di.py
+  - tests/unit/test_pipeline.py
+  impacted_mocks: []
+rag_factory/strategies/chunking/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/chunking/base.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/chunking/test_docling_chunker.py
+  - tests/unit/strategies/chunking/test_fixed_size_chunker.py
+  - tests/unit/strategies/chunking/test_hybrid_chunker.py
+  - tests/unit/strategies/chunking/test_semantic_chunker.py
+  - tests/unit/strategies/chunking/test_structural_chunker.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/chunking/test_docling_chunker.py
+  - tests/unit/strategies/chunking/test_fixed_size_chunker.py
+  - tests/unit/strategies/chunking/test_hybrid_chunker.py
+  - tests/unit/strategies/chunking/test_semantic_chunker.py
+  - tests/unit/strategies/chunking/test_structural_chunker.py
+  impacted_mocks: []
+rag_factory/strategies/chunking/docling_chunker.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/chunking/test_docling_chunker.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/chunking/test_docling_chunker.py
+  impacted_mocks: []
+rag_factory/strategies/chunking/fixed_size_chunker.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/chunking/test_fixed_size_chunker.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/chunking/test_fixed_size_chunker.py
+  impacted_mocks: []
+rag_factory/strategies/chunking/hybrid_chunker.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/chunking/test_hybrid_chunker.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/chunking/test_hybrid_chunker.py
+  impacted_mocks: []
+rag_factory/strategies/chunking/semantic_chunker.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/chunking/test_semantic_chunker.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/chunking/test_semantic_chunker.py
+  impacted_mocks: []
+rag_factory/strategies/chunking/structural_chunker.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/chunking/test_structural_chunker.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/chunking/test_structural_chunker.py
+  impacted_mocks: []
+rag_factory/strategies/chunking/utils.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/contextual/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/contextual/batch_processor.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/benchmarks/test_contextual_performance.py
+  - tests/unit/strategies/contextual/test_batch_processor.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/benchmarks/test_contextual_performance.py
+  - tests/unit/strategies/contextual/test_batch_processor.py
+  impacted_mocks: []
+rag_factory/strategies/contextual/config.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/benchmarks/test_contextual_performance.py
+  - tests/integration/strategies/test_contextual_integration.py
+  - tests/unit/strategies/contextual/test_batch_processor.py
+  - tests/unit/strategies/contextual/test_context_generator.py
+  - tests/unit/strategies/contextual/test_cost_tracker.py
+  - tests/unit/strategies/contextual/test_storage.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/benchmarks/test_contextual_performance.py
+  - tests/integration/strategies/test_contextual_integration.py
+  - tests/unit/strategies/contextual/test_batch_processor.py
+  - tests/unit/strategies/contextual/test_context_generator.py
+  - tests/unit/strategies/contextual/test_cost_tracker.py
+  - tests/unit/strategies/contextual/test_storage.py
+  impacted_mocks: []
+rag_factory/strategies/contextual/context_generator.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/benchmarks/test_contextual_performance.py
+  - tests/unit/strategies/contextual/test_context_generator.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/benchmarks/test_contextual_performance.py
+  - tests/unit/strategies/contextual/test_context_generator.py
+  impacted_mocks: []
+rag_factory/strategies/contextual/cost_tracker.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/benchmarks/test_contextual_performance.py
+  - tests/unit/strategies/contextual/test_cost_tracker.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/benchmarks/test_contextual_performance.py
+  - tests/unit/strategies/contextual/test_cost_tracker.py
+  impacted_mocks: []
+rag_factory/strategies/contextual/prompts.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/contextual/storage.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/contextual/test_storage.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/contextual/test_storage.py
+  impacted_mocks: []
+rag_factory/strategies/contextual/strategy.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/strategies/test_contextual_integration.py
+  - tests/integration/test_contextual_retrieval_pair.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/strategies/auto_register.py
+  impacted_tests:
+  - tests/integration/strategies/test_contextual_integration.py
+  - tests/integration/test_contextual_retrieval_pair.py
+  impacted_mocks: []
+rag_factory/strategies/fine_tuned/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/fine_tuned/ab_testing.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/fine_tuned/test_ab_testing.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/fine_tuned/test_ab_testing.py
+  impacted_mocks: []
+rag_factory/strategies/fine_tuned/config.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/services/test_fine_tuned_onnx_integration.py
+  - tests/unit/strategies/fine_tuned/test_custom_loader.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration/services/test_fine_tuned_onnx_integration.py
+  - tests/unit/strategies/fine_tuned/test_custom_loader.py
+  impacted_mocks: []
+rag_factory/strategies/fine_tuned/custom_loader.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/services/test_fine_tuned_onnx_integration.py
+  - tests/unit/strategies/fine_tuned/test_custom_loader.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration/services/test_fine_tuned_onnx_integration.py
+  - tests/unit/strategies/fine_tuned/test_custom_loader.py
+  impacted_mocks: []
+rag_factory/strategies/fine_tuned/model_registry.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/services/test_fine_tuned_onnx_integration.py
+  - tests/unit/strategies/fine_tuned/test_custom_loader.py
+  - tests/unit/strategies/fine_tuned/test_model_registry.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration/services/test_fine_tuned_onnx_integration.py
+  - tests/unit/strategies/fine_tuned/test_custom_loader.py
+  - tests/unit/strategies/fine_tuned/test_model_registry.py
+  impacted_mocks: []
+rag_factory/strategies/hierarchical/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/hierarchical/hierarchy_builder.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/hierarchical/test_hierarchy_builder.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/hierarchical/test_hierarchy_builder.py
+  impacted_mocks: []
+rag_factory/strategies/hierarchical/models.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/hierarchical/test_hierarchy_builder.py
+  - tests/unit/strategies/hierarchical/test_parent_retriever.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/hierarchical/test_hierarchy_builder.py
+  - tests/unit/strategies/hierarchical/test_parent_retriever.py
+  impacted_mocks: []
+rag_factory/strategies/hierarchical/parent_retriever.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/hierarchical/test_parent_retriever.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/hierarchical/test_parent_retriever.py
+  impacted_mocks: []
+rag_factory/strategies/hierarchical/strategy.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/test_hierarchical_rag_pair.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration/test_hierarchical_rag_pair.py
+  impacted_mocks: []
+rag_factory/strategies/indexing/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/indexing/context_aware.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/test_context_aware_chunking_pair.py
+  - tests/unit/strategies/indexing/test_context_aware.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/strategies/auto_register.py
+  impacted_tests:
+  - tests/integration/test_context_aware_chunking_pair.py
+  - tests/unit/strategies/indexing/test_context_aware.py
+  impacted_mocks: []
+rag_factory/strategies/indexing/hierarchical.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/strategies/test_hierarchical_indexing.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/strategies/auto_register.py
+  impacted_tests:
+  - tests/integration/strategies/test_hierarchical_indexing.py
+  impacted_mocks: []
+rag_factory/strategies/indexing/in_memory.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/strategies/test_in_memory_indexing.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration/strategies/test_in_memory_indexing.py
+  impacted_mocks: []
+rag_factory/strategies/indexing/keyword_indexing.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/strategies/test_keyword_indexing.py
+  - tests/integration/test_keyword_pair.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/strategies/auto_register.py
+  impacted_tests:
+  - tests/integration/strategies/test_keyword_indexing.py
+  - tests/integration/test_keyword_pair.py
+  impacted_mocks: []
+rag_factory/strategies/indexing/knowledge_graph_indexing.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/strategies/auto_register.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/indexing/vector_embedding.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/strategies/test_vector_embedding_indexing.py
+  - tests/integration/test_agentic_rag_pair.py
+  - tests/integration/test_fine_tuned_embeddings_pair.py
+  - tests/integration/test_hybrid_search_pair.py
+  - tests/integration/test_multi_query_pair.py
+  - tests/integration/test_query_expansion_pair.py
+  - tests/integration/test_reranking_pair.py
+  - tests/integration/test_self_reflective_pair.py
+  - tests/integration/test_semantic_api_pair.py
+  - tests/integration/test_semantic_local_pair.py
+  - tests/integration_real/test_end_to_end_real.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/cli/commands/validate_e2e.py
+  - rag_factory/strategies/auto_register.py
+  impacted_tests:
+  - tests/integration/strategies/test_vector_embedding_indexing.py
+  - tests/integration/test_agentic_rag_pair.py
+  - tests/integration/test_fine_tuned_embeddings_pair.py
+  - tests/integration/test_hybrid_search_pair.py
+  - tests/integration/test_multi_query_pair.py
+  - tests/integration/test_query_expansion_pair.py
+  - tests/integration/test_reranking_pair.py
+  - tests/integration/test_self_reflective_pair.py
+  - tests/integration/test_semantic_api_pair.py
+  - tests/integration/test_semantic_local_pair.py
+  - tests/integration_real/test_end_to_end_real.py
+  impacted_mocks: []
+rag_factory/strategies/knowledge_graph/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/knowledge_graph/config.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/strategies/test_knowledge_graph_integration.py
+  - tests/unit/strategies/knowledge_graph/test_entity_extractor.py
+  - tests/unit/strategies/knowledge_graph/test_hybrid_retriever.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration/strategies/test_knowledge_graph_integration.py
+  - tests/unit/strategies/knowledge_graph/test_entity_extractor.py
+  - tests/unit/strategies/knowledge_graph/test_hybrid_retriever.py
+  impacted_mocks: []
+rag_factory/strategies/knowledge_graph/entity_extractor.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/knowledge_graph/test_entity_extractor.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/knowledge_graph/test_entity_extractor.py
+  impacted_mocks: []
+rag_factory/strategies/knowledge_graph/graph_store.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/knowledge_graph/hybrid_retriever.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/knowledge_graph/test_hybrid_retriever.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/knowledge_graph/test_hybrid_retriever.py
+  impacted_mocks: []
+rag_factory/strategies/knowledge_graph/memory_graph_store.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/knowledge_graph/test_memory_graph_store.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/knowledge_graph/test_memory_graph_store.py
+  impacted_mocks: []
+rag_factory/strategies/knowledge_graph/models.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/knowledge_graph/test_entity_extractor.py
+  - tests/unit/strategies/knowledge_graph/test_hybrid_retriever.py
+  - tests/unit/strategies/knowledge_graph/test_memory_graph_store.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/knowledge_graph/test_entity_extractor.py
+  - tests/unit/strategies/knowledge_graph/test_hybrid_retriever.py
+  - tests/unit/strategies/knowledge_graph/test_memory_graph_store.py
+  impacted_mocks: []
+rag_factory/strategies/knowledge_graph/relationship_extractor.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/knowledge_graph/strategy.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/strategies/test_knowledge_graph_integration.py
+  - tests/integration/test_knowledge_graph_pair.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration/strategies/test_knowledge_graph_integration.py
+  - tests/integration/test_knowledge_graph_pair.py
+  impacted_mocks: []
+rag_factory/strategies/late_chunking/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/late_chunking/coherence_analyzer.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/late_chunking/test_coherence_analyzer.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/late_chunking/test_coherence_analyzer.py
+  impacted_mocks: []
+rag_factory/strategies/late_chunking/document_embedder.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/late_chunking/test_document_embedder.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/late_chunking/test_document_embedder.py
+  impacted_mocks: []
+rag_factory/strategies/late_chunking/embedding_chunker.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/late_chunking/test_embedding_chunker.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/late_chunking/test_embedding_chunker.py
+  impacted_mocks: []
+rag_factory/strategies/late_chunking/models.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/strategies/test_late_chunking_integration.py
+  - tests/unit/strategies/late_chunking/test_coherence_analyzer.py
+  - tests/unit/strategies/late_chunking/test_document_embedder.py
+  - tests/unit/strategies/late_chunking/test_embedding_chunker.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration/strategies/test_late_chunking_integration.py
+  - tests/unit/strategies/late_chunking/test_coherence_analyzer.py
+  - tests/unit/strategies/late_chunking/test_document_embedder.py
+  - tests/unit/strategies/late_chunking/test_embedding_chunker.py
+  impacted_mocks: []
+rag_factory/strategies/late_chunking/strategy.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/benchmarks/test_late_chunking_performance.py
+  - tests/integration/strategies/test_late_chunking_integration.py
+  - tests/integration/test_late_chunking_pair.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/strategies/auto_register.py
+  impacted_tests:
+  - tests/benchmarks/test_late_chunking_performance.py
+  - tests/integration/strategies/test_late_chunking_integration.py
+  - tests/integration/test_late_chunking_pair.py
+  impacted_mocks: []
+rag_factory/strategies/multi_query/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/multi_query/config.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/multi_query/test_deduplicator.py
+  - tests/unit/strategies/multi_query/test_parallel_executor.py
+  - tests/unit/strategies/multi_query/test_ranker.py
+  - tests/unit/strategies/multi_query/test_variant_generator.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/multi_query/test_deduplicator.py
+  - tests/unit/strategies/multi_query/test_parallel_executor.py
+  - tests/unit/strategies/multi_query/test_ranker.py
+  - tests/unit/strategies/multi_query/test_variant_generator.py
+  impacted_mocks: []
+rag_factory/strategies/multi_query/deduplicator.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/multi_query/test_deduplicator.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/multi_query/test_deduplicator.py
+  impacted_mocks: []
+rag_factory/strategies/multi_query/parallel_executor.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/multi_query/test_parallel_executor.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/multi_query/test_parallel_executor.py
+  impacted_mocks: []
+rag_factory/strategies/multi_query/prompts.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/multi_query/ranker.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/multi_query/test_ranker.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/multi_query/test_ranker.py
+  impacted_mocks: []
+rag_factory/strategies/multi_query/strategy.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/test_multi_query_pair.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration/test_multi_query_pair.py
+  impacted_mocks: []
+rag_factory/strategies/multi_query/variant_generator.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/multi_query/test_variant_generator.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/multi_query/test_variant_generator.py
+  impacted_mocks: []
+rag_factory/strategies/query_expansion/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/query_expansion/base.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/query_expansion/test_base.py
+  - tests/unit/strategies/query_expansion/test_expander_service.py
+  - tests/unit/strategies/query_expansion/test_llm_expander.py
+  - tests/unit/strategies/query_expansion/test_prompts.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/strategies/retrieval/query_expansion_retriever.py
+  impacted_tests:
+  - tests/unit/strategies/query_expansion/test_base.py
+  - tests/unit/strategies/query_expansion/test_expander_service.py
+  - tests/unit/strategies/query_expansion/test_llm_expander.py
+  - tests/unit/strategies/query_expansion/test_prompts.py
+  impacted_mocks: []
+rag_factory/strategies/query_expansion/cache.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/query_expansion/expander_service.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/query_expansion/test_expander_service.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/strategies/retrieval/query_expansion_retriever.py
+  impacted_tests:
+  - tests/unit/strategies/query_expansion/test_expander_service.py
+  impacted_mocks: []
+rag_factory/strategies/query_expansion/hyde_expander.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/query_expansion/test_expander_service.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/query_expansion/test_expander_service.py
+  impacted_mocks: []
+rag_factory/strategies/query_expansion/llm_expander.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/query_expansion/test_expander_service.py
+  - tests/unit/strategies/query_expansion/test_llm_expander.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/query_expansion/test_expander_service.py
+  - tests/unit/strategies/query_expansion/test_llm_expander.py
+  impacted_mocks: []
+rag_factory/strategies/query_expansion/metrics.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/query_expansion/prompts.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/query_expansion/test_prompts.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/query_expansion/test_prompts.py
+  impacted_mocks: []
+rag_factory/strategies/reranking/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/reranking/base.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/strategies/test_reranking_integration.py
+  - tests/unit/strategies/reranking/test_base.py
+  - tests/unit/strategies/reranking/test_cache.py
+  - tests/unit/strategies/reranking/test_cosine_reranker.py
+  - tests/unit/strategies/reranking/test_cross_encoder_reranker.py
+  - tests/unit/strategies/reranking/test_reranker_service.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/services/utils/reranker_selector.py
+  impacted_tests:
+  - tests/integration/strategies/test_reranking_integration.py
+  - tests/unit/strategies/reranking/test_base.py
+  - tests/unit/strategies/reranking/test_cache.py
+  - tests/unit/strategies/reranking/test_cosine_reranker.py
+  - tests/unit/strategies/reranking/test_cross_encoder_reranker.py
+  - tests/unit/strategies/reranking/test_reranker_service.py
+  impacted_mocks: []
+rag_factory/strategies/reranking/bge_reranker.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/services/utils/reranker_selector.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/reranking/cache.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/reranking/test_cache.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/reranking/test_cache.py
+  impacted_mocks: []
+rag_factory/strategies/reranking/cohere_reranker.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/services/utils/reranker_selector.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/reranking/cosine_reranker.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/reranking/test_cosine_reranker.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/services/utils/reranker_selector.py
+  impacted_tests:
+  - tests/unit/strategies/reranking/test_cosine_reranker.py
+  impacted_mocks: []
+rag_factory/strategies/reranking/cross_encoder_reranker.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/reranking/test_cross_encoder_reranker.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/services/utils/reranker_selector.py
+  impacted_tests:
+  - tests/unit/strategies/reranking/test_cross_encoder_reranker.py
+  impacted_mocks: []
+rag_factory/strategies/reranking/metrics.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/reranking/test_metrics.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/reranking/test_metrics.py
+  impacted_mocks: []
+rag_factory/strategies/reranking/reranker_service.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/strategies/test_reranking_integration.py
+  - tests/unit/strategies/reranking/test_reranker_service.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/integration/strategies/test_reranking_integration.py
+  - tests/unit/strategies/reranking/test_reranker_service.py
+  impacted_mocks: []
+rag_factory/strategies/retrieval/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/retrieval/hybrid_retriever.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/strategies/auto_register.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/retrieval/keyword_retriever.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/strategies/auto_register.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/retrieval/knowledge_graph_retriever.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/strategies/auto_register.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/retrieval/multi_query_retriever.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/strategies/auto_register.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/retrieval/query_expansion_retriever.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/strategies/auto_register.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/retrieval/semantic_retriever.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/test_context_aware_chunking_pair.py
+  - tests/integration/test_contextual_retrieval_pair.py
+  - tests/integration/test_fine_tuned_embeddings_pair.py
+  - tests/integration/test_hybrid_search_pair.py
+  - tests/integration/test_late_chunking_pair.py
+  - tests/integration/test_semantic_api_pair.py
+  - tests/integration/test_semantic_local_pair.py
+  - tests/integration_real/test_end_to_end_real.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/cli/commands/validate_e2e.py
+  - rag_factory/strategies/auto_register.py
+  impacted_tests:
+  - tests/integration/test_context_aware_chunking_pair.py
+  - tests/integration/test_contextual_retrieval_pair.py
+  - tests/integration/test_fine_tuned_embeddings_pair.py
+  - tests/integration/test_hybrid_search_pair.py
+  - tests/integration/test_late_chunking_pair.py
+  - tests/integration/test_semantic_api_pair.py
+  - tests/integration/test_semantic_local_pair.py
+  - tests/integration_real/test_end_to_end_real.py
+  impacted_mocks: []
+rag_factory/strategies/self_reflective/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/self_reflective/config.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategies/self_reflective/grader.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/self_reflective/test_grader.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/self_reflective/test_grader.py
+  impacted_mocks: []
+rag_factory/strategies/self_reflective/models.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/self_reflective/test_grader.py
+  - tests/unit/strategies/self_reflective/test_refiner.py
+  - tests/unit/strategies/self_reflective/test_strategy.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/self_reflective/test_grader.py
+  - tests/unit/strategies/self_reflective/test_refiner.py
+  - tests/unit/strategies/self_reflective/test_strategy.py
+  impacted_mocks: []
+rag_factory/strategies/self_reflective/refiner.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/strategies/self_reflective/test_refiner.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/strategies/self_reflective/test_refiner.py
+  impacted_mocks: []
+rag_factory/strategies/self_reflective/strategy.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/test_self_reflective_pair.py
+  - tests/unit/strategies/self_reflective/test_strategy.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/strategies/auto_register.py
+  impacted_tests:
+  - tests/integration/test_self_reflective_pair.py
+  - tests/unit/strategies/self_reflective/test_strategy.py
+  impacted_mocks: []
+rag_factory/strategy_validation/run_validation.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/strategy_validation/validate_strategies.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source:
+  - rag_factory/strategy_validation/run_validation.py
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/utils/__init__.py:
+  has_tests: false
+  has_mocks: false
+  test_files: []
+  mock_files: []
+  impacted_source: []
+  impacted_tests: []
+  impacted_mocks: []
+rag_factory/utils/token_counter.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/unit/utils/test_token_counter.py
+  mock_files: []
+  impacted_source: []
+  impacted_tests:
+  - tests/unit/utils/test_token_counter.py
+  impacted_mocks: []
+rag_factory/utils/tokenization.py:
+  has_tests: true
+  has_mocks: false
+  test_files:
+  - tests/integration/test_tokenization_integration.py
+  - tests/unit/utils/test_tokenization.py
+  mock_files: []
+  impacted_source:
+  - rag_factory/services/embedding/providers/onnx_local.py
+  impacted_tests:
+  - tests/integration/test_tokenization_integration.py
+  - tests/unit/utils/test_tokenization.py
+  impacted_mocks: []

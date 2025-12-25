@@ -1,0 +1,10 @@
+target_file: rag_factory/registry/service_factory.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/registry/test_service_factory.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/unit/registry/test_service_factory.py
+impacted_mocks: []

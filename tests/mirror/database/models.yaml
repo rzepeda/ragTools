@@ -1,0 +1,20 @@
+target_file: rag_factory/database/models.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/conftest.py
+- tests/integration/database/test_database_integration.py
+- tests/unit/database/test_models.py
+- tests/unit/repositories/test_chunk_repository.py
+- tests/unit/repositories/test_document_repository.py
+mock_files: []
+impacted_source:
+- rag_factory/database/__init__.py
+- rag_factory/database/connection.py
+impacted_tests:
+- tests/conftest.py
+- tests/integration/database/test_database_integration.py
+- tests/unit/database/test_models.py
+- tests/unit/repositories/test_chunk_repository.py
+- tests/unit/repositories/test_document_repository.py
+impacted_mocks: []

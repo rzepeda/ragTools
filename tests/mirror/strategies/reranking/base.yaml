@@ -1,0 +1,21 @@
+target_file: rag_factory/strategies/reranking/base.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/strategies/test_reranking_integration.py
+- tests/unit/strategies/reranking/test_base.py
+- tests/unit/strategies/reranking/test_cache.py
+- tests/unit/strategies/reranking/test_cosine_reranker.py
+- tests/unit/strategies/reranking/test_cross_encoder_reranker.py
+- tests/unit/strategies/reranking/test_reranker_service.py
+mock_files: []
+impacted_source:
+- rag_factory/services/utils/reranker_selector.py
+impacted_tests:
+- tests/integration/strategies/test_reranking_integration.py
+- tests/unit/strategies/reranking/test_base.py
+- tests/unit/strategies/reranking/test_cache.py
+- tests/unit/strategies/reranking/test_cosine_reranker.py
+- tests/unit/strategies/reranking/test_cross_encoder_reranker.py
+- tests/unit/strategies/reranking/test_reranker_service.py
+impacted_mocks: []

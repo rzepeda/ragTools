@@ -1,7 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/strategies/fine_tuned/model_registry.py
-test_files:
-- tests/integration/services/test_fine_tuned_onnx_integration.py
-- tests/unit/strategies/fine_tuned/test_custom_loader.py
-- tests/unit/strategies/fine_tuned/test_model_registry.py
-mocks: []

@@ -1,0 +1,14 @@
+target_file: rag_factory/strategies/knowledge_graph/config.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/strategies/test_knowledge_graph_integration.py
+- tests/unit/strategies/knowledge_graph/test_entity_extractor.py
+- tests/unit/strategies/knowledge_graph/test_hybrid_retriever.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/integration/strategies/test_knowledge_graph_integration.py
+- tests/unit/strategies/knowledge_graph/test_entity_extractor.py
+- tests/unit/strategies/knowledge_graph/test_hybrid_retriever.py
+impacted_mocks: []

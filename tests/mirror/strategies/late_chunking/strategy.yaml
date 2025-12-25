@@ -1,0 +1,15 @@
+target_file: rag_factory/strategies/late_chunking/strategy.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/benchmarks/test_late_chunking_performance.py
+- tests/integration/strategies/test_late_chunking_integration.py
+- tests/integration/test_late_chunking_pair.py
+mock_files: []
+impacted_source:
+- rag_factory/strategies/auto_register.py
+impacted_tests:
+- tests/benchmarks/test_late_chunking_performance.py
+- tests/integration/strategies/test_late_chunking_integration.py
+- tests/integration/test_late_chunking_pair.py
+impacted_mocks: []

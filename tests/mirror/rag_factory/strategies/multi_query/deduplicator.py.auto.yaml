@@ -1,5 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/strategies/multi_query/deduplicator.py
-test_files:
-- tests/unit/strategies/multi_query/test_deduplicator.py
-mocks: []

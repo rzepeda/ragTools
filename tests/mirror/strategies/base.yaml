@@ -1,0 +1,46 @@
+target_file: rag_factory/strategies/base.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/strategies/test_base_integration.py
+- tests/integration/test_config_integration.py
+- tests/integration/test_factory_consistency.py
+- tests/integration/test_factory_integration.py
+- tests/integration/test_package_integration.py
+- tests/integration/test_pipeline_integration.py
+- tests/integration_real/test_end_to_end_real.py
+- tests/unit/core/test_retrieval_interface.py
+- tests/unit/strategies/test_base.py
+- tests/unit/strategies/test_base_strategy_di.py
+- tests/unit/test_factory.py
+- tests/unit/test_factory_di.py
+- tests/unit/test_pipeline.py
+mock_files: []
+impacted_source:
+- rag_factory/cli/commands/validate_e2e.py
+- rag_factory/core/retrieval_interface.py
+- rag_factory/evaluation/benchmarks/runner.py
+- rag_factory/factory.py
+- rag_factory/pipeline.py
+- rag_factory/strategies/__init__.py
+- rag_factory/strategies/retrieval/hybrid_retriever.py
+- rag_factory/strategies/retrieval/keyword_retriever.py
+- rag_factory/strategies/retrieval/knowledge_graph_retriever.py
+- rag_factory/strategies/retrieval/multi_query_retriever.py
+- rag_factory/strategies/retrieval/query_expansion_retriever.py
+- rag_factory/strategies/retrieval/semantic_retriever.py
+impacted_tests:
+- tests/integration/strategies/test_base_integration.py
+- tests/integration/test_config_integration.py
+- tests/integration/test_factory_consistency.py
+- tests/integration/test_factory_integration.py
+- tests/integration/test_package_integration.py
+- tests/integration/test_pipeline_integration.py
+- tests/integration_real/test_end_to_end_real.py
+- tests/unit/core/test_retrieval_interface.py
+- tests/unit/strategies/test_base.py
+- tests/unit/strategies/test_base_strategy_di.py
+- tests/unit/test_factory.py
+- tests/unit/test_factory_di.py
+- tests/unit/test_pipeline.py
+impacted_mocks: []

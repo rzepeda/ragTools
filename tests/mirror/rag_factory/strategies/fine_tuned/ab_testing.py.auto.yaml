@@ -1,5 +1,0 @@
-header: '[AUTO-GENERATED] DO NOT EDIT'
-target: rag_factory/strategies/fine_tuned/ab_testing.py
-test_files:
-- tests/unit/strategies/fine_tuned/test_ab_testing.py
-mocks: []

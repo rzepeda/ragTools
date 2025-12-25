@@ -1,0 +1,10 @@
+target_file: rag_factory/strategies/query_expansion/prompts.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/unit/strategies/query_expansion/test_prompts.py
+mock_files: []
+impacted_source: []
+impacted_tests:
+- tests/unit/strategies/query_expansion/test_prompts.py
+impacted_mocks: []

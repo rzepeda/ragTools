@@ -1,0 +1,13 @@
+target_file: rag_factory/evaluation/analysis/comparison.py
+has_tests: true
+has_mocks: false
+test_files:
+- tests/integration/evaluation/test_evaluation_integration.py
+- tests/unit/evaluation/test_comparison.py
+mock_files: []
+impacted_source:
+- rag_factory/evaluation/analysis/__init__.py
+impacted_tests:
+- tests/integration/evaluation/test_evaluation_integration.py
+- tests/unit/evaluation/test_comparison.py
+impacted_mocks: []
