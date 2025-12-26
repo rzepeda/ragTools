@@ -274,7 +274,7 @@ class Chunk(Base):
     )
 
     embedding = Column(
-        Vector(1536),
+        Vector(384),
         nullable=True,
         comment="Vector embedding for similarity search"
     )
@@ -399,7 +399,7 @@ class AgenticChunk(Base):
     )
 
     embedding = Column(
-        Vector(1536),
+        Vector(384),
         nullable=True,
         comment="Vector embedding for similarity search"
     )

@@ -28,7 +28,8 @@ def upgrade() -> None:
         sa.Column('document_id', sa.String(255), nullable=False),
         sa.Column('text_content', sa.Text(), nullable=False),
         sa.Column('chunk_index', sa.Integer(), nullable=False),
-        sa.Column('created_at', sa.TIMESTAMP(), server_default=sa.func.now())
+        sa.Column('created_at', sa.TIMESTAMP(), server_default=sa.func.now()),
+        if_not_exists=True
     )
     
     # Vectors table
@@ -37,7 +38,8 @@ def upgrade() -> None:
         sa.Column('id', sa.UUID(), primary_key=True, server_default=sa.text('gen_random_uuid()')),
         sa.Column('chunk_id', sa.String(255), sa.ForeignKey('contextual_chunks.chunk_id')),
         sa.Column('vector_embedding', Vector(384)),
-        sa.Column('created_at', sa.TIMESTAMP(), server_default=sa.func.now())
+        sa.Column('created_at', sa.TIMESTAMP(), server_default=sa.func.now()),
+        if_not_exists=True
     )
     
     # Metadata table
@@ -47,7 +49,8 @@ def upgrade() -> None:
         sa.Column('title', sa.String(500)),
         sa.Column('source', sa.String(255)),
         sa.Column('metadata', sa.JSON()),
-        sa.Column('indexed_at', sa.TIMESTAMP(), server_default=sa.func.now())
+        sa.Column('indexed_at', sa.TIMESTAMP(), server_default=sa.func.now()),
+        if_not_exists=True
     )
     
     # Index for fast vector search
@@ -57,7 +60,8 @@ def upgrade() -> None:
         ['vector_embedding'],
         postgresql_using='ivfflat',
         postgresql_ops={'vector_embedding': 'vector_cosine_ops'},
-        postgresql_with={'lists': 100}
+        postgresql_with={'lists': 100},
+        if_not_exists=True
     )
 
 

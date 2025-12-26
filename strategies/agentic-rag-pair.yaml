@@ -37,7 +37,7 @@ retriever:
     fields:
       chunk_id: "chunk_id"
       document_id: "document_id"
-      text: "text"
+      text: "text_content"
       embedding: "embedding"
       chunk_index: "chunk_index"
       metadata: "metadata"

@@ -53,7 +53,7 @@ def upgrade() -> None:
         sa.Column("chunk_index", sa.Integer(), nullable=False,
                   comment="Order within document (0-indexed)"),
         sa.Column("text", sa.Text(), nullable=False),
-        sa.Column("embedding", Vector(1536), nullable=True,
+        sa.Column("embedding", Vector(384), nullable=True,
                   comment="Vector embedding for similarity search"),
         sa.Column("metadata", JSONB(), nullable=False, default={},
                   comment="Flexible metadata storage"),

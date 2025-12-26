@@ -257,4 +257,5 @@ rag_factory/strategy_validation/validate_strategies.py
 rag_factory/utils/__init__.py
 rag_factory/utils/token_counter.py
 rag_factory/utils/tokenization.py
+tests/test_agentic_workflow.py
 tests/test_mock_registry.py

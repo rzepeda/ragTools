@@ -8,6 +8,7 @@ from typing import Dict, Any, List, Optional, TYPE_CHECKING
 import logging
 import json
 
+from rag_factory.database.config import DatabaseConfig
 from rag_factory.services.database.database_context import DatabaseContext
 
 try:
@@ -56,11 +57,11 @@ class PostgresqlDatabaseService(IDatabaseService):
 
     def __init__(
         self,
-        host: str = "localhost",
-        port: int = 5432,
-        database: str = "rag_db",
-        user: str = "postgres",
-        password: str = "",
+        host: Optional[str] = None,
+        port: Optional[int] = None,
+        database: Optional[str] = None,
+        user: Optional[str] = None,
+        password: Optional[str] = None,
         table_name: str = "chunks",
         vector_dimensions: int = 384,
         connection_string: Optional[str] = None,
@@ -87,19 +88,25 @@ class PostgresqlDatabaseService(IDatabaseService):
                 "  pip install asyncpg"
             )
 
+        # If no connection string, load from config
+        if not connection_string and not all([host, port, database, user]):
+            db_config = DatabaseConfig()
+            connection_string = db_config.database_url
+            if not connection_string:
+                raise ValueError("Database connection details not found in environment or arguments.")
+
         if connection_string:
             try:
                 from sqlalchemy.engine import make_url
                 url = make_url(connection_string)
-                self.host = url.host or "localhost"
-                self.port = url.port or 5432
-                self.database = url.database or "rag_db"
-                self.user = url.username or "postgres"
-                self.password = url.password or ""
+                self.host = url.host
+                self.port = url.port
+                self.database = url.database
+                self.user = url.username
+                self.password = url.password
+                if not self.database:
+                    raise ValueError("Database name is missing from the connection string.")
             except ImportError:
-                 # Fallback if sqlalchemy not available? But file imports it.
-                 # Assuming simple parsing if make_url fails or not imported?
-                 # Since imports are usually at top and handled, it should be fine.
                  raise ImportError("SQLAlchemy required to parse connection string")
         else:
             self.host = host
@@ -119,7 +126,7 @@ class PostgresqlDatabaseService(IDatabaseService):
         self._contexts: Dict[tuple, DatabaseContext] = {}  # Cache contexts
 
         logger.info(
-            f"Initialized PostgreSQL service for {host}:{port}/{database}"
+            f"Initialized PostgreSQL service for {self.host}:{self.port}/{self.database}"
         )
         
         # Repository instances (lazy-loaded for agentic strategy)

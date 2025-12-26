@@ -20,7 +20,15 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     """Add metadata column to keyword_chunks table."""
-    op.add_column('keyword_chunks', sa.Column('metadata', sa.JSON(), nullable=True))
+    op.execute("""
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='keyword_chunks' AND column_name='metadata') THEN
+                ALTER TABLE keyword_chunks ADD COLUMN metadata JSON NULL;
+            END IF;
+        END
+        $$;
+    """)
 
 
 def downgrade() -> None:

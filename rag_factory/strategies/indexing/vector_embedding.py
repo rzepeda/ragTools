@@ -70,26 +70,34 @@ class VectorEmbeddingIndexing(IIndexingStrategy):
         # Store documents first to satisfy foreign key constraints
         logger.info(f"Storing {len(documents)} documents...")
         for doc in documents:
-            doc_id = doc.get("id")
-            if not doc_id:
-                logger.warning("Document is missing an 'id', skipping.")
-                continue
-            
-            doc_data = {
-                "document_id": doc_id,
-                "filename": doc.get("metadata", {}).get("filename", str(doc_id)),
-                "source_path": doc.get("metadata", {}).get("source_path", str(doc_id)),
-                "content_hash": str(uuid.uuid4()),  # Placeholder
-                "total_chunks": 0,  # Will be updated after chunking
-                "metadata": doc.get("metadata", {}),
-                "status": "indexing",
-            }
+            repo = context.database.document_repository
             try:
-                context.database.insert("documents", doc_data)
+                import hashlib
+                import uuid
+                
+                content_to_hash = doc.get("text", "").encode("utf-8")
+                content_hash = hashlib.sha256(content_to_hash).hexdigest()
+
+                # Check for existing document by content hash
+                existing_doc = repo.get_by_content_hash(content_hash)
+                if existing_doc:
+                    # If it exists, we just use its ID for the rest of the process
+                    doc['id'] = str(existing_doc.document_id)
+                    logger.info(f"Document with same content already exists with ID {doc['id']}. Skipping creation.")
+                else:
+                    # If it doesn't exist, create it with the ID from the test data
+                    doc_id_str = doc.get("id")
+                    repo.create(
+                        document_id=uuid.UUID(doc_id_str),
+                        filename=doc.get("metadata", {}).get("filename", doc_id_str),
+                        source_path=doc.get("metadata", {}).get("source_path", doc_id_str),
+                        content_hash=content_hash,
+                        metadata=doc.get("metadata", {}),
+                        status="indexing",
+                    )
             except Exception as e:
-                logger.error(f"Failed to insert document {doc_id}: {e}")
-                # Depending on desired behavior, we might want to skip this doc
-                # or raise the exception. For now, we log and continue.
+                logger.error(f"Failed to create document {doc.get('id')} via repository: {e}", exc_info=True)
+                raise
         logger.info("Document storage complete.")
 
 

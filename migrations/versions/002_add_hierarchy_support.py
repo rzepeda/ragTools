@@ -23,51 +23,60 @@ def upgrade() -> None:
     """Add hierarchy support columns to chunks table."""
 
     # Add parent_chunk_id column (self-referencing foreign key)
-    op.add_column(
-        "chunks",
-        sa.Column("parent_chunk_id", UUID(as_uuid=True), nullable=True,
-                  comment="Parent chunk in hierarchy (null for root chunks)")
-    )
+    op.execute("""
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='chunks' AND column_name='parent_chunk_id') THEN
+                ALTER TABLE chunks ADD COLUMN parent_chunk_id UUID NULL;
+            END IF;
+        END
+        $$;
+    """)
 
     # Add hierarchy_level column
-    op.add_column(
-        "chunks",
-        sa.Column("hierarchy_level", sa.Integer(), nullable=False, 
-                  server_default="0",
-                  comment="Depth in hierarchy: 0=document, 1=section, 2=paragraph, 3=sentence")
-    )
+    op.execute("""
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='chunks' AND column_name='hierarchy_level') THEN
+                ALTER TABLE chunks ADD COLUMN hierarchy_level INTEGER NOT NULL DEFAULT 0;
+            END IF;
+        END
+        $$;
+    """)
 
     # Add hierarchy_metadata JSONB column
-    op.add_column(
-        "chunks",
-        sa.Column("hierarchy_metadata", JSONB(), nullable=False,
-                  server_default="{}",
-                  comment="Hierarchy metadata: position_in_parent, total_siblings, depth_from_root")
-    )
+    op.execute("""
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='chunks' AND column_name='hierarchy_metadata') THEN
+                ALTER TABLE chunks ADD COLUMN hierarchy_metadata JSONB NOT NULL DEFAULT '{}';
+            END IF;
+        END
+        $$;
+    """)
 
     # Create foreign key constraint for parent_chunk_id
-    op.create_foreign_key(
-        "fk_chunks_parent_chunk_id",
-        "chunks",
-        "chunks",
-        ["parent_chunk_id"],
-        ["chunk_id"],
-        ondelete="CASCADE"
-    )
+    op.execute("""
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_chunks_parent_chunk_id') THEN
+                ALTER TABLE chunks ADD CONSTRAINT fk_chunks_parent_chunk_id FOREIGN KEY (parent_chunk_id) REFERENCES chunks (chunk_id) ON DELETE CASCADE;
+            END IF;
+        END
+        $$;
+    """)
 
     # Create index on parent_chunk_id for efficient parent/child queries
-    op.create_index(
-        "idx_chunks_parent_chunk_id",
-        "chunks",
-        ["parent_chunk_id"]
-    )
+    op.execute("""
+        CREATE INDEX IF NOT EXISTS idx_chunks_parent_chunk_id
+        ON chunks (parent_chunk_id);
+    """)
 
     # Create composite index for hierarchy queries
-    op.create_index(
-        "idx_chunks_hierarchy",
-        "chunks",
-        ["document_id", "hierarchy_level", "chunk_index"]
-    )
+    op.execute("""
+        CREATE INDEX IF NOT EXISTS idx_chunks_hierarchy
+        ON chunks (document_id, hierarchy_level, chunk_index);
+    """)
 
     # Create view for hierarchy validation
     op.execute("""

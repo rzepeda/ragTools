@@ -86,7 +86,8 @@ class DocumentRepository(BaseRepository[Document]):
         source_path: str,
         content_hash: str,
         metadata: Optional[Dict[str, Any]] = None,
-        status: str = "pending"
+        status: str = "pending",
+        document_id: Optional[UUID] = None
     ) -> Document:
         """Create a new document.
 
@@ -99,6 +100,7 @@ class DocumentRepository(BaseRepository[Document]):
             content_hash: SHA-256 hash of the document content
             metadata: Optional dictionary of custom metadata
             status: Processing status (default: "pending")
+            document_id: Optional UUID to use for the document
 
         Returns:
             The created Document entity
@@ -113,13 +115,17 @@ class DocumentRepository(BaseRepository[Document]):
             raise DuplicateEntityError("Document", "content_hash", content_hash)
 
         try:
-            document = Document(
-                filename=filename,
-                source_path=source_path,
-                content_hash=content_hash,
-                metadata_=metadata or {},
-                status=status
-            )
+            doc_data = {
+                "filename": filename,
+                "source_path": source_path,
+                "content_hash": content_hash,
+                "metadata_": metadata or {},
+                "status": status,
+            }
+            if document_id:
+                doc_data["document_id"] = document_id
+            
+            document = Document(**doc_data)
             self.session.add(document)
             self.session.flush()
             return document

@@ -11,6 +11,7 @@ from typing import Dict, Optional, List, Any, Tuple
 from sqlalchemy import MetaData, Table, select, insert, update, delete, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.dialects.postgresql import insert as pg_insert
+import uuid
 
 logger = logging.getLogger(__name__)
 
@@ -339,81 +340,22 @@ class DatabaseContext:
         await loop.run_in_executor(None, self._store_chunks_sync, chunks)
 
     def _store_chunks_sync(self, chunks: List[Dict[str, Any]]) -> None:
-        """Synchronous implementation of store_chunks with multi-table support."""
+        """Synchronous implementation of store_chunks using the ChunkRepository."""
         if not chunks:
             return
-            
-        has_chunks = "chunks" in self.tables
-        has_vectors = "vectors" in self.tables
         
-        if not has_chunks and not has_vectors:
-             raise KeyError("Neither 'chunks' nor 'vectors' logical tables found in mapping.")
+        try:
+            # Convert document_id to UUID if it's a string
+            for chunk in chunks:
+                if isinstance(chunk.get("document_id"), str):
+                    chunk["document_id"] = uuid.UUID(chunk["document_id"])
 
-        with self.engine.begin() as conn:
-            # 1. Store chunks (text, metadata)
-            if has_chunks:
-                table = self.get_table("chunks")
-                chunks_cols = set(c.name for c in table.columns)
-                pk_field = self._map_field("chunk_id")
-                
-                for chunk in chunks:
-                    data = {}
-                    for k, v in chunk.items():
-                        mapped_k = self._map_field(k)
-                        # Skip 'id' field - let database auto-generate UUID
-                        if mapped_k == 'id':
-                            continue
-                        if mapped_k in chunks_cols:
-                            data[mapped_k] = v
-                    
-                    if data:
-                        stmt = pg_insert(table).values(**data)
-                        if pk_field in data:
-                             # Upsert
-                            stmt = stmt.on_conflict_do_update(
-                                index_elements=[pk_field],
-                                set_=data
-                            )
-                        conn.execute(stmt)
-
-            # 2. Store vectors
-            if has_vectors:
-                table = self.get_table("vectors")
-                vectors_cols = set(c.name for c in table.columns)
-                chunk_id_mapped = self._map_field("chunk_id")
-                
-                # Vectors table likely uses a different PK (uuid), but we have chunk_id as FK?
-                # or chunk_id is PK?
-                # In semantic_local_schema: vectors has custom 'id' (UUID PK) and 'chunk_id' (FK).
-                # We can't upsert on 'id' because we don't have it.
-                # We can't upsert on 'chunk_id' unless it's unique constraint.
-                # Schema didn't show unique constraint on chunk_id in vectors table.
-                # But logical 1:1 implies it.
-                # For now, let's just INSERT. If we run twice, we might get duplicates in vectors table.
-                # Ideal: Delete previous vector for this chunk_id?
-                
-                for chunk in chunks:
-                    data = {}
-                    # Ensure chunk_id is present
-                    if "chunk_id" in chunk:
-                        data[chunk_id_mapped] = chunk["chunk_id"]
-                        
-                    for k, v in chunk.items():
-                        mapped_k = self._map_field(k)
-                        # Skip 'id' field - let database auto-generate UUID for vectors table
-                        if mapped_k == 'id':
-                            continue
-                        if mapped_k in vectors_cols:
-                            data[mapped_k] = v
-                            
-                    if len(data) > 1: # contains more than just chunk_id
-                         # Log what we're storing
-                         logger.debug(f"Storing vector data: chunk_id={data.get(chunk_id_mapped)}, fields={list(data.keys())}")
-                         # Try simple insert for now
-                         stmt = pg_insert(table).values(**data)
-                         conn.execute(stmt)
-                    else:
-                         logger.warning(f"Skipping vector insert for chunk {chunk.get('chunk_id')} - no vector data found")
+            self.chunk_repository.bulk_create(chunks)
+            logger.debug(f"Successfully stored {len(chunks)} chunks via ChunkRepository.")
+        except Exception as e:
+            logger.error(f"Failed to store chunks via repository: {e}", exc_info=True)
+            # The repository handles its own rollback, but we re-raise
+            raise
 
     async def search_chunks(
         self,

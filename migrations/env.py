@@ -30,15 +30,8 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 # Get database URL from environment with backward compatibility
-# Check if we're running tests by looking for TEST_DATABASE_URL or DATABASE_TEST_URL
-test_url = EnvironmentValidator.get_database_url(for_tests=True)
-if test_url:
-    # Use test database if available
-    db_url = test_url
-else:
-    # Fall back to main database
-    db_config = DatabaseConfig()
-    db_url = db_config.database_url
+db_config = DatabaseConfig()
+db_url = db_config.database_url
 
 config.set_main_option("sqlalchemy.url", db_url)
 

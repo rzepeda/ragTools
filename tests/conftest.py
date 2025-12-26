@@ -92,12 +92,12 @@ def test_db_url() -> str:
         Test database URL
         
     Raises:
-        pytest.skip: If DB_TEST_DATABASE_URL not set
+        pytest.skip: If DB_DATABASE_URL not set
     """
-    url = os.getenv("DB_TEST_DATABASE_URL")
+    url = os.getenv("DB_DATABASE_URL")
     if not url:
         pytest.skip(
-            "DB_TEST_DATABASE_URL not set. "
+            "DB_DATABASE_URL not set. "
             "Set this environment variable to run database tests."
         )
     return url
